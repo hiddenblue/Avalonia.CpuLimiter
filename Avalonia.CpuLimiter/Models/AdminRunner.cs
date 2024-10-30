@@ -1,42 +1,31 @@
-﻿using System.Runtime.InteropServices;
-using System;
-using System.IO;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Security.Principal;
-using Win32CpuAffinity;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace CpuLimiter
+namespace Avalonia.CpuLimiter.Models
 {
-    class Program
+    public class AdminRunner
     {
-        public static void Main(string[] args)
-        {
-            if (!IsRunAsAdmin())
-            {
-                RunElevated();
-            }
-            else
-            {
-                RunAsAdmin();
-            }
-        }
-
-        static bool IsRunAsAdmin()
+        public static bool IsRunAsAdmin()
         {
             WindowsIdentity identity = WindowsIdentity.GetCurrent();
-            WindowsPrincipal principal = new WindowsPrincipal(identity);
+            WindowsPrincipal principal = new(identity);
 
             return principal.IsInRole(WindowsBuiltInRole.Administrator);
         }
 
-        static void RunElevated()
+        public static void RunElevated()
         {
             ProcessStartInfo procInfo = new ProcessStartInfo();
             procInfo.UseShellExecute = true;
             procInfo.FileName = Environment.ProcessPath;
             procInfo.Verb = "runas";
             procInfo.CreateNoWindow = true;
-            procInfo.WindowStyle = ProcessWindowStyle.Hidden;
+            // procInfo.WindowStyle = ProcessWindowStyle.Hidden;
 
             try
             {
@@ -49,28 +38,33 @@ namespace CpuLimiter
             }
         }
 
-        static void RunAsAdmin()
+        public static void RunAsAdmin(int CPUCoreNum, string Path)
         {
-            Console.WriteLine("Running as adminisitrator.");
-            string executablePath = "D:\\prototype\\Prototype\\prototypef.exe";
 
-            ProcessStartInfo startInfo = new ProcessStartInfo(executablePath)
+            if (string.IsNullOrWhiteSpace(Path))
+                throw new InvalidOperationException("The executable file Path cannot be empty");
+
+            Console.WriteLine("Running as adminisitrator.");
+
+            ProcessStartInfo startInfo = new ProcessStartInfo(Path)
             {
                 UseShellExecute = false,
                 RedirectStandardInput = true,
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,
                 CreateNoWindow = true,
-                WindowStyle = ProcessWindowStyle.Hidden
-              
+                // WindowStyle = ProcessWindowStyle.Hidden
+
             };
 
             Process process = new Process { StartInfo = startInfo };
 
-           
+
 
             process.Start();
-            process = Win32CpuAffinity.Win32CpuAffinity.SetProcessWithLimitedCPU(process, 14);
+            Win32CpuAffinity win32CpuAffinity = new(CPUCoreNum);
+
+            process = win32CpuAffinity.SetProcessWithLimitedCPU(process);
 
             if (process != null)
             {
