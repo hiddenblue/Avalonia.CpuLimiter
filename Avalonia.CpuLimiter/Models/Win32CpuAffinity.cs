@@ -8,9 +8,9 @@ namespace Avalonia.CpuLimiter.Models;
 
 class Win32CpuAffinity
 {
-    public Win32CpuAffinity(int CPULogicalCoreNum)
+    public Win32CpuAffinity(int cpuLogicalCoreNum)
     {
-        CpuLogicalCoreNum = CPULogicalCoreNum;
+        CpuLogicalCoreNum = cpuLogicalCoreNum;
     }
 
     [DllImport("kernel32.dll", SetLastError = true)]
@@ -19,7 +19,7 @@ class Win32CpuAffinity
     [DllImport("kernel32.dll", SetLastError = true)]
     public static extern bool GetProcessAffinityMask(nint hProcess, nint dwProcessAffinityMask, nint lpSystemAffinityMask);
 
-    public Process SetProcessWithLimitedCPU(Process process)
+    public Process SetProcessWithLimitedCpu(Process process)
     {
         if (CpuLogicalCoreNum <= 0)
         {

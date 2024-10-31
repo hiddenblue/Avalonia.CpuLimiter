@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,10 +13,17 @@ namespace Avalonia.CpuLimiter.Models
     {
         public static bool IsRunAsAdmin()
         {
-            WindowsIdentity identity = WindowsIdentity.GetCurrent();
-            WindowsPrincipal principal = new(identity);
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                WindowsIdentity identity = WindowsIdentity.GetCurrent();
+                WindowsPrincipal principal = new(identity);
 
-            return principal.IsInRole(WindowsBuiltInRole.Administrator);
+                return principal.IsInRole(WindowsBuiltInRole.Administrator); 
+            }
+            else
+            {
+                throw new PlatformNotSupportedException();
+            }
         }
 
         public static void RunElevated()
@@ -38,15 +46,20 @@ namespace Avalonia.CpuLimiter.Models
             }
         }
 
-        public static void RunAsAdmin(int CPUCoreNum, string Path)
+        public static void RunAsAdmin(int cpuCoreNum, string path)
         {
 
-            if (string.IsNullOrWhiteSpace(Path))
+            if (string.IsNullOrWhiteSpace(path))
                 throw new InvalidOperationException("The executable file Path cannot be empty");
 
-            Console.WriteLine("Running as adminisitrator.");
+            if(IsRunAsAdmin())
+                Console.WriteLine("Running as adminisitrator.");
+            else
+            {
+                Console.WriteLine($"Running without administrator privileges.");
+            }
 
-            ProcessStartInfo startInfo = new ProcessStartInfo(Path)
+            ProcessStartInfo startInfo = new ProcessStartInfo(path)
             {
                 UseShellExecute = false,
                 RedirectStandardInput = true,
@@ -62,28 +75,18 @@ namespace Avalonia.CpuLimiter.Models
 
 
             process.Start();
-            Win32CpuAffinity win32CpuAffinity = new(CPUCoreNum);
+            Win32CpuAffinity win32CpuAffinity = new(cpuCoreNum);
 
-            process = win32CpuAffinity.SetProcessWithLimitedCPU(process);
+            process = win32CpuAffinity.SetProcessWithLimitedCpu(process);
 
-            if (process != null)
-            {
-                Console.WriteLine($"Process started with PID: {process.Id}");
+            Console.WriteLine($"Process started with PID: {process.Id}");
 
-                process.WaitForExit();
+            process.WaitForExit();
 
-                int exitCode = process.ExitCode;
-                Console.WriteLine($"Process exited with exit code: {exitCode}");
+            int exitCode = process.ExitCode;
+            Console.WriteLine($"Process exited with exit code: {exitCode}");
 
-                process.Close();
-
-            }
-            else
-            {
-                Console.WriteLine("Failed to start process.");
-
-            }
-
+            process.Close();
         }
     }
 }

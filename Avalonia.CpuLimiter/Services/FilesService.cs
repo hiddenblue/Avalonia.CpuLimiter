@@ -24,7 +24,7 @@ namespace Avalonia.CpuLimiter.Services
         {
             var files = await _target.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions()
             {
-                Title = "Open Text File",
+                Title = "Select executable file",
                 AllowMultiple = false
 
 
