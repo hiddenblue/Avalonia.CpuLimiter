@@ -3,12 +3,12 @@
         xmlns:vm="using:Avalonia.CpuLimiter.ViewModels"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="350"
+        mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="400"
 		Width="600" Height="400"
         x:Class="Avalonia.CpuLimiter.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
         Icon="/Assets/avalonia-logo.ico"
-        Title="Avalonia.CpuLimiter"
+        Title="Game Launcher"
 		TransparencyLevelHint="AcrylicBlur"
         Background="Transparent"
         ExtendClientAreaToDecorationsHint="False"
@@ -36,60 +36,91 @@
 		<DockPanel>
 			<Menu DockPanel.Dock="Top">
 				<MenuItem Header="File">
-					<MenuItem Header="Open" Command="{Binding ChooseExeFileCommand}"/>
-					<MenuItem Header="Exit" Command="{Binding ExitProgramCommand}"/>
+					<MenuItem Header="Open" Command="{Binding ChooseExeFileCommand}" FontSize="13"/>
+					<MenuItem Header="Save" Command="{Binding}" FontSize="13"/>
+					<Separator/>
+					<MenuItem Header="Exit" Command="{Binding ExitProgramCommand}" FontSize="13"/>
 				</MenuItem>
 				
 				<MenuItem Header="_Edit">
-					<MenuItem Header="Cut"/>
-					<MenuItem Header="Copy"/>
-					<MenuItem Header="Paste"/>
+					<MenuItem Header="Cut" FontSize="13"/>
+					<MenuItem Header="Copy" FontSize="13"/>
+					<MenuItem Header="Paste" FontSize="13"/>
 				</MenuItem>
 				
 				<MenuItem Header="_Setting">
-					<MenuItem Header="View"/>
-					<MenuItem Header="Config"/>
+					<MenuItem Header="View" FontSize="13"/>
+					<MenuItem Header="Config" FontSize="13"/>
 				</MenuItem>
 				
 				<MenuItem Header="_Run">
-					<MenuItem Header="Run Game" Command="{Binding RunGameCommand}"/>	
+					<MenuItem Header="Launch Game" Command="{Binding RunGameCommand}" FontSize="13"/>	
 				</MenuItem>
 				
 				<MenuItem Header="_Help">
-					<MenuItem Header="Docs"/>
-					<MenuItem Header="About Author"/>
-					<MenuItem Header="Project website"></MenuItem>
+					<MenuItem Header="Docs" FontSize="13" Command="{Binding OpenDocsCommand}"
+					          ToolTip.Tip="Click to open docs in browser"/>
+					<Separator/>
+					<MenuItem Header="Project website" FontSize="13" Command="{Binding OpenProjWebsiteCommand}"/>
+					<MenuItem Header="About" FontSize="13" Command="{Binding OpenAboutWindowCommand}"/>
 				</MenuItem>
 				
 			</Menu>
 			
 			<!-- content -->
 			<StackPanel>
+				
+				<TextBlock FontSize="18" FontWeight="Bold" Foreground="DodgerBlue"
+				           HorizontalAlignment="Center" Padding="20">
+					Exe File Path
+				</TextBlock>
 
-				<Button Content="Select Executable File" HorizontalAlignment="Center"
-				        Background="Beige" Foreground="Black" Margin="20 20 20 20"
-				        Command="{Binding ChooseExeFileCommand}"/>
-
-				<StackPanel Orientation="Horizontal">
-
-					<TextBlock FontSize="18" FontWeight="Bold" Foreground="Fuchsia"
-					           HorizontalAlignment="Center" Padding="15">
-						Exe File Path
-					</TextBlock>
-
+				<StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
 					<TextBox Text="{Binding GamePath}" Name="GamePathTextBox"
 					         HorizontalAlignment="Center"
-					         Padding="15" FontSize="16"/>
-			
+					         Padding="30 8 30 0" FontSize="16"/>
+					
+					<Button Content=" ... " HorizontalAlignment="Center"
+					        Background="Beige" Foreground="Black"
+					        Margin="5 0 0 0"
+					        Padding="10"
+					        Width="40"
+					        BorderBrush="Black"
+					        ToolTip.Tip="Open the file explorer to select exe file"
+					        Command="{Binding ChooseExeFileCommand}"/>
 				</StackPanel>
 
+
+				<Separator Margin="0 20"/>
+				<Slider Name="slider" BorderBrush="Orange"
+				        Minimum="1" Maximum="16" IsSnapToTickEnabled="True" TickFrequency="1" TickPlacement="TopLeft"
+				        Width="400" Value="{Binding CpuCoreCount}"
+				        ToolTip.Tip="Adjust the cpu core numbers used by the Game program">
+				</Slider>
+				
+				<StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+					<TextBlock FontSize="18" FontWeight="Bold" Margin="10 6 10 0"
+					           HorizontalAlignment="Center">Cpu Core Number:</TextBlock>
+					<!-- <TextBlock Text="{Binding #slider.Value}" -->
+					<!--            HorizontalAlignment="Center" FontSize="20" FontWeight="Bold" Padding="0"/> -->
+					
+					<TextBox Margin="10 0 0 0" HorizontalAlignment="Center"
+					         Padding="10 10 10 10"
+					         Width="1"
+					         TextAlignment="Center"
+					         Text="{Binding CpuCoreCount}" FontSize="18"
+					         FontWeight="Bold" IsReadOnly="False"></TextBox>
+				</StackPanel>
 				<Button FontStyle="Normal"
 				        Foreground="Orange" Command="{Binding RunGameCommand}"
 				        HorizontalAlignment="Center" VerticalAlignment="Center"
-				        Margin="10" Padding="15"
-				        ToolTip.Tip="Run the selected Game">
-					<PathIcon Data="{StaticResource GamesRegular}"/>
+				        FontSize="16" FontWeight="Bold"
+				        Margin="10 20" Padding="14"
+				        ToolTip.Tip="Run the selected Game"
+				        Content="Launch the Game">
+					<!-- <PathIcon Data="{StaticResource GamesRegular}"/> -->
 				</Button>
+
 			</StackPanel>
 		</DockPanel>
 		
