@@ -1,4 +1,5 @@
 using Avalonia.Controls;
+using ReactiveUI;
 
 namespace Avalonia.CpuLimiter.Views
 {

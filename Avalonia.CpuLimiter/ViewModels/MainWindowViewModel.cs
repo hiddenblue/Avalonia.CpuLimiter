@@ -4,6 +4,7 @@ using ReactiveUI;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using System;
+using Avalonia.Controls;
 using Avalonia.CpuLimiter.Models;
 using Avalonia.CpuLimiter.Services;
 
@@ -13,13 +14,19 @@ namespace Avalonia.CpuLimiter.ViewModels
     {
         public MainWindowViewModel()
         {
-            if(!AdminRunner.IsRunAsAdmin())
-            {
-                AdminRunner.RunElevated();
-                Environment.Exit(0);
-            }
+            // if (!Design.IsDesignMode)
+            // {
+            //     if(!AdminRunner.IsRunAsAdmin())
+            //     {
+            //         AdminRunner.RunElevated();
+            //         Environment.Exit(0);
+            //     }
+            // }
+                
+
             ChooseExeFileCommand = ReactiveCommand.CreateFromTask(ChooseExeFile);
             RunGameCommand = ReactiveCommand.Create(RunGame);
+            ExitProgramCommand = ReactiveCommand.Create(ExitProgram);
 
         }
 
@@ -63,6 +70,16 @@ namespace Avalonia.CpuLimiter.ViewModels
                 Console.WriteLine(e);
 
             }
+        }
+        
+        // menu command
+        
+        public ICommand ExitProgramCommand { get; }
+
+        private void ExitProgram()
+        {
+            Environment.Exit(0);
+                
         }
     }
 }

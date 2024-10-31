@@ -7,7 +7,7 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
 	  <PublishAot>true</PublishAot>
-	  <RootNamespace>Avalonia.CpuLimiter1</RootNamespace>
+	  <RootNamespace>Avalonia.CpuLimiter</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

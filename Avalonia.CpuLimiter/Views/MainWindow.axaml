@@ -11,7 +11,7 @@
         Title="Avalonia.CpuLimiter"
 		TransparencyLevelHint="AcrylicBlur"
         Background="Transparent"
-        ExtendClientAreaToDecorationsHint="True"
+        ExtendClientAreaToDecorationsHint="False"
         WindowStartupLocation="CenterScreen">
 
     <Design.DataContext>
@@ -21,40 +21,77 @@
     </Design.DataContext>
 
 	<Panel>
+		<!-- the windows sytle -->
 		<ExperimentalAcrylicBorder IsHitTestVisible="False">
 			<ExperimentalAcrylicBorder.Material>
 				<ExperimentalAcrylicMaterial
 					 BackgroundSource="Digger"
 					 TintColor="Black"
 					 TintOpacity="1"
-					 MaterialOpacity="0.65" />
+					 MaterialOpacity="0.25" />
 			</ExperimentalAcrylicBorder.Material>
 		</ExperimentalAcrylicBorder>
-
-		<StackPanel>
-
-			<Button Content="Select Executable File" HorizontalAlignment="Center"
-					Background="Beige" Foreground="Black" Margin="20 20 20 20"
-					Command="{Binding ChooseExeFileCommand}"/>
-
-			<StackPanel Orientation="Horizontal">
-
-				<TextBlock FontSize="18" FontWeight="Bold" Foreground="Fuchsia"
-					   HorizontalAlignment="Center" Padding="15">
-					Exe File Path
-				</TextBlock>
-
-			<TextBox Text="{Binding GamePath}" HorizontalAlignment="Center"
-					 Padding="15" FontSize="16"/>
+		
+		<!-- window menu -->
+		<DockPanel>
+			<Menu DockPanel.Dock="Top">
+				<MenuItem Header="File">
+					<MenuItem Header="Open" Command="{Binding ChooseExeFileCommand}"/>
+					<MenuItem Header="Exit" Command="{Binding ExitProgramCommand}"/>
+				</MenuItem>
+				
+				<MenuItem Header="_Edit">
+					<MenuItem Header="Cut"/>
+					<MenuItem Header="Copy"/>
+					<MenuItem Header="Paste"/>
+				</MenuItem>
+				
+				<MenuItem Header="_Setting">
+					<MenuItem Header="View"/>
+					<MenuItem Header="Config"/>
+				</MenuItem>
+				
+				<MenuItem Header="_Run">
+					<MenuItem Header="Run Game" Command="{Binding RunGameCommand}"/>	
+				</MenuItem>
+				
+				<MenuItem Header="_Help">
+					<MenuItem Header="Docs"/>
+					<MenuItem Header="About Author"/>
+					<MenuItem Header="Project website"></MenuItem>
+				</MenuItem>
+				
+			</Menu>
 			
-			</StackPanel>
+			<!-- content -->
+			<StackPanel>
 
-			<Button FontStyle="Normal"
-				Foreground="Orange" Command="{Binding RunGameCommand}"
-				HorizontalAlignment="Center" VerticalAlignment="Center"
-					Margin="10" Padding="15">
-					<PathIcon Data="{StaticResource games_regular}"/>
-			</Button>
-		</StackPanel>
+				<Button Content="Select Executable File" HorizontalAlignment="Center"
+				        Background="Beige" Foreground="Black" Margin="20 20 20 20"
+				        Command="{Binding ChooseExeFileCommand}"/>
+
+				<StackPanel Orientation="Horizontal">
+
+					<TextBlock FontSize="18" FontWeight="Bold" Foreground="Fuchsia"
+					           HorizontalAlignment="Center" Padding="15">
+						Exe File Path
+					</TextBlock>
+
+					<TextBox Text="{Binding GamePath}" Name="GamePathTextBox"
+					         HorizontalAlignment="Center"
+					         Padding="15" FontSize="16"/>
+			
+				</StackPanel>
+
+				<Button FontStyle="Normal"
+				        Foreground="Orange" Command="{Binding RunGameCommand}"
+				        HorizontalAlignment="Center" VerticalAlignment="Center"
+				        Margin="10" Padding="15"
+				        ToolTip.Tip="Run the selected Game">
+					<PathIcon Data="{StaticResource GamesRegular}"/>
+				</Button>
+			</StackPanel>
+		</DockPanel>
+		
 	</Panel>
 </Window>
