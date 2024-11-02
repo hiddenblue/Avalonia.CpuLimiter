@@ -6,6 +6,7 @@ using Avalonia.CpuLimiter.Views;
 using Avalonia.Markup.Xaml;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.Globalization;
 
 namespace Avalonia.CpuLimiter
 {
@@ -18,6 +19,7 @@ namespace Avalonia.CpuLimiter
 
         public override void OnFrameworkInitializationCompleted()
         {
+            Assets.Resources.Culture = new CultureInfo("zh-hans-cn");
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             {
                 desktop.MainWindow = new MainWindow
