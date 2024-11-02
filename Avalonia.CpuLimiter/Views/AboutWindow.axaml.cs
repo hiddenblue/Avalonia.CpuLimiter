@@ -1,5 +1,6 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 
 namespace Avalonia.CpuLimiter.Views;
@@ -19,5 +20,10 @@ public partial class AboutWindow : Window
     {
         Instance = new AboutWindow();
         return Instance;
+    }
+
+    private async void OnCloseButtonClick(object? sender, RoutedEventArgs e)
+    {
+        this.Close();
     }
 }
