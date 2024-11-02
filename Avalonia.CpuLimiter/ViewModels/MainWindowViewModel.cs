@@ -3,11 +3,16 @@ using ReactiveUI;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using System;
+using System.Collections.ObjectModel;
+using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
+using System.IO;
 using System.Runtime.InteropServices;
+using Avalonia.Controls;
 using Avalonia.CpuLimiter.Models;
 using Avalonia.CpuLimiter.Services;
 using Avalonia.CpuLimiter.Views;
+using ArgumentNullException = System.ArgumentNullException;
 
 namespace Avalonia.CpuLimiter.ViewModels
 {
@@ -31,6 +36,7 @@ namespace Avalonia.CpuLimiter.ViewModels
             OpenAboutWindowCommand = ReactiveCommand.CreateFromTask(OpenAboutWindowAsync);
             OpenProjWebsiteCommand = ReactiveCommand.CreateFromTask(OpenProjWebsiteAsync);
             OpenDocsCommand = ReactiveCommand.CreateFromTask(OpenDocsAsync);
+            
             this.WhenAnyValue(x => x.CpuCoreCount)
                 .Subscribe(x => Console.WriteLine($"CPU core count: {x}"));
         }
@@ -44,13 +50,21 @@ namespace Avalonia.CpuLimiter.ViewModels
 
         private string _gamePath =  "D:\\prototype\\Prototype\\prototypef.exe";
 
+        [Required]
         public string GamePath
         {
             get => _gamePath;
 
             set
             {
-                this.RaiseAndSetIfChanged(ref _gamePath, value);
+                // Path Validation
+                if (string.IsNullOrWhiteSpace(value))
+                    throw new ArgumentNullException(nameof(GamePath), "Path cannot be null or empty.");
+                
+                else if (!File.Exists(value) &&  !Directory.Exists(value))
+                    throw new FileNotFoundException(nameof(GamePath),"Path does not exist.");
+                else
+                    this.RaiseAndSetIfChanged(ref _gamePath, value);
             }
         }
 
@@ -105,7 +119,6 @@ namespace Avalonia.CpuLimiter.ViewModels
         
         public ICommand OpenAboutWindowCommand { get; }
         
-        public Interaction<object, object> ShowAboutDialog { get; }
 
         public async Task OpenAboutWindowAsync()
         {
@@ -125,6 +138,8 @@ namespace Avalonia.CpuLimiter.ViewModels
                 FileName = url,
                 UseShellExecute = true
             });
+            
+            
         }
         
         public ICommand OpenDocsCommand { get; }
@@ -140,5 +155,49 @@ namespace Avalonia.CpuLimiter.ViewModels
                     
             });
         }
+        
+        // combobox 
+
+        public ObservableCollection<HistoryItemViewModel> HistoryItems { get; } = new();
+
+        private HistoryItemViewModel _newHistoryItem;
+
+        public HistoryItemViewModel NewHistoryItem
+        {
+            get => _newHistoryItem;
+            set
+            {
+                this.RaiseAndSetIfChanged(ref _newHistoryItem, value);
+            }
+        }
+
+        public bool CanLaunchProgram()
+        {
+            var value = NewHistoryItem.Path;
+            // Path Validation
+            if (string.IsNullOrWhiteSpace(value))
+                return false;
+                
+            if (!File.Exists(value) && !Directory.Exists(value))
+                return false;
+            
+            return true;
+        }
+
+        
+        private void AddHistoryItem()
+        {
+            // 这里的逻辑可能还要改一下
+            // 需要查找，重复判断，修改
+            // 感觉可以用linq语法？
+            HistoryItems.Add(NewHistoryItem);
+            
+        }
+
+        private void RemoveHistoryItem(HistoryItemViewModel historyItem)
+        {
+           HistoryItems.Remove(historyItem); 
+        }
+
     }
 }
