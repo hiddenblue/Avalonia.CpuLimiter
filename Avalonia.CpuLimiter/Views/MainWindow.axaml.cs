@@ -1,12 +1,14 @@
 using System;
 using System.Threading.Tasks;
 using Avalonia.Controls;
+using Avalonia.CpuLimiter.Models;
 using Avalonia.CpuLimiter.ViewModels;
 using Avalonia.Interactivity;
 using Avalonia.ReactiveUI;
 using MsBox.Avalonia;
 using MsBox.Avalonia.Dto;
 using MsBox.Avalonia.Enums;
+using ReactiveUI;
 
 namespace Avalonia.CpuLimiter.Views
 {
@@ -15,6 +17,15 @@ namespace Avalonia.CpuLimiter.Views
         public MainWindow()
         {
             InitializeComponent();
+            // HistoryBox.Items = 
+            this.WhenAnyValue(x => x.HistoryComboBox.SelectionBoxItem)
+                .Subscribe(Console.WriteLine);
+            this.WhenAnyValue(x => x.HistoryComboBox.SelectedIndex)
+                .Subscribe( x => Console.WriteLine($@"history combobox selected index {x}"));            
+            this.WhenAnyValue(x => x.HistoryComboBox.SelectedValue)
+                .Subscribe(x => Console.WriteLine($@"history combobox selected value {x}"));
+            
+            
         }
 
         public static async Task DoOpenAboutWindowAsync()

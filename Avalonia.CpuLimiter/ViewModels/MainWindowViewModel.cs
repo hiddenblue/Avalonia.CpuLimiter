@@ -7,11 +7,13 @@ using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.IO;
+using System.Reactive;
 using System.Runtime.InteropServices;
 using Avalonia.Controls;
 using Avalonia.CpuLimiter.Models;
 using Avalonia.CpuLimiter.Services;
 using Avalonia.CpuLimiter.Views;
+using Microsoft.VisualBasic;
 using ArgumentNullException = System.ArgumentNullException;
 
 namespace Avalonia.CpuLimiter.ViewModels
@@ -32,13 +34,45 @@ namespace Avalonia.CpuLimiter.ViewModels
 
             ChooseExeFileCommand = ReactiveCommand.CreateFromTask(ChooseExeFile);
             RunGameCommand = ReactiveCommand.Create(RunGame);
-            ExitProgramCommand = ReactiveCommand.Create(ExitProgram);
             OpenAboutWindowCommand = ReactiveCommand.CreateFromTask(OpenAboutWindowAsync);
             OpenProjWebsiteCommand = ReactiveCommand.CreateFromTask(OpenProjWebsiteAsync);
             OpenDocsCommand = ReactiveCommand.CreateFromTask(OpenDocsAsync);
+            RemoveHistoryItemCommand = ReactiveCommand.CreateFromTask<HistoryItemViewModel>( item => RemoveHistoryItemAsync(item) );
             
             this.WhenAnyValue(x => x.CpuCoreCount)
                 .Subscribe(x => Console.WriteLine($"CPU core count: {x}"));
+            
+            this.WhenAnyValue(x => x.GamePath)
+                .Subscribe( x => Console.WriteLine($"Game path: {x}"));
+
+
+            if (Design.IsDesignMode)
+            {
+                HistoryItems.Add(new HistoryItemViewModel(new HistoryItem()
+                {
+                    CPUCoreUsed = 1,
+                    LastUsed = new DateTime(2018, 9, 30),
+                    
+                    Path = "~/App_Data/CpuCoreHistory.json"
+                }));
+                HistoryItems.Add(new HistoryItemViewModel(new HistoryItem()
+                {
+                    CPUCoreUsed = 2,
+                    LastUsed = new DateTime(2018, 9, 30),
+                    
+                    Path = "~/App_Data/CpuCoreHistory.json"
+                }));
+                HistoryItems.Add(new HistoryItemViewModel(new HistoryItem()
+                {
+                    CPUCoreUsed = 3,
+                    LastUsed = new DateTime(2018, 9, 30),
+                    
+                    Path = "~/App_Data/CpuCoreHistory.json"
+                }));
+                
+            }
+            
+
         }
 
         public void RunGame() => AdminRunner.RunAsAdmin(4, GamePath);
@@ -59,10 +93,10 @@ namespace Avalonia.CpuLimiter.ViewModels
             {
                 // Path Validation
                 if (string.IsNullOrWhiteSpace(value))
-                    throw new ArgumentNullException(nameof(GamePath), "Path cannot be null or empty.");
+                    throw new ArgumentNullException(nameof(GamePath), $@"Path: '{GamePath}' cannot be null or empty.");
                 
                 else if (!File.Exists(value) &&  !Directory.Exists(value))
-                    throw new FileNotFoundException(nameof(GamePath),"Path does not exist.");
+                    throw new FileNotFoundException(nameof(GamePath),$@"Path: '{GamePath}' does not exist.");
                 else
                     this.RaiseAndSetIfChanged(ref _gamePath, value);
             }
@@ -97,8 +131,6 @@ namespace Avalonia.CpuLimiter.ViewModels
         
         // Exit command
         
-        public ICommand ExitProgramCommand { get; }
-
         private void ExitProgram()
         {
            Environment.Exit(0); 
@@ -193,8 +225,10 @@ namespace Avalonia.CpuLimiter.ViewModels
             HistoryItems.Add(NewHistoryItem);
             
         }
+        
+        public ICommand RemoveHistoryItemCommand { get; }
 
-        private void RemoveHistoryItem(HistoryItemViewModel historyItem)
+        private async Task RemoveHistoryItemAsync(HistoryItemViewModel historyItem)
         {
            HistoryItems.Remove(historyItem); 
         }
