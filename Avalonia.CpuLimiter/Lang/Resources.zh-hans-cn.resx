@@ -1,11 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-
 <root>
-    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
-        <xsd:element name="root" msdata:IsDataSet="true">
-            
-        </xsd:element>
-    </xsd:schema>
     <resheader name="resmimetype">
         <value>text/microsoft-resx</value>
     </resheader>
@@ -19,24 +12,24 @@
         <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
     </resheader>
     <data name="FileButton" xml:space="preserve">
-        <value>File</value>
+        <value>文件</value>
     </data>
     <data name="EditButton" xml:space="preserve">
-        <value>Edit</value>
-    </data>
-    <data name="HelpButton" xml:space="preserve">
-        <value>Help</value>
+        <value>编辑</value>
     </data>
     <data name="RunButton" xml:space="preserve">
-        <value>Run</value>
+        <value>运行</value>
     </data>
     <data name="SettingButton" xml:space="preserve">
-        <value>Setting</value>
+        <value>设置</value>
     </data>
     <data name="LaunchGameButton" xml:space="preserve">
-        <value>Launch Game</value>
+        <value>启 动 程 序</value>
+    </data>
+    <data name="HelpButton" xml:space="preserve">
+        <value>帮助</value>
     </data>
     <data name="CPUCoreNumberTextBlock" xml:space="preserve">
-        <value>CPU Core Number</value>
+        <value>CPU 核心数量</value>
     </data>
 </root>
