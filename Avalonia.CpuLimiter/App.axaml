@@ -13,4 +13,22 @@
         <FluentTheme />
 		<StyleInclude Source="avares://Avalonia.CpuLimiter/Icons.axaml"/>
     </Application.Styles>
+    
+     <TrayIcon.Icons>
+         <TrayIcons>
+             <TrayIcon Icon="/Assets/avalonia-logo.ico" 
+                       ToolTipText="Game Launcher">
+                 <TrayIcon.Menu>
+                     <NativeMenu>
+                                 <NativeMenuItem Header="Open File"/>
+                                 <NativeMenuItem Header="Restore Window"/>
+                                 <NativeMenuItem Header="Launcher Program"/>
+                                 <NativeMenuItem Header="Settings"/>
+                                 <NativeMenuItemSeparator />
+                                 <NativeMenuItem Header="Exit Program"  Click="OnExitButtonClicked"/>
+                     </NativeMenu>
+                 </TrayIcon.Menu>
+             </TrayIcon>
+         </TrayIcons>
+     </TrayIcon.Icons>
 </Application>

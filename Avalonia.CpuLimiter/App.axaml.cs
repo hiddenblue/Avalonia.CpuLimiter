@@ -11,7 +11,12 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
+using Avalonia.Controls;
 using Avalonia.CpuLimiter.Models;
+using Avalonia.Interactivity;
+using MsBox.Avalonia;
+using MsBox.Avalonia.Dto;
+using MsBox.Avalonia.Enums;
 
 namespace Avalonia.CpuLimiter
 {
@@ -97,6 +102,12 @@ namespace Avalonia.CpuLimiter
                     _mainWindowViewModel.HistoryItems.Add(new HistoryItemViewModel(item));
                 }
             }
+        }
+        
+        public async void OnExitButtonClicked(object? sender, EventArgs eventArgs)
+        {
+            // todo
+
         }
     }
 }
