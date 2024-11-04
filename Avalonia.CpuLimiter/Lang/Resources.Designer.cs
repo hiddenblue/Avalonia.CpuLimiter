@@ -7,7 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Avalonia.CpuLimiter.Assets {
+namespace Avalonia.CpuLimiter.Lang {
     using System;
     
     
@@ -28,7 +28,7 @@ namespace Avalonia.CpuLimiter.Assets {
         internal static System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.Equals(null, resourceMan)) {
-                    System.Resources.ResourceManager temp = new System.Resources.ResourceManager("Avalonia.CpuLimiter.Assets.Resources", typeof(Resources).Assembly);
+                    System.Resources.ResourceManager temp = new System.Resources.ResourceManager("Avalonia.CpuLimiter.Lang.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;

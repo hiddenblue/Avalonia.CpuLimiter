@@ -1,10 +1,10 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="using:Avalonia.CpuLimiter.ViewModels"
+        xmlns:lang="using:Avalonia.CpuLimiter.Lang"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:assets="clr-namespace:Avalonia.CpuLimiter.Assets"
-        mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="500"
+        mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="400"
 		Width="600" Height="400"
         x:Class="Avalonia.CpuLimiter.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
@@ -36,29 +36,29 @@
 		<!-- window menu -->
 		<DockPanel>
 			<Menu DockPanel.Dock="Top">
-				<MenuItem Name="FileButton" Header="{x:Static assets:Resources.FileButton}">
+				<MenuItem Name="FileButton" Header="{x:Static lang:Resources.FileButton}">
 					<MenuItem Header="Open" Command="{Binding ChooseExeFileCommand}" FontSize="13"/>
 					<MenuItem Header="Save" Command="{Binding}" FontSize="13"/>
 					<Separator/>
 					<MenuItem Header="Exit" Click="OnExitButtonClicked" FontSize="13"/>
 				</MenuItem>
 				
-				<MenuItem Name="EditButton" Header="{x:Static assets:Resources.EditButton}">
+				<MenuItem Name="EditButton" Header="{x:Static lang:Resources.EditButton}">
 					<MenuItem Header="Cut" FontSize="13"/>
 					<MenuItem Header="Copy" FontSize="13"/>
 					<MenuItem Header="Paste" FontSize="13"/>
 				</MenuItem>
 				
-				<MenuItem Name="SettingButton" Header="{x:Static assets:Resources.SettingButton}">
+				<MenuItem Name="SettingButton" Header="{x:Static lang:Resources.SettingButton}">
 					<MenuItem Header="View" FontSize="13"/>
 					<MenuItem Header="Config" FontSize="13"/>
 				</MenuItem>
 				
-				<MenuItem Name="RunButton" Header="{x:Static assets:Resources.RunButton}">
+				<MenuItem Name="RunButton" Header="{x:Static lang:Resources.RunButton}">
 					<MenuItem Header="Launch Game" Command="{Binding RunGameCommand}" FontSize="13"/>	
 				</MenuItem>
 				
-				<MenuItem Name="HelpButton" Header="{x:Static assets:Resources.HelpButton}">
+				<MenuItem Name="HelpButton" Header="{x:Static lang:Resources.HelpButton}">
 					<MenuItem Header="Docs" FontSize="13" Command="{Binding OpenDocsCommand}"
 					          ToolTip.Tip="Click to open docs in browser"/>
 					<Separator/>
@@ -77,14 +77,39 @@
 				</TextBlock>
 
 				<StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-					<TextBox Text="{Binding GamePath}" Name="GamePathTextBox"
-					         HorizontalAlignment="Center"
-					         Padding="30 8 30 0" FontSize="16">
-						<TextBox.InnerRightContent>
-							<!-- <Button>Select</Button> -->
-							
-						</TextBox.InnerRightContent>
-					</TextBox>
+					<!-- SelectedItem="{Binding HistoryItems[0]}" -->
+					<ComboBox Name="HistoryComboBox" HorizontalAlignment="Center" Padding="15 0 15 5"
+					          FontSize="16" FontWeight="Bold"
+					          PlaceholderText="Input the Program Path"
+					          PlaceholderForeground="Yellow"
+					          ItemsSource="{Binding HistoryItems}"
+					          ToolTip.Tip="Store no more than five records">
+					
+						<ComboBox.ItemTemplate>
+							<DataTemplate DataType="vm:HistoryItemViewModel">
+								<Grid ColumnDefinitions="* Auto">
+									<TextBlock Grid.Column="0" Text="{Binding Path}"
+									           FontSize="16"
+									           Width="300"
+									           Height="20"/>
+									<Button Grid.Column="1" Padding="10"
+									        Command="{Binding }"
+									        CommandParameter="{Binding .}">
+										<PathIcon Data="{StaticResource DeleteRegular}" Padding="0 10" IsVisible="True"/>
+									</Button>
+								</Grid>
+							</DataTemplate>	
+						</ComboBox.ItemTemplate>
+					</ComboBox>	
+					
+					<!-- <TextBox Text="{Binding GamePath}" Name="GamePathTextBox" -->
+					<!--          HorizontalAlignment="Center" -->
+					<!--          Padding="30 8 30 0" FontSize="16"> -->
+					<!-- 	<TextBox.InnerRightContent> -->
+					<!-- 		~1~ <Button>Select</Button> @1@ -->
+					<!-- 		 -->
+					<!-- 	</TextBox.InnerRightContent> -->
+					<!-- </TextBox> -->
 					
 					<Button Content=" ... " HorizontalAlignment="Center"
 					        Background="Beige" Foreground="Black"
@@ -107,7 +132,7 @@
 				
 				<StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
 					<TextBlock Name="CPUCoreNumberTextBlock" FontSize="18" FontWeight="Bold" Margin="10 6 10 0"
-					           HorizontalAlignment="Center" Text="{x:Static assets:Resources.CPUCoreNumberTextBlock}"></TextBlock>
+					           HorizontalAlignment="Center" Text="{x:Static lang:Resources.CPUCoreNumberTextBlock}"></TextBlock>
 					<!-- <TextBlock Text="{Binding #slider.Value}" -->
 					<!--            HorizontalAlignment="Center" FontSize="20" FontWeight="Bold" Padding="0"/> -->
 					
@@ -124,29 +149,12 @@
 				        FontSize="16" FontWeight="Bold"
 				        Margin="10 20" Padding="14"
 				        ToolTip.Tip="Run the selected Game"
-				        Content="{x:Static assets:Resources.LaunchGameButton}"
+				        Content="{x:Static lang:Resources.LaunchGameButton}"
 				        HotKey="Enter">
 					<!-- <PathIcon Data="{StaticResource GamesRegular}"/> -->
 				</Button>
 				
-				<ComboBox HorizontalAlignment="Center" Padding="15"
-				          FontSize="16" FontWeight="Bold"
-				          x:Name="HistoryBox"
-				          ToolTip.Tip="Store no more than five records">
-					<ComboBox.ItemTemplate>
-						<DataTemplate>
-							<Grid ColumnDefinitions="* Auto">
-								<TextBlock Grid.Column="0" Text="Hello"
-								           FontSize="18"
-								           FontFamily="{Binding}"
-								           Width="200"
-								           Height="20"
-								           />
-								<Button Grid.Column="1" Padding="10">X</Button>
-							</Grid>
-						</DataTemplate>	
-					</ComboBox.ItemTemplate>
-				</ComboBox>
+
 
 			</StackPanel>
 		</DockPanel>
