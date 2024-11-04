@@ -2,10 +2,18 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Avalonia.CpuLimiter.Models;
 
 namespace Avalonia.CpuLimiter.Services;
+
+[JsonSourceGenerationOptions(WriteIndented = true)]
+[JsonSerializable(typeof(IEnumerable<HistoryItem>))]
+internal partial class SourceGenerationContext : JsonSerializerContext
+{
+    
+}
 
 public class HistoryItemFileService
 {
@@ -19,9 +27,9 @@ public class HistoryItemFileService
         if(!Directory.Exists(Path.GetDirectoryName(_configPath)))
             Directory.CreateDirectory(Path.GetDirectoryName(_configPath)!);
 
-        using (FileStream fs = File.Open(_configPath, FileMode.Create))
+        await using (FileStream fs = File.Open(_configPath, FileMode.Create))
         {
-            await JsonSerializer.SerializeAsync(fs, historyItems, _jsonSerializerOptions);
+            await JsonSerializer.SerializeAsync(fs, historyItems, SourceGenerationContext.Default.IEnumerableHistoryItem!);
         }
     }
     
@@ -32,9 +40,12 @@ public class HistoryItemFileService
     {
         try
         {
-            using (FileStream fs = File.OpenRead(_configPath))
+            if(!File.Exists(_configPath))
+                return null;
+
+            await using (FileStream fs = File.OpenRead(_configPath))
             {
-                return await JsonSerializer.DeserializeAsync<IEnumerable<HistoryItem>>(fs ,_jsonSerializerOptions);
+                return await JsonSerializer.DeserializeAsync<IEnumerable<HistoryItem>>(fs , SourceGenerationContext.Default.IEnumerableHistoryItem!);
             }
         }
         catch (Exception e) when (e is FileNotFoundException or DirectoryNotFoundException)
@@ -44,6 +55,7 @@ public class HistoryItemFileService
         }
     }
 
+    // this option is conflicting with Sourcegenerator
     private static JsonSerializerOptions _jsonSerializerOptions = new()
     {
         WriteIndented = true
