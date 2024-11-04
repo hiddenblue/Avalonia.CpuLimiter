@@ -3,6 +3,8 @@ using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.CpuLimiter.Models;
 using Avalonia.CpuLimiter.ViewModels;
+using Avalonia.Input;
+using Avalonia.Input.Raw;
 using Avalonia.Interactivity;
 using Avalonia.ReactiveUI;
 using MsBox.Avalonia;
@@ -61,5 +63,32 @@ namespace Avalonia.CpuLimiter.Views
             var aboutWindow = new AboutWindow();
             aboutWindow.Show();
         }
+        
+        
+        // Add a scroll event to change slider value. the unit change is 1
+        private void  OnPointerWheelChanged(object sender, PointerWheelEventArgs e)
+        {
+            Console.WriteLine(e.Delta);
+            if (e.Delta.Y < 0)
+                slider.Value -= 1;
+            
+            if(e.Delta.Y > 0)
+                slider.Value += 1;
+        }
+
+        private async void OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var historyItemViewModel = (HistoryItemViewModel)e.AddedItems[0]!;
+                slider.Value = (double)historyItemViewModel.CPUCoreUsed!;
+                Auxiliary.Text = historyItemViewModel.Path;
+                
+                if(Width < historyItemViewModel.Path.Length * 20 )
+                    Width = historyItemViewModel.Path.Length * 20;
+
+                Console.WriteLine(historyItemViewModel.CPUCoreUsed);
+                Console.WriteLine(historyItemViewModel.Path);
+                Console.WriteLine(historyItemViewModel.LastUsed);
+        }
+        
     }
 }

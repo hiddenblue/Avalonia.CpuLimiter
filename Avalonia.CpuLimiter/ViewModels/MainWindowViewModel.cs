@@ -31,8 +31,7 @@ namespace Avalonia.CpuLimiter.ViewModels
             //     }
             // }
 
-
-            ChooseExeFileCommand = ReactiveCommand.CreateFromTask(ChooseExeFile);
+            // ChooseExeFileCommand = ReactiveCommand.CreateFromTask(ChooseExeFile);
             RunGameCommand = ReactiveCommand.Create(RunGame);
             OpenAboutWindowCommand = ReactiveCommand.CreateFromTask(OpenAboutWindowAsync);
             OpenProjWebsiteCommand = ReactiveCommand.CreateFromTask(OpenProjWebsiteAsync);
@@ -71,14 +70,11 @@ namespace Avalonia.CpuLimiter.ViewModels
                 }));
                 
             }
-            
-
         }
 
         public void RunGame() => AdminRunner.RunAsAdmin(4, GamePath);
 
-
-        public ICommand ChooseExeFileCommand { get; }
+        // public ICommand ChooseExeFileCommand { get; }
 
         public ICommand RunGameCommand { get; }
 
@@ -102,8 +98,7 @@ namespace Avalonia.CpuLimiter.ViewModels
             }
         }
 
-
-        private async Task ChooseExeFile()
+        public async Task ChooseExeFile()
         {
             try
             {
@@ -114,11 +109,18 @@ namespace Avalonia.CpuLimiter.ViewModels
 
                 var file = await fileService.OpenFileAsync();
                 if (file != null)
-                    GamePath = file.Path.AbsolutePath;
+                    GamePath = file.Path.LocalPath;
+                
+                HistoryItems.Add(new HistoryItemViewModel()
+                {
+                    CPUCoreUsed = CpuCoreCount,
+                    LastUsed = new DateTime(),
+                    Path = GamePath
+                });
                 
                 // extension judgement
                 if(RuntimeInformation.IsOSPlatform(OSPlatform.Windows) && !GamePath.EndsWith(".exe"))
-                    throw new PlatformNotSupportedException("File extension is not supported on windows");
+                    throw new PlatformNotSupportedException($"File extension: {Path.GetExtension(GamePath)} is not supported on windows");
                 
             }
             catch (Exception e)
@@ -232,6 +234,25 @@ namespace Avalonia.CpuLimiter.ViewModels
         {
            HistoryItems.Remove(historyItem); 
         }
+
+        public async Task PrintLevel(object o)
+        {
+            Console.WriteLine(o);
+        }
+        
+        private int _screenWidth;
+        public int ScreenWidth
+        {
+            get
+            {
+                if (string.IsNullOrWhiteSpace(GamePath))
+                    return 400;
+                else return 3 * GamePath.Length; 
+            }
+            
+            set => this.RaiseAndSetIfChanged(ref _screenWidth, value);
+        }
+
 
     }
 }

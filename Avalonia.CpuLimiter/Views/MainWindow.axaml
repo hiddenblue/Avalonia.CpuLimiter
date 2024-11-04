@@ -4,15 +4,16 @@
         xmlns:lang="using:Avalonia.CpuLimiter.Lang"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="400"
-		Width="600" Height="400"
+        mc:Ignorable="d" d:DesignWidth="650" d:DesignHeight="400"
+		Width= "620" Height="400"
+        MaxWidth="800"
         x:Class="Avalonia.CpuLimiter.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
         Icon="/Assets/avalonia-logo.ico"
         Title="Game Launcher"
 		TransparencyLevelHint="AcrylicBlur"
         Background="Transparent"
-        ExtendClientAreaToDecorationsHint="False"
+        ExtendClientAreaToDecorationsHint="True"
         WindowStartupLocation="CenterScreen">
 
     <Design.DataContext>
@@ -35,9 +36,9 @@
 		
 		<!-- window menu -->
 		<DockPanel>
-			<Menu DockPanel.Dock="Top">
+			<Menu DockPanel.Dock="Top" HorizontalAlignment="Left" FontSize="14">
 				<MenuItem Name="FileButton" Header="{x:Static lang:Resources.FileButton}">
-					<MenuItem Header="Open" Command="{Binding ChooseExeFileCommand}" FontSize="13"/>
+					<MenuItem Header="Open" Command="{Binding ChooseExeFile}" FontSize="13"/>
 					<MenuItem Header="Save" Command="{Binding}" FontSize="13"/>
 					<Separator/>
 					<MenuItem Header="Exit" Click="OnExitButtonClicked" FontSize="13"/>
@@ -79,20 +80,32 @@
 				<StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
 					<!-- SelectedItem="{Binding HistoryItems[0]}" -->
 					<ComboBox Name="HistoryComboBox" HorizontalAlignment="Center" Padding="15 0 15 5"
-					          FontSize="16" FontWeight="Bold"
-					          PlaceholderText="Input the Program Path"
-					          PlaceholderForeground="Yellow"
+					          FontSize="16"
+					          MinWidth="400"
+					          Height="40"
 					          ItemsSource="{Binding HistoryItems}"
+					          SelectionChanged="OnSelectionChanged"
 					          ToolTip.Tip="Store no more than five records">
 					
 						<ComboBox.ItemTemplate>
 							<DataTemplate DataType="vm:HistoryItemViewModel">
-								<Grid ColumnDefinitions="* Auto">
-									<TextBlock Grid.Column="0" Text="{Binding Path}"
+								<Grid ColumnDefinitions="* Auto"
+								      
+								      RowDefinitions="30"
+								      Margin="0" MinWidth="40">
+									<TextBox Grid.Column="0" Text="{Binding Path}"
+									         HorizontalAlignment="Left"
+									         VerticalContentAlignment="Center"
 									           FontSize="16"
-									           Width="300"
-									           Height="20"/>
-									<Button Grid.Column="1" Padding="10"
+									           Height="20"
+									           Margin="0 5 1 5"
+									         Padding="0 0 0 0"
+									           BorderThickness="0"
+									         Background="Transparent"/>
+									<Button Grid.Column="1" Padding="1 10 0 10"
+									        Margin="8 0"
+									        Width="38"
+									        Height="38"
 									        Command="{Binding }"
 									        CommandParameter="{Binding .}">
 										<PathIcon Data="{StaticResource DeleteRegular}" Padding="0 10" IsVisible="True"/>
@@ -117,17 +130,16 @@
 					        Padding="10"
 					        Width="40"
 					        BorderBrush="Black"
-					        ToolTip.Tip="Open the file explorer to select exe file"
-					        Command="{Binding ChooseExeFileCommand}">
+					        ToolTip.Tip="Open the file explorer to select"
+					        Command="{Binding ChooseExeFile}">
 						</Button>
 				</StackPanel>
-
-
-				<Separator Margin="0 20"/>
+				<Separator Margin="0 30"/>
 				<Slider Name="slider" BorderBrush="Orange"
 				        Minimum="1" Maximum="16" IsSnapToTickEnabled="True" TickFrequency="1" TickPlacement="TopLeft"
 				        Width="400" Value="{Binding CpuCoreCount}"
-				        ToolTip.Tip="Adjust the cpu core numbers used by the Game program">
+				        ToolTip.Tip="Adjust the cpu core numbers used by the Game program"
+				        PointerWheelChanged="OnPointerWheelChanged">
 				</Slider>
 				
 				<StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
@@ -137,8 +149,11 @@
 					<!--            HorizontalAlignment="Center" FontSize="20" FontWeight="Bold" Padding="0"/> -->
 					
 					<TextBox Margin="10 0 0 0" HorizontalAlignment="Center"
-					         Padding="10 10 10 10"
+					         VerticalContentAlignment="Center"
+					         Padding="0 0 0 0"
 					         Width="1"
+					         MinWidth="40"
+					         Height="40"
 					         TextAlignment="Center"
 					         Text="{Binding CpuCoreCount}" FontSize="18"
 					         FontWeight="Bold" IsReadOnly="False"></TextBox>
@@ -153,6 +168,11 @@
 				        HotKey="Enter">
 					<!-- <PathIcon Data="{StaticResource GamesRegular}"/> -->
 				</Button>
+				
+				<TextBlock Name="Auxiliary" Text="{Binding GamePath}" IsVisible="False"/>
+				
+				
+				
 				
 
 
