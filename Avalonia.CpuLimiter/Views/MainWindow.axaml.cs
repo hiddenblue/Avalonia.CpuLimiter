@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.CpuLimiter.Models;
@@ -19,15 +21,13 @@ namespace Avalonia.CpuLimiter.Views
         public MainWindow()
         {
             InitializeComponent();
-            // HistoryBox.Items = 
             this.WhenAnyValue(x => x.HistoryComboBox.SelectionBoxItem)
                 .Subscribe(Console.WriteLine);
             this.WhenAnyValue(x => x.HistoryComboBox.SelectedIndex)
                 .Subscribe( x => Console.WriteLine($@"history combobox selected index {x}"));            
             this.WhenAnyValue(x => x.HistoryComboBox.SelectedValue)
                 .Subscribe(x => Console.WriteLine($@"history combobox selected value {x}"));
-            
-            
+
         }
 
         public static async Task DoOpenAboutWindowAsync()
@@ -69,11 +69,8 @@ namespace Avalonia.CpuLimiter.Views
         private void  OnPointerWheelChanged(object sender, PointerWheelEventArgs e)
         {
             Console.WriteLine(e.Delta);
-            if (e.Delta.Y < 0)
-                slider.Value -= 1;
-            
-            if(e.Delta.Y > 0)
-                slider.Value += 1;
+            // e.Delta.Y value is vary between [-2, 2]
+            slider.Value += e.Delta.Y;
         }
 
         private async void OnSelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -84,10 +81,24 @@ namespace Avalonia.CpuLimiter.Views
                 
                 if(Width < historyItemViewModel.Path.Length * 20 )
                     Width = historyItemViewModel.Path.Length * 20;
+                if(Width > historyItemViewModel.Path.Length * 20 * 1.5)
+                    Width = historyItemViewModel.Path.Length * 20;
 
                 Console.WriteLine(historyItemViewModel.CPUCoreUsed);
                 Console.WriteLine(historyItemViewModel.Path);
                 Console.WriteLine(historyItemViewModel.LastUsed);
+        }
+
+        private async void ResourcesChanged(object? sender, ResourcesChangedEventArgs e)
+        {
+            HistoryComboBox.SelectedIndex = 0;
+            // Console.WriteLine($"History ComboBox slec";
+            Console.WriteLine($@"HistoryComboBox.SelectedIndex : {HistoryComboBox.SelectedIndex}");
+            Console.WriteLine($@"HistoryComboBox.SelectedValue): {HistoryComboBox.SelectedValue}");
+            Console.WriteLine($@"HistoryComboBox.SelectedItem): {HistoryComboBox.SelectedItem}");
+            HistoryComboBox.SelectedIndex = 0;
+
+
         }
         
     }

@@ -6,7 +6,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d" d:DesignWidth="650" d:DesignHeight="400"
 		Width= "620" Height="400"
-        MaxWidth="800"
+        MaxWidth="900"
+        MinWidth="620"
         x:Class="Avalonia.CpuLimiter.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
         Icon="/Assets/avalonia-logo.ico"
@@ -66,46 +67,40 @@
 					<MenuItem Header="Project website" FontSize="13" Command="{Binding OpenProjWebsiteCommand}"/>
 					<MenuItem Header="About" FontSize="13" Click="OnOpenAboutWindowClicked"/>
 				</MenuItem>
-				
 			</Menu>
 			
 			<!-- content -->
 			<StackPanel>
 				
 				<TextBlock FontSize="18" FontWeight="Bold" Foreground="DodgerBlue"
-				           HorizontalAlignment="Center" Padding="20">
-					Exe File Path
-				</TextBlock>
+				           HorizontalAlignment="Center" Padding="20"
+				           Text="Exe File Path"/>
 
 				<StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
 					<!-- SelectedItem="{Binding HistoryItems[0]}" -->
 					<ComboBox Name="HistoryComboBox" HorizontalAlignment="Center" Padding="15 0 15 5"
-					          FontSize="16"
-					          MinWidth="400"
-					          Height="40"
+					          FontSize="16" MinWidth="400" Height="40"
 					          ItemsSource="{Binding HistoryItems}"
-					          SelectionChanged="OnSelectionChanged"
-					          ToolTip.Tip="Store no more than five records">
-					
+					          AutoScrollToSelectedItem="True"
+					          PlaceholderText="{Binding GamePath}"
+					          SelectedIndex="{Binding SelectedComboboxIndex}"
+					          SelectionChanged="OnSelectionChanged">
 						<ComboBox.ItemTemplate>
 							<DataTemplate DataType="vm:HistoryItemViewModel">
 								<Grid ColumnDefinitions="* Auto"
-								      
-								      RowDefinitions="30"
-								      Margin="0" MinWidth="40">
+								      ResourcesChanged="ResourcesChanged"
+								      ToolTip.Tip="{Binding LastUsed}"
+								      RowDefinitions="30" Margin="0" MinWidth="40">
 									<TextBox Grid.Column="0" Text="{Binding Path}"
+									         IsReadOnly="{Binding $parent.IsFocused}"
 									         HorizontalAlignment="Left"
 									         VerticalContentAlignment="Center"
-									           FontSize="16"
-									           Height="20"
-									           Margin="0 5 1 5"
+									         FontSize="16" Height="20" Margin="0 5 1 5"
 									         Padding="0 0 0 0"
-									           BorderThickness="0"
+									         BorderThickness="0"
 									         Background="Transparent"/>
 									<Button Grid.Column="1" Padding="1 10 0 10"
-									        Margin="8 0"
-									        Width="38"
-									        Height="38"
+									        Margin="8 0" Width="38" Height="38"
 									        Command="{Binding }"
 									        CommandParameter="{Binding .}">
 										<PathIcon Data="{StaticResource DeleteRegular}" Padding="0 10" IsVisible="True"/>
@@ -115,20 +110,9 @@
 						</ComboBox.ItemTemplate>
 					</ComboBox>	
 					
-					<!-- <TextBox Text="{Binding GamePath}" Name="GamePathTextBox" -->
-					<!--          HorizontalAlignment="Center" -->
-					<!--          Padding="30 8 30 0" FontSize="16"> -->
-					<!-- 	<TextBox.InnerRightContent> -->
-					<!-- 		~1~ <Button>Select</Button> @1@ -->
-					<!-- 		 -->
-					<!-- 	</TextBox.InnerRightContent> -->
-					<!-- </TextBox> -->
-					
-					<Button Content=" ... " HorizontalAlignment="Center"
+					<Button Name="OpenFilePickerButton" Content=" ... " HorizontalAlignment="Center"
 					        Background="Beige" Foreground="Black"
-					        Margin="5 0 0 0"
-					        Padding="10"
-					        Width="40"
+					        Margin="5 0 0 0" Padding="10" Width="40"
 					        BorderBrush="Black"
 					        ToolTip.Tip="Open the file explorer to select"
 					        Command="{Binding ChooseExeFile}">
@@ -151,10 +135,7 @@
 					<TextBox Margin="10 0 0 0" HorizontalAlignment="Center"
 					         VerticalContentAlignment="Center"
 					         Padding="0 0 0 0"
-					         Width="1"
-					         MinWidth="40"
-					         Height="40"
-					         TextAlignment="Center"
+					         Width="1" MinWidth="40" Height="40" TextAlignment="Center"
 					         Text="{Binding CpuCoreCount}" FontSize="18"
 					         FontWeight="Bold" IsReadOnly="False"></TextBox>
 				</StackPanel>
@@ -170,12 +151,6 @@
 				</Button>
 				
 				<TextBlock Name="Auxiliary" Text="{Binding GamePath}" IsVisible="False"/>
-				
-				
-				
-				
-
-
 			</StackPanel>
 		</DockPanel>
 		

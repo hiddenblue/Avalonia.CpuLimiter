@@ -3,17 +3,17 @@ using ReactiveUI;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.IO;
-using System.Reactive;
+using System.Linq;
 using System.Runtime.InteropServices;
 using Avalonia.Controls;
 using Avalonia.CpuLimiter.Models;
 using Avalonia.CpuLimiter.Services;
 using Avalonia.CpuLimiter.Views;
-using Microsoft.VisualBasic;
 using ArgumentNullException = System.ArgumentNullException;
 
 namespace Avalonia.CpuLimiter.ViewModels
@@ -44,6 +44,8 @@ namespace Avalonia.CpuLimiter.ViewModels
             this.WhenAnyValue(x => x.GamePath)
                 .Subscribe( x => Console.WriteLine($"Game path: {x}"));
 
+            // this.WhenAnyValue(x => x.HistoryItems)
+            //     .Subscribe( x => SortHistoryItems(x));
 
             if (Design.IsDesignMode)
             {
@@ -68,33 +70,73 @@ namespace Avalonia.CpuLimiter.ViewModels
                     
                     Path = "~/App_Data/CpuCoreHistory.json"
                 }));
-                
+                GamePath = "~/App_Data/CpuCoreHistory.json";
+
+
             }
         }
 
-        public void RunGame() => AdminRunner.RunAsAdmin(4, GamePath);
+        public void RunGame()
+        {
+            // Path Validation
+            if (string.IsNullOrWhiteSpace(GamePath))
+                throw new ArgumentNullException(nameof(GamePath), $@"Path: '{GamePath}' cannot be null or empty.");
+                
+            else if (!File.Exists(GamePath) &&  !Directory.Exists(GamePath))
+                throw new FileNotFoundException(nameof(GamePath),$@"Path: '{GamePath}' does not exist.");
+            else
+                AdminRunner.RunAsAdmin(4, GamePath);
+        }
 
         // public ICommand ChooseExeFileCommand { get; }
 
         public ICommand RunGameCommand { get; }
 
-        private string _gamePath =  "D:\\prototype\\Prototype\\prototypef.exe";
+        // private string _gamePath =  "D:\\prototype\\Prototype\\prototypef.exe";
+        private string? _gamePath;
 
         [Required]
-        public string GamePath
+        public string? GamePath
         {
             get => _gamePath;
 
             set
             {
-                // Path Validation
-                if (string.IsNullOrWhiteSpace(value))
-                    throw new ArgumentNullException(nameof(GamePath), $@"Path: '{GamePath}' cannot be null or empty.");
-                
-                else if (!File.Exists(value) &&  !Directory.Exists(value))
-                    throw new FileNotFoundException(nameof(GamePath),$@"Path: '{GamePath}' does not exist.");
-                else
+
+                    Console.WriteLine($@"Game path: '{value}'");
                     this.RaiseAndSetIfChanged(ref _gamePath, value);
+            }
+        }
+
+        private async Task AddHistoryItemAsync(HistoryItemViewModel historyItem)
+        {
+            IEnumerable<string?> list = HistoryItems.Select(x => x.Path);
+            if (!list.Contains(historyItem.Path))
+            {
+                // determine whether the item was already in HistoryItems
+                HistoryItemViewModel.SortHistoryItems(HistoryItems);
+
+                if (HistoryItems.Count() > 4)
+                {
+                    var items = HistoryItems.Skip(0).Take(4).ToList();
+                    HistoryItems.Clear();
+                    
+                    foreach (var item in items)
+                    {
+                        HistoryItems.Add(item);
+                    }
+                }
+                // the new item is always the first place
+                HistoryItems.Insert(0, historyItem);
+                SelectedComboboxIndex = 0;
+                GamePath = HistoryItems[0].Path;
+                
+            }
+            else
+            {
+                Console.WriteLine($@"History item: {historyItem.Path} already exists");
+                
+                // todo refresh the date of history item
             }
         }
 
@@ -109,19 +151,20 @@ namespace Avalonia.CpuLimiter.ViewModels
 
                 var file = await fileService.OpenFileAsync();
                 if (file != null)
+                {
                     GamePath = file.Path.LocalPath;
                 
-                HistoryItems.Add(new HistoryItemViewModel()
-                {
-                    CPUCoreUsed = CpuCoreCount,
-                    LastUsed = new DateTime(),
-                    Path = GamePath
-                });
-                
+                    AddHistoryItemAsync(new HistoryItemViewModel()
+                    {
+                        CPUCoreUsed = CpuCoreCount,
+                        LastUsed = DateTime.Now,
+                        Path = GamePath
+                    }); 
+                }
+
                 // extension judgement
                 if(RuntimeInformation.IsOSPlatform(OSPlatform.Windows) && !GamePath.EndsWith(".exe"))
                     throw new PlatformNotSupportedException($"File extension: {Path.GetExtension(GamePath)} is not supported on windows");
-                
             }
             catch (Exception e)
             {
@@ -132,10 +175,9 @@ namespace Avalonia.CpuLimiter.ViewModels
         }
         
         // Exit command
-        
         private void ExitProgram()
         {
-           Environment.Exit(0); 
+           Environment.Exit(0);
         }
         
         //slider cpu core
@@ -192,22 +234,14 @@ namespace Avalonia.CpuLimiter.ViewModels
         
         // combobox 
 
-        public ObservableCollection<HistoryItemViewModel> HistoryItems { get; } = new();
-
-        private HistoryItemViewModel _newHistoryItem;
-
-        public HistoryItemViewModel NewHistoryItem
+        public ObservableCollection<HistoryItemViewModel> HistoryItems
         {
-            get => _newHistoryItem;
-            set
-            {
-                this.RaiseAndSetIfChanged(ref _newHistoryItem, value);
-            }
-        }
-
+            get;
+        } = new();
+        
         public bool CanLaunchProgram()
         {
-            var value = NewHistoryItem.Path;
+            var value = GamePath;
             // Path Validation
             if (string.IsNullOrWhiteSpace(value))
                 return false;
@@ -224,7 +258,7 @@ namespace Avalonia.CpuLimiter.ViewModels
             // 这里的逻辑可能还要改一下
             // 需要查找，重复判断，修改
             // 感觉可以用linq语法？
-            HistoryItems.Add(NewHistoryItem);
+            // HistoryItems.Add();
             
         }
         
@@ -253,6 +287,18 @@ namespace Avalonia.CpuLimiter.ViewModels
             set => this.RaiseAndSetIfChanged(ref _screenWidth, value);
         }
 
+        private int _selectedComboboxIndex;
+
+        public int SelectedComboboxIndex
+        {
+            get => _selectedComboboxIndex;
+
+            set
+            {
+                Console.WriteLine(value);
+                this.RaiseAndSetIfChanged(ref _selectedComboboxIndex, value);
+            }
+        }
 
     }
 }
