@@ -1,9 +1,7 @@
-using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.CpuLimiter.Services;
 using Avalonia.CpuLimiter.ViewModels;
 using Avalonia.CpuLimiter.Views;
-using Avalonia.CpuLimiter;
 using Avalonia.Markup.Xaml;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -11,12 +9,8 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
-using Avalonia.Controls;
 using Avalonia.CpuLimiter.Models;
-using Avalonia.Interactivity;
-using MsBox.Avalonia;
-using MsBox.Avalonia.Dto;
-using MsBox.Avalonia.Enums;
+
 
 namespace Avalonia.CpuLimiter
 {
@@ -101,6 +95,10 @@ namespace Avalonia.CpuLimiter
                 {
                     _mainWindowViewModel.HistoryItems.Add(new HistoryItemViewModel(item));
                 }
+
+                _mainWindowViewModel.GamePath = _mainWindowViewModel.HistoryItems[0].Path;
+                
+                await HistoryItemViewModel.RemoveDuplicatedHistoryItemAsync(_mainWindowViewModel.HistoryItems);
             }
         }
         

@@ -46,7 +46,7 @@ namespace Avalonia.CpuLimiter.Models
             }
         }
 
-        public static void RunAsAdmin(int cpuCoreNum, string path)
+        public static void RunAsAdmin(int cpuCoreNum, string? path)
         {
 
             if (string.IsNullOrWhiteSpace(path))
