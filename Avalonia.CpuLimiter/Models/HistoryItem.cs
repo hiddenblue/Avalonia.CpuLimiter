@@ -22,5 +22,14 @@ public class HistoryItem
     public DateTime? LastUsed { get; set; }
     
     public int? CPUCoreUsed { get; set; }
-    
+
+    public override bool Equals(object? obj)
+    {
+        return Path == (obj as HistoryItem)?.Path;
+    }
+
+    public override int GetHashCode()
+    {
+        return (Path, LastUsed, CPUCoreUsed).GetHashCode();
+    }
 }

@@ -1,4 +1,8 @@
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Threading.Tasks;
 using Avalonia.CpuLimiter.Models;
 using ReactiveUI;
 
@@ -49,10 +53,37 @@ public class HistoryItemViewModel : ViewModelBase
         };
     }
 
+    public override bool Equals(object? obj)
+    {
+        // call the base item equal function
+       return this.GetHistoryItem() == (obj as HistoryItemViewModel)?.GetHistoryItem(); 
+    }
 
+    public override int GetHashCode()
+    {
+        return (Path, CPUCoreUsed, LastUsed).GetHashCode();
+    }
+    
+    
+    public static async Task RemoveDuplicatedHistoryItemAsync(ObservableCollection<HistoryItemViewModel> historyItems)
+    {
+        List<HistoryItemViewModel> distinctItems = historyItems.Distinct().ToList();
+        historyItems.Clear();
+        for (var i = 0; i < distinctItems.Count; i++)
+        {
+            historyItems.Add(distinctItems[i]);
+        } 
+    }
 
-
-
+    public static async Task SortHistoryItems(ObservableCollection<HistoryItemViewModel> historyItems)
+    {
+        var tempList = historyItems.OrderByDescending(x => x.LastUsed).ToList();
+        historyItems.Clear();
+        for (int i = 0; i < tempList.Count(); i++)
+        {
+            historyItems.Add(tempList[i]);
+        }
+    }
 
 
 
