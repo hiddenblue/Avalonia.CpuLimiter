@@ -5,9 +5,9 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d" d:DesignWidth="650" d:DesignHeight="400"
-		Width= "620" Height="400"
+		Width= "600" Height="400"
         MaxWidth="900"
-        MinWidth="620"
+        MinWidth="560"
         x:Class="Avalonia.CpuLimiter.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
         Icon="/Assets/avalonia-logo.ico"
@@ -61,11 +61,11 @@
 				</MenuItem>
 				
 				<MenuItem Name="HelpButton" Header="{x:Static lang:Resources.HelpButton}">
-					<MenuItem Header="Docs" FontSize="13" Command="{Binding OpenDocsCommand}"
+					<MenuItem Header="Docs" FontSize="13" Click="OnDocsButtonClicked"
 					          ToolTip.Tip="Click to open docs in browser"/>
 					<Separator/>
-					<MenuItem Header="Project website" FontSize="13" Command="{Binding OpenProjWebsiteCommand}"/>
-					<MenuItem Header="About" FontSize="13" Click="OnOpenAboutWindowClicked"/>
+					<MenuItem Header="Project website" FontSize="13" Click="OnOpenProjButtonClicked"/>
+					<MenuItem Header="About" FontSize="13" Click="OnAboutWindowButtonClicked"/>
 				</MenuItem>
 			</Menu>
 			
@@ -76,7 +76,7 @@
 				           HorizontalAlignment="Center" Padding="20"
 				           Text="Exe File Path"/>
 
-				<StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+				<StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Tag="stackpanel2">
 					<!-- SelectedItem="{Binding HistoryItems[0]}" -->
 					<ComboBox Name="HistoryComboBox" HorizontalAlignment="Center" Padding="15 0 15 5"
 					          FontSize="16" MinWidth="400" Height="40"
@@ -94,6 +94,7 @@
 									<TextBox Grid.Column="0" Text="{Binding Path}"
 									         IsReadOnly="{Binding $parent.IsFocused}"
 									         HorizontalAlignment="Left"
+									         CaretBrush="Transparent"
 									         VerticalContentAlignment="Center"
 									         FontSize="16" Height="20" Margin="0 5 1 5"
 									         Padding="0 0 0 0"
@@ -101,8 +102,10 @@
 									         Background="Transparent"/>
 									<Button Grid.Column="1" Padding="1 10 0 10"
 									        Margin="8 0" Width="38" Height="38"
-									        Command="{Binding }"
-									        CommandParameter="{Binding .}">
+									        IsVisible="{Binding }"
+									        Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).RemoveHistoryItemCommand}"
+									        CommandParameter="{Binding .}"
+									        >
 										<PathIcon Data="{StaticResource DeleteRegular}" Padding="0 10" IsVisible="True"/>
 									</Button>
 								</Grid>

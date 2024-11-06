@@ -32,4 +32,6 @@ public class HistoryItem
     {
         return (Path, LastUsed, CPUCoreUsed).GetHashCode();
     }
+    
+    public override string ToString() => $"Path: {Path}, LastUsed: {LastUsed}, CPUCoreUsed: {CPUCoreUsed}";
 }

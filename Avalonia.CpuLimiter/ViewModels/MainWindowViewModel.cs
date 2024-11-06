@@ -10,7 +10,10 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using Avalonia;
 using Avalonia.Controls;
+using Avalonia.CpuLimiter;
+using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.CpuLimiter.Models;
 using Avalonia.CpuLimiter.Services;
 using Avalonia.CpuLimiter.Views;
@@ -32,10 +35,7 @@ namespace Avalonia.CpuLimiter.ViewModels
             // }
 
             // ChooseExeFileCommand = ReactiveCommand.CreateFromTask(ChooseExeFile);
-            RunGameCommand = ReactiveCommand.Create(RunGame);
-            OpenAboutWindowCommand = ReactiveCommand.CreateFromTask(OpenAboutWindowAsync);
-            OpenProjWebsiteCommand = ReactiveCommand.CreateFromTask(OpenProjWebsiteAsync);
-            OpenDocsCommand = ReactiveCommand.CreateFromTask(OpenDocsAsync);
+            RunGameCommand = ReactiveCommand.CreateFromTask(RunGame);
             RemoveHistoryItemCommand = ReactiveCommand.CreateFromTask<HistoryItemViewModel>( item => RemoveHistoryItemAsync(item) );
             
             this.WhenAnyValue(x => x.CpuCoreCount)
@@ -43,6 +43,13 @@ namespace Avalonia.CpuLimiter.ViewModels
             
             this.WhenAnyValue(x => x.GamePath)
                 .Subscribe( x => Console.WriteLine($"Game path: {x}"));
+
+            this.WhenAnyValue(x => x.SelectedComboboxIndex)
+                .Subscribe(x => Console.WriteLine($"Selected combobox index: {x}"));
+             this.WhenAnyValue(x => x.SelectedHistoryItem)
+                .Subscribe(x => Console.WriteLine($"Selected combobox item: {x}"));
+            
+            
 
             // this.WhenAnyValue(x => x.HistoryItems)
             //     .Subscribe( x => SortHistoryItems(x));
@@ -76,7 +83,7 @@ namespace Avalonia.CpuLimiter.ViewModels
             }
         }
 
-        public void RunGame()
+        public async Task RunGame()
         {
             // Path Validation
             if (string.IsNullOrWhiteSpace(GamePath))
@@ -130,7 +137,6 @@ namespace Avalonia.CpuLimiter.ViewModels
                 HistoryItems.Insert(0, historyItem);
                 SelectedComboboxIndex = 0;
                 GamePath = HistoryItems[0].Path;
-                
             }
             else
             {
@@ -174,12 +180,6 @@ namespace Avalonia.CpuLimiter.ViewModels
             }
         }
         
-        // Exit command
-        private void ExitProgram()
-        {
-           Environment.Exit(0);
-        }
-        
         //slider cpu core
 
         private int _CpuCoreCount = 4;
@@ -187,51 +187,9 @@ namespace Avalonia.CpuLimiter.ViewModels
         public int CpuCoreCount
         {
             get => _CpuCoreCount;
-            
             set => this.RaiseAndSetIfChanged(ref _CpuCoreCount, value);
         }
-        
-        // about button
-        
-        public ICommand OpenAboutWindowCommand { get; }
-        
 
-        public async Task OpenAboutWindowAsync()
-        {
-            await MainWindow.DoOpenAboutWindowAsync();
-        }
-        
-        // project website button
-        
-        public ICommand OpenProjWebsiteCommand { get; }
-
-        private async Task OpenProjWebsiteAsync()
-        {
-            string url = "https://github.com/hiddenblue/Avalonia.CpuLimiter";
-            
-            Process.Start(new ProcessStartInfo
-            {
-                FileName = url,
-                UseShellExecute = true
-            });
-            
-            
-        }
-        
-        public ICommand OpenDocsCommand { get; }
-
-        private async Task OpenDocsAsync()
-        {
-            string url = "https://github.com/hiddenblue/Avalonia.CpuLimiter";
-            
-            Process.Start(new ProcessStartInfo
-            {
-                FileName = url,
-                UseShellExecute = true
-                    
-            });
-        }
-        
         // combobox 
 
         public ObservableCollection<HistoryItemViewModel> HistoryItems
@@ -248,50 +206,42 @@ namespace Avalonia.CpuLimiter.ViewModels
                 
             if (!File.Exists(value) && !Directory.Exists(value))
                 return false;
-            
             return true;
         }
 
-        
-        private void AddHistoryItem()
-        {
-            // 这里的逻辑可能还要改一下
-            // 需要查找，重复判断，修改
-            // 感觉可以用linq语法？
-            // HistoryItems.Add();
-            
-        }
-        
         public ICommand RemoveHistoryItemCommand { get; }
 
         private async Task RemoveHistoryItemAsync(HistoryItemViewModel historyItem)
-        {
-           HistoryItems.Remove(historyItem); 
-        }
+        { 
+            Console.WriteLine(historyItem);
+            Console.WriteLine(HistoryItems.Contains(historyItem));
 
-        public async Task PrintLevel(object o)
-        {
-            Console.WriteLine(o);
-        }
-        
-        private int _screenWidth;
-        public int ScreenWidth
-        {
-            get
+            try
             {
-                if (string.IsNullOrWhiteSpace(GamePath))
-                    return 400;
-                else return 3 * GamePath.Length; 
+                var index = HistoryItems.IndexOf(historyItem);
+                HistoryItems.RemoveAt(index);
+                HistoryItemViewModel.SortHistoryItems(HistoryItems);
+                Console.WriteLine($"Removed history item: {historyItem.Path}");
+                if(HistoryItems.Count == 0) GamePath = null;
+
             }
-            
-            set => this.RaiseAndSetIfChanged(ref _screenWidth, value);
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                Console.WriteLine($"Failed to remove history item: {historyItem.Path}");
+            }
         }
 
         private int _selectedComboboxIndex;
 
         public int SelectedComboboxIndex
         {
-            get => _selectedComboboxIndex;
+            get
+            {
+                if (HistoryItems.Count == 0)
+                    return -1;
+                return _selectedComboboxIndex;
+            }
 
             set
             {
@@ -299,6 +249,21 @@ namespace Avalonia.CpuLimiter.ViewModels
                 this.RaiseAndSetIfChanged(ref _selectedComboboxIndex, value);
             }
         }
+        
+        private HistoryItem _selectedComboboxItem;
+
+        public HistoryItem SelectedHistoryItem
+        {
+            get => _selectedComboboxItem;
+
+            set
+            {
+                this.RaiseAndSetIfChanged(ref _selectedComboboxItem, value);
+            }
+        }
+        
+        // public bool ButtonVisable => 
+
 
     }
 }

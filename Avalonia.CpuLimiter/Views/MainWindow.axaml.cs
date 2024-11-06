@@ -4,6 +4,7 @@ using Avalonia.Controls;
 using Avalonia.CpuLimiter.ViewModels;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using Avalonia.Platform.Storage;
 using Avalonia.ReactiveUI;
 using MsBox.Avalonia;
 using MsBox.Avalonia.Dto;
@@ -24,15 +25,33 @@ namespace Avalonia.CpuLimiter.Views
                 .Subscribe( x => Console.WriteLine($@"history combobox selected index {x}"));            
             this.WhenAnyValue(x => x.HistoryComboBox.SelectedValue)
                 .Subscribe(x => Console.WriteLine($@"history combobox selected value {x}"));
-
         }
 
-        public static async Task DoOpenAboutWindowAsync()
+        private async void OnDocsButtonClicked(object? sender, RoutedEventArgs e)
         {
-            var aboutWindow = AboutWindow.GetInstance();
+            Uri url = new Uri("https://github.com/hiddenblue/Avalonia.CpuLimiter");
+
+            ILauncher launcher = TopLevel.GetTopLevel(this)!.Launcher;
+
+            await launcher.LaunchUriAsync(url);
+        }
+        
+        private void OnAboutWindowButtonClicked(object? sender, RoutedEventArgs e)
+        {
+            AboutWindow aboutWindow = AboutWindow.GetInstance();
             aboutWindow.Show();
         }
+        
+        // project website button
 
+        private async void OnOpenProjButtonClicked(object? sender, RoutedEventArgs e)
+        {
+            Uri uri = new("https://github.com/hiddenblue/Avalonia.CpuLimiter");
+            
+            ILauncher launcher = TopLevel.GetTopLevel(this)!.Launcher;
+
+            await launcher.LaunchUriAsync(uri);
+        }
 
         private async void OnExitButtonClicked(object? sender, RoutedEventArgs e)
         {

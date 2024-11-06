@@ -56,7 +56,11 @@ public class HistoryItemViewModel : ViewModelBase
     public override bool Equals(object? obj)
     {
         // call the base item equal function
-       return this.GetHistoryItem() == (obj as HistoryItemViewModel)?.GetHistoryItem(); 
+        if (obj is HistoryItemViewModel other)
+        {
+            return Path == other.Path && LastUsed == other.LastUsed && CPUCoreUsed == other.CPUCoreUsed;
+        }
+        return false;
     }
 
     public override int GetHashCode()
@@ -85,7 +89,5 @@ public class HistoryItemViewModel : ViewModelBase
         }
     }
 
-
-
-
+    public override string ToString() => GetHistoryItem().ToString();
 }
