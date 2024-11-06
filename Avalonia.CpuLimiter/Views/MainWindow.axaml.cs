@@ -1,18 +1,15 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Avalonia.Controls;
-using Avalonia.CpuLimiter.Models;
 using Avalonia.CpuLimiter.ViewModels;
 using Avalonia.Input;
-using Avalonia.Input.Raw;
 using Avalonia.Interactivity;
 using Avalonia.ReactiveUI;
 using MsBox.Avalonia;
 using MsBox.Avalonia.Dto;
 using MsBox.Avalonia.Enums;
 using ReactiveUI;
+using Avalonia.Visuals;
 
 namespace Avalonia.CpuLimiter.Views
 {
@@ -54,7 +51,8 @@ namespace Avalonia.CpuLimiter.Views
             ButtonResult result = await box.ShowWindowDialogAsync(this);
             
             if(result == ButtonResult.Yes) 
-                Environment.Exit(0);
+               ExitApp(); 
+                
 
         }
 
@@ -75,18 +73,28 @@ namespace Avalonia.CpuLimiter.Views
 
         private async void OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            var historyItemViewModel = (HistoryItemViewModel)e.AddedItems[0]!;
+            // if select another, both added and remove are exist.
+            // if removed, no addeditems referrence
+            if (e.AddedItems.Count != 0)
+            {
+                var historyItemViewModel = (HistoryItemViewModel)e.AddedItems[0]!;
                 slider.Value = (double)historyItemViewModel.CPUCoreUsed!;
                 Auxiliary.Text = historyItemViewModel.Path;
                 
-                if(Width < historyItemViewModel.Path.Length * 20 )
-                    Width = historyItemViewModel.Path.Length * 20;
-                if(Width > historyItemViewModel.Path.Length * 20 * 1.5)
-                    Width = historyItemViewModel.Path.Length * 20;
+                if(Width < historyItemViewModel.Path.Length * 15 )
+                    Width = historyItemViewModel.Path.Length * 15;
+                if(Width > historyItemViewModel.Path.Length * 15 * 1.5)
+                    Width = historyItemViewModel.Path.Length * 15;
 
                 Console.WriteLine(historyItemViewModel.CPUCoreUsed);
                 Console.WriteLine(historyItemViewModel.Path);
                 Console.WriteLine(historyItemViewModel.LastUsed);
+            }
+            else if (e.AddedItems.Count == 0)
+            {
+                // var historyItemViewModel = 
+            }
+
         }
 
         private async void ResourcesChanged(object? sender, ResourcesChangedEventArgs e)
@@ -100,6 +108,14 @@ namespace Avalonia.CpuLimiter.Views
 
 
         }
+        
+        
+        // Exit command
+        private void ExitApp()
+        {
+            ClosedApp.Invoke(this, EventArgs.Empty);
+        }
+        public event EventHandler ClosedApp = App.Current!.OnExitApplicationTriggered;
         
     }
 }

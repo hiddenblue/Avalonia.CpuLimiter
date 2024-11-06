@@ -43,6 +43,8 @@ namespace Avalonia.CpuLimiter
                 Services = services.BuildServiceProvider();
 
                 desktop.ShutdownRequested += DesktopOnShutdownRequested;
+
+                ExitApplication += OnExitApplicationTriggered;
             }
 
             base.OnFrameworkInitializationCompleted();
@@ -89,7 +91,7 @@ namespace Avalonia.CpuLimiter
         {
             IEnumerable<HistoryItem>? loadItem = await HistoryItemFileService.LoadHistoryFromFileAsync();
 
-            if (loadItem != null)
+            if (loadItem != null && loadItem.Count() > 0)
             {
                 foreach (HistoryItem item in loadItem)
                 {
@@ -104,8 +106,24 @@ namespace Avalonia.CpuLimiter
         
         public async void OnExitButtonClicked(object? sender, EventArgs eventArgs)
         {
-            // todo
+            ExitApplication?.Invoke(this, EventArgs.Empty);
 
         }
+
+        public  void OnExitApplicationTriggered(object? sender, EventArgs eventArgs)
+        {
+            if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+            {
+                Console.WriteLine("The application is exiting.");
+                desktop.TryShutdown();
+            } 
+        }
+
+        // the program calling this Event to exit;
+        // App.Current.ExitApplication.invoke
+        public event EventHandler? ExitApplication;
+        
+        
+
     }
 }
