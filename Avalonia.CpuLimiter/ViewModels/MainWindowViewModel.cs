@@ -6,17 +6,12 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
-using Avalonia;
 using Avalonia.Controls;
-using Avalonia.CpuLimiter;
-using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.CpuLimiter.Models;
 using Avalonia.CpuLimiter.Services;
-using Avalonia.CpuLimiter.Views;
 using ArgumentNullException = System.ArgumentNullException;
 
 namespace Avalonia.CpuLimiter.ViewModels
@@ -39,20 +34,19 @@ namespace Avalonia.CpuLimiter.ViewModels
             RemoveHistoryItemCommand = ReactiveCommand.CreateFromTask<HistoryItemViewModel>( item => RemoveHistoryItemAsync(item) );
             
             this.WhenAnyValue(x => x.CpuCoreCount)
-                .Subscribe(x => Console.WriteLine($"CPU core count: {x}"));
+                .Subscribe(x => Console.WriteLine($@"CPU core count: {x}"));
             
             this.WhenAnyValue(x => x.GamePath)
-                .Subscribe( x => Console.WriteLine($"Game path: {x}"));
+                .Subscribe( x => Console.WriteLine($@"Game path: {x}"));
 
             this.WhenAnyValue(x => x.SelectedComboboxIndex)
-                .Subscribe(x => Console.WriteLine($"change Selected combobox index: {x}"));
-             this.WhenAnyValue(x => x.SelectedHistoryItem)
-                .Subscribe(x => Console.WriteLine($"change Selected combobox item: {x}"));
-            
-            
-
-            // this.WhenAnyValue(x => x.HistoryItems)
-            //     .Subscribe( x => SortHistoryItems(x));
+                .Subscribe(x =>
+                {
+                    Console.WriteLine($@"change Selected combobox index: {x}");
+                    // refresh gamepath when selectedindex is not -1
+                    if(HistoryItems.Count > 0)
+                        GamePath = HistoryItems[SelectedComboboxIndex]?.Path;
+                });
 
             if (Design.IsDesignMode)
             {
@@ -78,8 +72,6 @@ namespace Avalonia.CpuLimiter.ViewModels
                     Path = "~/App_Data/CpuCoreHistory.json"
                 }));
                 GamePath = "~/App_Data/CpuCoreHistory.json";
-
-
             }
         }
 
@@ -109,9 +101,8 @@ namespace Avalonia.CpuLimiter.ViewModels
 
             set
             {
-
-                    Console.WriteLine($@"Game path: '{value}'");
-                    this.RaiseAndSetIfChanged(ref _gamePath, value);
+                Console.WriteLine($@"Game path: '{value}'");
+                this.RaiseAndSetIfChanged(ref _gamePath, value);
             }
         }
 
@@ -155,7 +146,7 @@ namespace Avalonia.CpuLimiter.ViewModels
                 if (fileService is null)
                     throw new NullReferenceException("Missing File Service instance.");
 
-                var file = await fileService.OpenFileAsync();
+                var file = await fileService.OpenFilePickerAsync();
                 if (file != null)
                 {
                     GamePath = file.Path.LocalPath;
@@ -231,6 +222,24 @@ namespace Avalonia.CpuLimiter.ViewModels
                 Console.WriteLine($@"Failed to remove history item: {historyItem.Path}");
             }
         }
+        
+        private async Task RemoveHistoryItemAsync(int index)
+        { 
+            Console.WriteLine($"to remove index : {index}");
+            try
+            {
+                HistoryItems.RemoveAt(index);
+                await HistoryItemViewModel.SortHistoryItems(HistoryItems);
+                Console.WriteLine($@"Removed history item index: {index}");
+                if(HistoryItems.Count == 0) GamePath = null;
+
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                Console.WriteLine($@"Failed to remove history index : {index}");
+            }
+        }
 
         private int _selectedComboboxIndex;
 
@@ -250,20 +259,54 @@ namespace Avalonia.CpuLimiter.ViewModels
             }
         }
         
-        private HistoryItem _selectedComboboxItem;
-
-        public HistoryItem SelectedHistoryItem
-        {
-            get => _selectedComboboxItem;
-
-            set
-            {
-                this.RaiseAndSetIfChanged(ref _selectedComboboxItem, value);
-            }
-        }
+        // private HistoryItem _selectedComboboxItem;
+        //
+        // public HistoryItem SelectedHistoryItem
+        // {
+        //     get => _selectedComboboxItem;
+        //
+        //     set
+        //     {
+        //         this.RaiseAndSetIfChanged(ref _selectedComboboxItem, value);
+        //     }
+        // }
         
         // public bool ButtonVisable => 
         
+        
+        // clipboard command
+
+        public IClipBoardService ClipBoardService;
+        
+        public async Task CopyTextToClipboard(string text)
+        {
+            // text is pass by button command parameter
+            await ClipBoardService.SetClipboardTextAsync(text);
+        }
+        
+        public async Task PastePathFromClipboard()
+        {
+            string? path = await ClipBoardService.GetClipboardTextAsync();
+            if (path is not null)
+            {
+                await AddHistoryItemAsync(new HistoryItemViewModel()
+                {
+                    CPUCoreUsed = this.CpuCoreCount,
+                    LastUsed = DateTime.Now,
+                    Path = path
+                });
+            }
+            else
+            {
+                Console.WriteLine($@"Clipboard text is empty");
+            }
+        }
+
+        public async Task CutTextToClipboard(string text)
+        {
+            await ClipBoardService.SetClipboardTextAsync(text);
+            await RemoveHistoryItemAsync(SelectedComboboxIndex);
+        }
 
 
     }

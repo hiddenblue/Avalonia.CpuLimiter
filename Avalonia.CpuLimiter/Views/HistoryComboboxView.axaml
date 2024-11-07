@@ -14,7 +14,6 @@
                     <TextBox Grid.Column="0" Text="{Binding Path}"
                              IsReadOnly="{Binding $parent.IsFocused}"
                              HorizontalAlignment="Left"
-                             CaretBrush="Transparent"
                              VerticalContentAlignment="Center"
                              FontSize="16" Height="20" Margin="0 5 1 5"
                              MinWidth="300"

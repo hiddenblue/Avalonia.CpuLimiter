@@ -21,7 +21,7 @@ namespace Avalonia.CpuLimiter.Services
             _target = target;
         }
 
-        public async Task<IStorageFile?> OpenFileAsync()
+        public async Task<IStorageFile?> OpenFilePickerAsync()
         {
             FilePickerOpenOptions options = new()
             {
@@ -39,7 +39,7 @@ namespace Avalonia.CpuLimiter.Services
             return files.Count >= 1 ? files[0] : null;
         }
 
-        public async Task<IStorageFile?> SaveFileAsync()
+        public async Task<IStorageFile?> SaveFilePickerAsync()
         {
             return await _target.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions()
             {

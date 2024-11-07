@@ -122,12 +122,14 @@ namespace Avalonia.CpuLimiter.Views
         private async void OnThemeToggleSwitchClicked(object? sender, RoutedEventArgs e)
         {
             Console.WriteLine($@"OnThemeToggleSwitchClicked {RequestedThemeVariant}");
+            
             if(RequestedThemeVariant == ThemeVariant.Light)
                 RequestedThemeVariant = ThemeVariant.Dark;
             else if(RequestedThemeVariant == ThemeVariant.Dark)
                 RequestedThemeVariant = ThemeVariant.Light;
             else if(RequestedThemeVariant == ThemeVariant.Default)
                 RequestedThemeVariant = ThemeVariant.Light;
+            
             Console.WriteLine($@"OnThemeToggleSwitchClicked {RequestedThemeVariant}");
         }
     }
