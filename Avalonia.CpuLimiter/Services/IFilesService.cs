@@ -9,8 +9,8 @@ namespace Avalonia.CpuLimiter.Services
 {
     public interface IFilesService
     {
-        public Task<IStorageFile?> OpenFileAsync();
+        public Task<IStorageFile?> OpenFilePickerAsync();
 
-        public Task<IStorageFile?> SaveFileAsync();
+        public Task<IStorageFile?> SaveFilePickerAsync();
     }
 }

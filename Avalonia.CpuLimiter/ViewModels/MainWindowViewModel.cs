@@ -3,11 +3,16 @@ using ReactiveUI;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using System;
-using System.Diagnostics;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel.DataAnnotations;
+using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
+using Avalonia.Controls;
 using Avalonia.CpuLimiter.Models;
 using Avalonia.CpuLimiter.Services;
-using Avalonia.CpuLimiter.Views;
+using ArgumentNullException = System.ArgumentNullException;
 
 namespace Avalonia.CpuLimiter.ViewModels
 {
@@ -24,38 +29,115 @@ namespace Avalonia.CpuLimiter.ViewModels
             //     }
             // }
 
-
-            ChooseExeFileCommand = ReactiveCommand.CreateFromTask(ChooseExeFile);
-            RunGameCommand = ReactiveCommand.Create(RunGame);
-            ExitProgramCommand = ReactiveCommand.Create(ExitProgram);
-            OpenAboutWindowCommand = ReactiveCommand.CreateFromTask(OpenAboutWindowAsync);
-            OpenProjWebsiteCommand = ReactiveCommand.CreateFromTask(OpenProjWebsiteAsync);
-            OpenDocsCommand = ReactiveCommand.CreateFromTask(OpenDocsAsync);
+            // ChooseExeFileCommand = ReactiveCommand.CreateFromTask(ChooseExeFile);
+            RunGameCommand = ReactiveCommand.CreateFromTask(RunGame);
+            RemoveHistoryItemCommand = ReactiveCommand.CreateFromTask<HistoryItemViewModel>( item => RemoveHistoryItemAsync(item) );
+            
             this.WhenAnyValue(x => x.CpuCoreCount)
-                .Subscribe(x => Console.WriteLine($"CPU core count: {x}"));
+                .Subscribe(x => Console.WriteLine($@"CPU core count: {x}"));
+            
+            this.WhenAnyValue(x => x.GamePath)
+                .Subscribe( x => Console.WriteLine($@"Game path: {x}"));
+
+            this.WhenAnyValue(x => x.SelectedComboboxIndex)
+                .Subscribe(x =>
+                {
+                    Console.WriteLine($@"change Selected combobox index: {x}");
+                    // refresh gamepath when selectedindex is not -1
+                    if(HistoryItems.Count > 0)
+                        GamePath = HistoryItems[SelectedComboboxIndex]?.Path;
+                });
+
+            if (Design.IsDesignMode)
+            {
+                HistoryItems.Add(new HistoryItemViewModel(new HistoryItem()
+                {
+                    CPUCoreUsed = 1,
+                    LastUsed = new DateTime(2018, 9, 30),
+                    
+                    Path = "~/App_Data/CpuCoreHistory.json"
+                }));
+                HistoryItems.Add(new HistoryItemViewModel(new HistoryItem()
+                {
+                    CPUCoreUsed = 2,
+                    LastUsed = new DateTime(2018, 9, 30),
+                    
+                    Path = "~/App_Data/CpuCoreHistory.json"
+                }));
+                HistoryItems.Add(new HistoryItemViewModel(new HistoryItem()
+                {
+                    CPUCoreUsed = 3,
+                    LastUsed = new DateTime(2018, 9, 30),
+                    
+                    Path = "~/App_Data/CpuCoreHistory.json"
+                }));
+                GamePath = "~/App_Data/CpuCoreHistory.json";
+            }
         }
 
-        public void RunGame() => AdminRunner.RunAsAdmin(4, GamePath);
+        public async Task RunGame()
+        {
+            // Path Validation
+            if (string.IsNullOrWhiteSpace(GamePath))
+                throw new ArgumentNullException(nameof(GamePath), $@"Path: '{GamePath}' cannot be null or empty.");
+                
+            else if (!File.Exists(GamePath) &&  !Directory.Exists(GamePath))
+                throw new FileNotFoundException(nameof(GamePath),$@"Path: '{GamePath}' does not exist.");
+            else
+                AdminRunner.RunAsAdmin(4, GamePath);
+        }
 
-
-        public ICommand ChooseExeFileCommand { get; }
+        // public ICommand ChooseExeFileCommand { get; }
 
         public ICommand RunGameCommand { get; }
 
-        private string _gamePath =  "D:\\prototype\\Prototype\\prototypef.exe";
+        // private string _gamePath =  "D:\\prototype\\Prototype\\prototypef.exe";
+        private string? _gamePath;
 
-        public string GamePath
+        [Required]
+        public string? GamePath
         {
             get => _gamePath;
 
             set
             {
+                Console.WriteLine($@"Game path: '{value}'");
                 this.RaiseAndSetIfChanged(ref _gamePath, value);
             }
         }
 
+        private async Task AddHistoryItemAsync(HistoryItemViewModel historyItem)
+        {
+            IEnumerable<string?> list = HistoryItems.Select(x => x.Path);
+            if (!list.Contains(historyItem.Path))
+            {
+                // determine whether the item was already in HistoryItems
+                await HistoryItemViewModel.SortHistoryItems(HistoryItems);
 
-        private async Task ChooseExeFile()
+                if (HistoryItems.Count() > 4)
+                {
+                    var items = HistoryItems.Skip(0).Take(4).ToList();
+                    HistoryItems.Clear();
+                    
+                    foreach (var item in items)
+                    {
+                        HistoryItems.Add(item);
+                    }
+                }
+                // the new item is always the first place
+                HistoryItems.Insert(0, historyItem);
+                SelectedComboboxIndex = 0;
+                GamePath = HistoryItems[0].Path;
+            }
+            else
+            {
+                Console.WriteLine($@"History item: {historyItem.Path} already exists");
+                
+                // todo refresh the date of history item
+            }
+        }
+
+        public async Task ChooseExeFile()
         {
             try
             {
@@ -64,14 +146,22 @@ namespace Avalonia.CpuLimiter.ViewModels
                 if (fileService is null)
                     throw new NullReferenceException("Missing File Service instance.");
 
-                var file = await fileService.OpenFileAsync();
+                var file = await fileService.OpenFilePickerAsync();
                 if (file != null)
-                    GamePath = file.Path.AbsolutePath;
+                {
+                    GamePath = file.Path.LocalPath;
                 
+                    await AddHistoryItemAsync(new HistoryItemViewModel()
+                    {
+                        CPUCoreUsed = CpuCoreCount,
+                        LastUsed = DateTime.Now,
+                        Path = GamePath
+                    }); 
+                }
+
                 // extension judgement
                 if(RuntimeInformation.IsOSPlatform(OSPlatform.Windows) && !GamePath.EndsWith(".exe"))
-                    throw new PlatformNotSupportedException("File extension is not supported on windows");
-                
+                    throw new PlatformNotSupportedException($"File extension: {Path.GetExtension(GamePath)} is not supported on windows");
             }
             catch (Exception e)
             {
@@ -81,15 +171,6 @@ namespace Avalonia.CpuLimiter.ViewModels
             }
         }
         
-        // Exit command
-        
-        public ICommand ExitProgramCommand { get; }
-
-        private void ExitProgram()
-        {
-           Environment.Exit(0); 
-        }
-        
         //slider cpu core
 
         private int _CpuCoreCount = 4;
@@ -97,48 +178,136 @@ namespace Avalonia.CpuLimiter.ViewModels
         public int CpuCoreCount
         {
             get => _CpuCoreCount;
-            
             set => this.RaiseAndSetIfChanged(ref _CpuCoreCount, value);
         }
-        
-        // about button
-        
-        public ICommand OpenAboutWindowCommand { get; }
-        
-        public Interaction<object, object> ShowAboutDialog { get; }
 
-        public async Task OpenAboutWindowAsync()
+        // combobox 
+
+        public ObservableCollection<HistoryItemViewModel> HistoryItems
         {
-            await MainWindow.DoOpenAboutWindowAsync();
+            get;
+        } = new();
+        
+        public bool CanLaunchProgram()
+        {
+            var value = GamePath;
+            // Path Validation
+            if (string.IsNullOrWhiteSpace(value))
+                return false;
+                
+            if (!File.Exists(value) && !Directory.Exists(value))
+                return false;
+            return true;
         }
-        
-        // project website button
-        
-        public ICommand OpenProjWebsiteCommand { get; }
 
-        private async Task OpenProjWebsiteAsync()
-        {
-            string url = "https://github.com/hiddenblue/Avalonia.CpuLimiter";
-            
-            Process.Start(new ProcessStartInfo
+        public ICommand RemoveHistoryItemCommand { get; }
+
+        private async Task RemoveHistoryItemAsync(HistoryItemViewModel historyItem)
+        { 
+            Console.WriteLine(historyItem);
+            Console.WriteLine(HistoryItems.Contains(historyItem));
+
+            try
             {
-                FileName = url,
-                UseShellExecute = true
-            });
+                var index = HistoryItems.IndexOf(historyItem);
+                HistoryItems.RemoveAt(index);
+                await HistoryItemViewModel.SortHistoryItems(HistoryItems);
+                Console.WriteLine($@"Removed history item: {historyItem.Path}");
+                if(HistoryItems.Count == 0) GamePath = null;
+
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                Console.WriteLine($@"Failed to remove history item: {historyItem.Path}");
+            }
         }
         
-        public ICommand OpenDocsCommand { get; }
-
-        private async Task OpenDocsAsync()
-        {
-            string url = "https://github.com/hiddenblue/Avalonia.CpuLimiter";
-            
-            Process.Start(new ProcessStartInfo
+        private async Task RemoveHistoryItemAsync(int index)
+        { 
+            Console.WriteLine($"to remove index : {index}");
+            try
             {
-                FileName = url,
-                UseShellExecute = true
-                    
-            });
+                HistoryItems.RemoveAt(index);
+                await HistoryItemViewModel.SortHistoryItems(HistoryItems);
+                Console.WriteLine($@"Removed history item index: {index}");
+                if(HistoryItems.Count == 0) GamePath = null;
+
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                Console.WriteLine($@"Failed to remove history index : {index}");
+            }
         }
+
+        private int _selectedComboboxIndex;
+
+        public int SelectedComboboxIndex
+        {
+            get
+            {
+                if (HistoryItems.Count == 0)
+                    return -1;
+                return _selectedComboboxIndex;
+            }
+
+            set
+            {
+                Console.WriteLine(value);
+                this.RaiseAndSetIfChanged(ref _selectedComboboxIndex, value);
+            }
+        }
+        
+        // private HistoryItem _selectedComboboxItem;
+        //
+        // public HistoryItem SelectedHistoryItem
+        // {
+        //     get => _selectedComboboxItem;
+        //
+        //     set
+        //     {
+        //         this.RaiseAndSetIfChanged(ref _selectedComboboxItem, value);
+        //     }
+        // }
+        
+        // public bool ButtonVisable => 
+        
+        
+        // clipboard command
+
+        public IClipBoardService ClipBoardService;
+        
+        public async Task CopyTextToClipboard(string text)
+        {
+            // text is pass by button command parameter
+            await ClipBoardService.SetClipboardTextAsync(text);
+        }
+        
+        public async Task PastePathFromClipboard()
+        {
+            string? path = await ClipBoardService.GetClipboardTextAsync();
+            if (path is not null)
+            {
+                await AddHistoryItemAsync(new HistoryItemViewModel()
+                {
+                    CPUCoreUsed = this.CpuCoreCount,
+                    LastUsed = DateTime.Now,
+                    Path = path
+                });
+            }
+            else
+            {
+                Console.WriteLine($@"Clipboard text is empty");
+            }
+        }
+
+        public async Task CutTextToClipboard(string text)
+        {
+            await ClipBoardService.SetClipboardTextAsync(text);
+            await RemoveHistoryItemAsync(SelectedComboboxIndex);
+        }
+
+
     }
 }

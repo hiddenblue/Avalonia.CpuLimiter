@@ -4,6 +4,7 @@ using Avalonia.Platform.Storage;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -20,25 +21,35 @@ namespace Avalonia.CpuLimiter.Services
             _target = target;
         }
 
-        public async Task<IStorageFile?> OpenFileAsync()
+        public async Task<IStorageFile?> OpenFilePickerAsync()
         {
-            var files = await _target.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions()
+            FilePickerOpenOptions options = new()
             {
                 Title = "Select executable file",
-                AllowMultiple = false
+                AllowMultiple = false,
+            };
+
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                options.FileTypeFilter = new FilePickerFileType[] { WinexeFileType };
+            }
 
 
-            });
-
+            var files = await _target.StorageProvider.OpenFilePickerAsync(options);
             return files.Count >= 1 ? files[0] : null;
         }
 
-        public async Task<IStorageFile?> SaveFileAsync()
+        public async Task<IStorageFile?> SaveFilePickerAsync()
         {
             return await _target.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions()
             {
                 Title = "Save Text File"
             });
         }
+        
+        public static FilePickerFileType WinexeFileType { get; } = new("Windows exe")
+        {
+            Patterns = new[] { "*.exe" },
+        };
     }
 }

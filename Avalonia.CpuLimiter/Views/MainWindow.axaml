@@ -1,18 +1,24 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:view="using:Avalonia.CpuLimiter.Views"
         xmlns:vm="using:Avalonia.CpuLimiter.ViewModels"
+        xmlns:lang="using:Avalonia.CpuLimiter.Lang"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="400"
-		Width="600" Height="400"
+        mc:Ignorable="d" d:DesignWidth="650" d:DesignHeight="450"
+		Width= "600" Height="420"
+        MaxWidth="900"
+        MinWidth="560"
         x:Class="Avalonia.CpuLimiter.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
+        x:CompileBindings="True"
         Icon="/Assets/avalonia-logo.ico"
         Title="Game Launcher"
 		TransparencyLevelHint="AcrylicBlur"
         Background="Transparent"
-        ExtendClientAreaToDecorationsHint="False"
-        WindowStartupLocation="CenterScreen">
+        ExtendClientAreaToDecorationsHint="True"
+        WindowStartupLocation="CenterScreen"
+        RequestedThemeVariant="Dark">
 
     <Design.DataContext>
         <!-- This only sets the DataContext for the previewer in an IDE,
@@ -34,93 +40,116 @@
 		
 		<!-- window menu -->
 		<DockPanel>
-			<Menu DockPanel.Dock="Top">
-				<MenuItem Header="File">
-					<MenuItem Header="Open" Command="{Binding ChooseExeFileCommand}" FontSize="13"/>
-					<MenuItem Header="Save" Command="{Binding}" FontSize="13"/>
+			<Menu DockPanel.Dock="Top" HorizontalAlignment="Left" FontSize="14" Margin="10 0">
+				<Menu.Styles>
+					<Style Selector="MenuItem.Menu1">
+						<Setter Property="Margin" Value="8 0 8 0"/>
+					</Style>
+					<Style Selector="MenuItem.Menu2">
+						<Setter Property="FontSize" Value="13"/>	
+					</Style>
+				</Menu.Styles>
+				
+				<MenuItem Name="FileButton" Classes="Menu1" Header="{x:Static lang:Resources.FileButton}">
+					<MenuItem Header="Open" Classes="Menu2" Command="{Binding ChooseExeFile}"/>
+					<MenuItem Header="Save" Classes="Menu2" Command="{Binding}"/>
 					<Separator/>
-					<MenuItem Header="Exit" Command="{Binding ExitProgramCommand}" FontSize="13"/>
+					<MenuItem Header="Exit" Classes="Menu2" Click="OnExitButtonClicked"/>
 				</MenuItem>
 				
-				<MenuItem Header="_Edit">
-					<MenuItem Header="Cut" FontSize="13"/>
-					<MenuItem Header="Copy" FontSize="13"/>
-					<MenuItem Header="Paste" FontSize="13"/>
+				<MenuItem Name="EditButton" Classes="Menu1" Header="{x:Static lang:Resources.EditButton}">
+					<MenuItem Header="Cut" Classes="Menu2" Command="{Binding CutTextToClipboard}"
+					          CommandParameter="{Binding #Auxiliary.Text}"/>
+					<MenuItem Header="Copy" Classes="Menu2" Command="{Binding CopyTextToClipboard}"
+					          CommandParameter="{Binding #Auxiliary.Text}"/>
+					<MenuItem Header="Paste" Classes="Menu2" Command="{Binding PastePathFromClipboard}"/>
 				</MenuItem>
 				
-				<MenuItem Header="_Setting">
-					<MenuItem Header="View" FontSize="13"/>
-					<MenuItem Header="Config" FontSize="13"/>
+				<MenuItem Name="SettingButton" Classes="Menu1" Header="{x:Static lang:Resources.SettingButton}">
+					<MenuItem Header="View" Classes="Menu2"/>
+					<MenuItem Header="Config" Classes="Menu2"/>
 				</MenuItem>
 				
-				<MenuItem Header="_Run">
-					<MenuItem Header="Launch Game" Command="{Binding RunGameCommand}" FontSize="13"/>	
+				<MenuItem Name="RunButton" Classes="Menu1" Header="{x:Static lang:Resources.RunButton}">
+					<MenuItem Header="Launch Game" Classes="Menu2" Command="{Binding RunGameCommand}"/>	
 				</MenuItem>
 				
-				<MenuItem Header="_Help">
-					<MenuItem Header="Docs" FontSize="13" Command="{Binding OpenDocsCommand}"
+				<MenuItem Name="HelpButton" Classes="Menu1" Header="{x:Static lang:Resources.HelpButton}">
+					<MenuItem Header="Docs" Classes="Menu2" Click="OnDocsButtonClicked"
 					          ToolTip.Tip="Click to open docs in browser"/>
 					<Separator/>
-					<MenuItem Header="Project website" FontSize="13" Command="{Binding OpenProjWebsiteCommand}"/>
-					<MenuItem Header="About" FontSize="13" Command="{Binding OpenAboutWindowCommand}"/>
+					<MenuItem Header="Project website" Classes="Menu2" Click="OnOpenProjButtonClicked"/>
+					<MenuItem Header="About" Classes="Menu2" Click="OnAboutWindowButtonClicked"/>
 				</MenuItem>
-				
 			</Menu>
 			
 			<!-- content -->
 			<StackPanel>
-				
+				<ToggleSwitch Click="OnThemeToggleSwitchClicked" HorizontalAlignment="Right" Content="Theme"
+				              FontSize="14" FontWeight="DemiBold"
+				              OffContent="Dark" OnContent="Light"
+				              Margin="30 10 20 -20"></ToggleSwitch>
 				<TextBlock FontSize="18" FontWeight="Bold" Foreground="DodgerBlue"
-				           HorizontalAlignment="Center" Padding="20">
-					Exe File Path
-				</TextBlock>
+				           HorizontalAlignment="Center" Padding="20"
+				           Text="Exe File Path"/>
 
-				<StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-					<TextBox Text="{Binding GamePath}" Name="GamePathTextBox"
-					         HorizontalAlignment="Center"
-					         Padding="30 8 30 0" FontSize="16"/>
+				<StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Tag="stackpanel2">
+					<!-- SelectedItem="{Binding HistoryItems[0]}" -->
+					<ComboBox Name="HistoryComboBox" HorizontalAlignment="Center" Padding="15 0 15 5"
+					          FontSize="16" MinWidth="400" Height="40" MaxWidth="700"
+					          ItemsSource="{Binding HistoryItems}"
+					          AutoScrollToSelectedItem="True"
+					          PlaceholderText="{}"
+					          SelectedIndex="{Binding SelectedComboboxIndex}">
+						<!-- SelectionChanged="OnSelectionChanged" -->
+						<ComboBox.ItemTemplate>
+							<DataTemplate DataType="vm:HistoryItemViewModel">
+								<view:HistoryComboboxView/>
+							</DataTemplate>
+						</ComboBox.ItemTemplate>
+					</ComboBox>	
 					
-					<Button Content=" ... " HorizontalAlignment="Center"
+					<Button Name="OpenFilePickerButton" Content=" ... " HorizontalAlignment="Center"
 					        Background="Beige" Foreground="Black"
-					        Margin="5 0 0 0"
-					        Padding="10"
-					        Width="40"
+					        Margin="5 0 0 0" Padding="10" Width="40"
 					        BorderBrush="Black"
-					        ToolTip.Tip="Open the file explorer to select exe file"
-					        Command="{Binding ChooseExeFileCommand}"/>
+					        ToolTip.Tip="Open the file explorer to select"
+					        Command="{Binding ChooseExeFile}">
+						</Button>
 				</StackPanel>
-
-
-				<Separator Margin="0 20"/>
-				<Slider Name="slider" BorderBrush="Orange"
-				        Minimum="1" Maximum="16" IsSnapToTickEnabled="True" TickFrequency="1" TickPlacement="TopLeft"
+				<Separator Margin="0 30"/>
+				<Slider Name="slider" BorderBrush="Orange" Minimum="1"
+				        Maximum="16" IsSnapToTickEnabled="True" TickFrequency="1" TickPlacement="TopLeft"
 				        Width="400" Value="{Binding CpuCoreCount}"
-				        ToolTip.Tip="Adjust the cpu core numbers used by the Game program">
+				        ToolTip.Tip="Adjust the cpu core numbers used by the Game program"
+				        PointerWheelChanged="OnPointerWheelChanged">
 				</Slider>
 				
 				<StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-					<TextBlock FontSize="18" FontWeight="Bold" Margin="10 6 10 0"
-					           HorizontalAlignment="Center">Cpu Core Number:</TextBlock>
+					<TextBlock Name="CPUCoreNumberTextBlock" FontSize="18" FontWeight="Bold" Margin="10 6 10 0"
+					           HorizontalAlignment="Center" Text="{x:Static lang:Resources.CPUCoreNumberTextBlock}"></TextBlock>
 					<!-- <TextBlock Text="{Binding #slider.Value}" -->
 					<!--            HorizontalAlignment="Center" FontSize="20" FontWeight="Bold" Padding="0"/> -->
 					
 					<TextBox Margin="10 0 0 0" HorizontalAlignment="Center"
-					         Padding="10 10 10 10"
-					         Width="1"
-					         TextAlignment="Center"
+					         VerticalContentAlignment="Center"
+					         Padding="0 0 0 0"
+					         Width="1" MinWidth="40" Height="40" TextAlignment="Center"
 					         Text="{Binding CpuCoreCount}" FontSize="18"
 					         FontWeight="Bold" IsReadOnly="False"></TextBox>
 				</StackPanel>
-				<Button FontStyle="Normal"
-				        Foreground="Orange" Command="{Binding RunGameCommand}"
+				<Button FontStyle="Normal" Foreground="Orange" 
+				        Command="{Binding RunGameCommand}"
 				        HorizontalAlignment="Center" VerticalAlignment="Center"
 				        FontSize="16" FontWeight="Bold"
 				        Margin="10 20" Padding="14"
 				        ToolTip.Tip="Run the selected Game"
-				        Content="Launch the Game">
+				        Content="{x:Static lang:Resources.LaunchGameButton}"
+				        HotKey="Enter">
 					<!-- <PathIcon Data="{StaticResource GamesRegular}"/> -->
 				</Button>
-
+				
+				<TextBlock Name="Auxiliary" Text="{Binding GamePath}" IsVisible="False"/>
 			</StackPanel>
 		</DockPanel>
 		
