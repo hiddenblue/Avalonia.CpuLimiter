@@ -28,20 +28,35 @@
                 <StackPanel HorizontalAlignment="Center" Margin="0 20">
                         <!-- Title -->
 
-                        <TextBlock Text="Game Launcher 1.0" FontSize="16"
-                                   FontWeight="Bold"
-                                   Padding="20"
-                                   HorizontalAlignment="Center"></TextBlock>
                         <Grid RowDefinitions="Auto * * * *" ColumnDefinitions="Auto *" ShowGridLines="False">
-                                <TextBlock Grid.Row="1" Padding="20 0 20 0">Author:</TextBlock>
-                                <TextBlock Grid.Row="1" Grid.Column="1" Padding="10 0 20 0">Hiddenblue</TextBlock>
-                                <TextBlock Grid.Row="2" Padding="20 0 20 0">Dotnet version:</TextBlock>
-                                <TextBlock Grid.Row="2" Grid.Column="1" Padding="10 0 20 0">8.0</TextBlock>
-                                <TextBlock Grid.Row="3" Padding="20 0 20 0">AvaloniaUI version:</TextBlock>
-                                <TextBlock Grid.Row="3" Grid.Column="1" Padding="10 0 20 0">11.10</TextBlock>
-                          
-                                <TextBlock Grid.Row="4" Padding="20 0 20 0">License:</TextBlock> 
-                                <TextBlock Grid.Row="4" Grid.Column="1" Padding="10 0 20 0">GPLV2</TextBlock> 
+                                
+
+                                <StackPanel Grid.Row="0" Grid.ColumnSpan="2" Orientation="Horizontal"
+                                            Margin="10 20 "
+                                            HorizontalAlignment="Center">
+                                        <TextBlock Text="Game Launcher" FontSize="16"
+                                                   FontWeight="Bold"
+                                                   HorizontalAlignment="Right"></TextBlock>
+                                
+                                        <TextBlock Grid.Row="0" Grid.Column="1" Text="1.0" FontSize="16"
+                                                   FontWeight="Bold" 
+                                                   HorizontalAlignment="Center"></TextBlock>
+                                </StackPanel>
+                                <Grid.Styles>
+                                        <Style Selector="TextBlock.left">
+                                                <Setter Property="Padding" Value="20 0 20 0"/></Style>
+                                         <Style Selector="TextBlock.right">
+                                                <Setter Property="Padding" Value="10 0 20 0"/></Style>
+                                </Grid.Styles>
+                                
+                                <TextBlock Classes="left" Grid.Row="1" Grid.Column="0">Author:</TextBlock>
+                                <TextBlock Classes="right" Grid.Row="1" Grid.Column="1">Hiddenblue</TextBlock>
+                                <TextBlock Classes="left" Grid.Row="2" Grid.Column="0">Dotnet version:</TextBlock>
+                                <TextBlock Classes="right" Grid.Row="2" Grid.Column="1">8.0</TextBlock>
+                                <TextBlock Classes="left" Grid.Row="3" Grid.Column="0"> AvaloniaUI version:</TextBlock>
+                                <TextBlock Classes="right" Grid.Row="3" Grid.Column="1">11.20</TextBlock>
+                                <TextBlock Classes="left" Grid.Row="4" Grid.Column="0">License:</TextBlock> 
+                                <TextBlock Classes="right" Grid.Row="4" Grid.Column="1">GPLV2</TextBlock> 
                         </Grid> 
      
                 </StackPanel>
@@ -53,7 +68,8 @@
                         <Button Content="Copy and Close" FontSize="16" FontWeight="Bold"
                                 Margin="0 0 6 0"
                                 Padding="10 6"
-                                Background="DodgerBlue"/>
+                                Background="DodgerBlue"
+                                Click="OnCopyAndCloseButtonClicked"/>
                         <Button Content="Close" Click="OnCloseButtonClick"
                                 HotKey="Escape"
                                 FontSize="16" FontWeight="Normal"
