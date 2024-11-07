@@ -39,6 +39,8 @@ namespace Avalonia.CpuLimiter
                 var services = new ServiceCollection();
 
                 services.AddSingleton<IFilesService>(x => new FilesService(desktop.MainWindow));
+                services.AddSingleton<IClipBoardService>(x => new ClipBoardService(desktop));
+                _mainWindowViewModel.ClipBoardService = services.BuildServiceProvider().GetService<IClipBoardService>()!;
 
                 Services = services.BuildServiceProvider();
 
