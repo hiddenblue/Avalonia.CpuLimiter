@@ -6,11 +6,11 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
 using Avalonia.ReactiveUI;
+using Avalonia.Styling;
 using MsBox.Avalonia;
 using MsBox.Avalonia.Dto;
 using MsBox.Avalonia.Enums;
 using ReactiveUI;
-using Avalonia.Visuals;
 
 namespace Avalonia.CpuLimiter.Views
 {
@@ -19,21 +19,34 @@ namespace Avalonia.CpuLimiter.Views
         public MainWindow()
         {
             InitializeComponent();
+            
             this.WhenAnyValue(x => x.HistoryComboBox.SelectionBoxItem)
                 .Subscribe(Console.WriteLine);
             this.WhenAnyValue(x => x.HistoryComboBox.SelectedIndex)
-                .Subscribe( x => Console.WriteLine($@"history combobox selected index {x}"));            
+                .Subscribe( x => Console.WriteLine($@"history combobox selected index {x}"));
             this.WhenAnyValue(x => x.HistoryComboBox.SelectedValue)
-                .Subscribe(x => Console.WriteLine($@"history combobox selected value {x}"));
+                .Subscribe(x =>
+                {
+                    Console.WriteLine($@"history combobox selected value {x}");
+                    AutoAlterScreenWidth();
+                });
+        }
+
+        private readonly string _docsWebsiteUrl = "https://github.com/hiddenblue/Avalonia.CpuLimiter";
+        
+        private readonly string _projectsWebsiteUrl = "https://github.com/hiddenblue/Avalonia.CpuLimiter";
+
+        private async Task _openUri(Uri uri)
+        {
+            ILauncher launcher = TopLevel.GetTopLevel(this)!.Launcher;
+
+            await launcher.LaunchUriAsync(uri); 
         }
 
         private async void OnDocsButtonClicked(object? sender, RoutedEventArgs e)
         {
-            Uri url = new Uri("https://github.com/hiddenblue/Avalonia.CpuLimiter");
-
-            ILauncher launcher = TopLevel.GetTopLevel(this)!.Launcher;
-
-            await launcher.LaunchUriAsync(url);
+            Uri url = new Uri(_docsWebsiteUrl);
+            await this._openUri(url);
         }
         
         private void OnAboutWindowButtonClicked(object? sender, RoutedEventArgs e)
@@ -46,11 +59,9 @@ namespace Avalonia.CpuLimiter.Views
 
         private async void OnOpenProjButtonClicked(object? sender, RoutedEventArgs e)
         {
-            Uri uri = new("https://github.com/hiddenblue/Avalonia.CpuLimiter");
+            Uri uri = new(_projectsWebsiteUrl);
             
-            ILauncher launcher = TopLevel.GetTopLevel(this)!.Launcher;
-
-            await launcher.LaunchUriAsync(uri);
+            await this._openUri(uri);
         }
 
         private async void OnExitButtonClicked(object? sender, RoutedEventArgs e)
@@ -75,13 +86,6 @@ namespace Avalonia.CpuLimiter.Views
 
         }
 
-        private async void OnOpenAboutWindowClicked(object? sender, RoutedEventArgs e)
-        {
-            var aboutWindow = new AboutWindow();
-            aboutWindow.Show();
-        }
-        
-        
         // Add a scroll event to change slider value. the unit change is 1
         private void  OnPointerWheelChanged(object sender, PointerWheelEventArgs e)
         {
@@ -90,51 +94,41 @@ namespace Avalonia.CpuLimiter.Views
             slider.Value += e.Delta.Y;
         }
 
-        private async void OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        private async void AutoAlterScreenWidth()
         {
-            // if select another, both added and remove are exist.
-            // if removed, no addeditems referrence
-            if (e.AddedItems.Count != 0)
+            Console.WriteLine(Width);
+
+            var selectedItem = HistoryComboBox.SelectionBoxItem;
+            
+            if (selectedItem is HistoryItemViewModel temp)
             {
-                var historyItemViewModel = (HistoryItemViewModel)e.AddedItems[0]!;
-                slider.Value = (double)historyItemViewModel.CPUCoreUsed!;
-                Auxiliary.Text = historyItemViewModel.Path;
+                Console.WriteLine($@"Width: {Width}");
+                Console.WriteLine($@"Width_compare: {temp.Path.Length * 14}");
                 
-                if(Width < historyItemViewModel.Path.Length * 15 )
-                    Width = historyItemViewModel.Path.Length * 15;
-                if(Width > historyItemViewModel.Path.Length * 15 * 1.5)
-                    Width = historyItemViewModel.Path.Length * 15;
-
-                Console.WriteLine(historyItemViewModel.CPUCoreUsed);
-                Console.WriteLine(historyItemViewModel.Path);
-                Console.WriteLine(historyItemViewModel.LastUsed);
+                if(Width < temp.Path.Length * 14 )
+                    Width = temp.Path.Length * 14;
+                if(Width > temp.Path.Length * 14 * 1.4)
+                    Width = temp.Path.Length * 14;
             }
-            else if (e.AddedItems.Count == 0)
-            {
-                // var historyItemViewModel = 
-            }
-
         }
 
-        private async void ResourcesChanged(object? sender, ResourcesChangedEventArgs e)
-        {
-            HistoryComboBox.SelectedIndex = 0;
-            // Console.WriteLine($"History ComboBox slec";
-            Console.WriteLine($@"HistoryComboBox.SelectedIndex : {HistoryComboBox.SelectedIndex}");
-            Console.WriteLine($@"HistoryComboBox.SelectedValue): {HistoryComboBox.SelectedValue}");
-            Console.WriteLine($@"HistoryComboBox.SelectedItem): {HistoryComboBox.SelectedItem}");
-            HistoryComboBox.SelectedIndex = 0;
-
-
-        }
-        
-        
         // Exit command
-        private void ExitApp()
+        private async void ExitApp()
         {
             ClosedApp.Invoke(this, EventArgs.Empty);
         }
         public event EventHandler ClosedApp = App.Current!.OnExitApplicationTriggered;
-        
+
+        private async void OnThemeToggleSwitchClicked(object? sender, RoutedEventArgs e)
+        {
+            Console.WriteLine($@"OnThemeToggleSwitchClicked {RequestedThemeVariant}");
+            if(RequestedThemeVariant == ThemeVariant.Light)
+                RequestedThemeVariant = ThemeVariant.Dark;
+            else if(RequestedThemeVariant == ThemeVariant.Dark)
+                RequestedThemeVariant = ThemeVariant.Light;
+            else if(RequestedThemeVariant == ThemeVariant.Default)
+                RequestedThemeVariant = ThemeVariant.Light;
+            Console.WriteLine($@"OnThemeToggleSwitchClicked {RequestedThemeVariant}");
+        }
     }
 }

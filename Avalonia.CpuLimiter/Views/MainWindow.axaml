@@ -1,5 +1,6 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:view="using:Avalonia.CpuLimiter.Views"
         xmlns:vm="using:Avalonia.CpuLimiter.ViewModels"
         xmlns:lang="using:Avalonia.CpuLimiter.Lang"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -10,12 +11,14 @@
         MinWidth="560"
         x:Class="Avalonia.CpuLimiter.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
+        x:CompileBindings="True"
         Icon="/Assets/avalonia-logo.ico"
         Title="Game Launcher"
 		TransparencyLevelHint="AcrylicBlur"
         Background="Transparent"
         ExtendClientAreaToDecorationsHint="True"
-        WindowStartupLocation="CenterScreen">
+        WindowStartupLocation="CenterScreen"
+        RequestedThemeVariant="Dark">
 
     <Design.DataContext>
         <!-- This only sets the DataContext for the previewer in an IDE,
@@ -71,7 +74,10 @@
 			
 			<!-- content -->
 			<StackPanel>
-				
+				<ToggleSwitch Click="OnThemeToggleSwitchClicked" HorizontalAlignment="Right" Content="Theme"
+				              FontSize="14" FontWeight="DemiBold"
+				              OffContent="Dark" OnContent="Light"
+				              Margin="30 10 30 -10"></ToggleSwitch>
 				<TextBlock FontSize="18" FontWeight="Bold" Foreground="DodgerBlue"
 				           HorizontalAlignment="Center" Padding="20"
 				           Text="Exe File Path"/>
@@ -82,34 +88,14 @@
 					          FontSize="16" MinWidth="400" Height="40"
 					          ItemsSource="{Binding HistoryItems}"
 					          AutoScrollToSelectedItem="True"
-					          PlaceholderText="{Binding GamePath}"
-					          SelectedIndex="{Binding SelectedComboboxIndex}"
-					          SelectionChanged="OnSelectionChanged">
+					          PlaceholderText="{}"
+					          SelectedIndex="{Binding SelectedComboboxIndex}">
+						<!-- SelectionChanged="OnSelectionChanged" -->
 						<ComboBox.ItemTemplate>
+
 							<DataTemplate DataType="vm:HistoryItemViewModel">
-								<Grid ColumnDefinitions="* Auto"
-								      ResourcesChanged="ResourcesChanged"
-								      ToolTip.Tip="{Binding LastUsed}"
-								      RowDefinitions="30" Margin="0" MinWidth="40">
-									<TextBox Grid.Column="0" Text="{Binding Path}"
-									         IsReadOnly="{Binding $parent.IsFocused}"
-									         HorizontalAlignment="Left"
-									         CaretBrush="Transparent"
-									         VerticalContentAlignment="Center"
-									         FontSize="16" Height="20" Margin="0 5 1 5"
-									         Padding="0 0 0 0"
-									         BorderThickness="0"
-									         Background="Transparent"/>
-									<Button Grid.Column="1" Padding="1 10 0 10"
-									        Margin="8 0" Width="38" Height="38"
-									        IsVisible="{Binding }"
-									        Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).RemoveHistoryItemCommand}"
-									        CommandParameter="{Binding .}"
-									        >
-										<PathIcon Data="{StaticResource DeleteRegular}" Padding="0 10" IsVisible="True"/>
-									</Button>
-								</Grid>
-							</DataTemplate>	
+								<view:HistoryComboboxView/>
+							</DataTemplate>
 						</ComboBox.ItemTemplate>
 					</ComboBox>	
 					

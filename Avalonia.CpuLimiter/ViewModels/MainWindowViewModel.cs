@@ -45,9 +45,9 @@ namespace Avalonia.CpuLimiter.ViewModels
                 .Subscribe( x => Console.WriteLine($"Game path: {x}"));
 
             this.WhenAnyValue(x => x.SelectedComboboxIndex)
-                .Subscribe(x => Console.WriteLine($"Selected combobox index: {x}"));
+                .Subscribe(x => Console.WriteLine($"change Selected combobox index: {x}"));
              this.WhenAnyValue(x => x.SelectedHistoryItem)
-                .Subscribe(x => Console.WriteLine($"Selected combobox item: {x}"));
+                .Subscribe(x => Console.WriteLine($"change Selected combobox item: {x}"));
             
             
 
@@ -121,7 +121,7 @@ namespace Avalonia.CpuLimiter.ViewModels
             if (!list.Contains(historyItem.Path))
             {
                 // determine whether the item was already in HistoryItems
-                HistoryItemViewModel.SortHistoryItems(HistoryItems);
+                await HistoryItemViewModel.SortHistoryItems(HistoryItems);
 
                 if (HistoryItems.Count() > 4)
                 {
@@ -160,7 +160,7 @@ namespace Avalonia.CpuLimiter.ViewModels
                 {
                     GamePath = file.Path.LocalPath;
                 
-                    AddHistoryItemAsync(new HistoryItemViewModel()
+                    await AddHistoryItemAsync(new HistoryItemViewModel()
                     {
                         CPUCoreUsed = CpuCoreCount,
                         LastUsed = DateTime.Now,
@@ -220,15 +220,15 @@ namespace Avalonia.CpuLimiter.ViewModels
             {
                 var index = HistoryItems.IndexOf(historyItem);
                 HistoryItems.RemoveAt(index);
-                HistoryItemViewModel.SortHistoryItems(HistoryItems);
-                Console.WriteLine($"Removed history item: {historyItem.Path}");
+                await HistoryItemViewModel.SortHistoryItems(HistoryItems);
+                Console.WriteLine($@"Removed history item: {historyItem.Path}");
                 if(HistoryItems.Count == 0) GamePath = null;
 
             }
             catch (Exception e)
             {
                 Console.WriteLine(e);
-                Console.WriteLine($"Failed to remove history item: {historyItem.Path}");
+                Console.WriteLine($@"Failed to remove history item: {historyItem.Path}");
             }
         }
 
@@ -263,6 +263,7 @@ namespace Avalonia.CpuLimiter.ViewModels
         }
         
         // public bool ButtonVisable => 
+        
 
 
     }
