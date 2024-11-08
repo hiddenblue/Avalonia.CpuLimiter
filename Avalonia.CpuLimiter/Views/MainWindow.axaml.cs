@@ -60,7 +60,6 @@ namespace Avalonia.CpuLimiter.Views
         private async void OnOpenProjButtonClicked(object? sender, RoutedEventArgs e)
         {
             Uri uri = new(_projectsWebsiteUrl);
-            
             await this._openUri(uri);
         }
 

@@ -103,6 +103,11 @@ namespace Avalonia.CpuLimiter
                 _mainWindowViewModel.GamePath = _mainWindowViewModel.HistoryItems[0].Path;
                 
                 await HistoryItemViewModel.RemoveDuplicatedHistoryItemAsync(_mainWindowViewModel.HistoryItems);
+                
+                if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop && desktop.MainWindow is MainWindow mainWindow)
+                {
+                        mainWindow.HistoryComboBox.SelectedIndex = 0;
+                }
             }
         }
         

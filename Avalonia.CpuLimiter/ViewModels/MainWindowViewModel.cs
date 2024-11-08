@@ -10,8 +10,10 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using Avalonia.Controls;
+using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.CpuLimiter.Models;
 using Avalonia.CpuLimiter.Services;
+using Avalonia.CpuLimiter.Views;
 using ArgumentNullException = System.ArgumentNullException;
 
 namespace Avalonia.CpuLimiter.ViewModels
@@ -47,6 +49,7 @@ namespace Avalonia.CpuLimiter.ViewModels
                     if(HistoryItems.Count > 0)
                         GamePath = HistoryItems[SelectedComboboxIndex]?.Path;
                 });
+
 
             if (Design.IsDesignMode)
             {
@@ -149,19 +152,23 @@ namespace Avalonia.CpuLimiter.ViewModels
                 var file = await fileService.OpenFilePickerAsync();
                 if (file != null)
                 {
-                    GamePath = file.Path.LocalPath;
+                    var tempPath = file.Path.LocalPath;
                 
                     await AddHistoryItemAsync(new HistoryItemViewModel()
                     {
                         CPUCoreUsed = CpuCoreCount,
                         LastUsed = DateTime.Now,
-                        Path = GamePath
-                    }); 
-                }
+                        Path = tempPath
+                    });
 
-                // extension judgement
-                if(RuntimeInformation.IsOSPlatform(OSPlatform.Windows) && !GamePath.EndsWith(".exe"))
-                    throw new PlatformNotSupportedException($"File extension: {Path.GetExtension(GamePath)} is not supported on windows");
+                    if (App.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop &&
+                        desktop.MainWindow is MainWindow mainWindow)
+                        mainWindow.HistoryComboBox.SelectedIndex = 0;
+                    
+                    // extension judgement
+                    if(RuntimeInformation.IsOSPlatform(OSPlatform.Windows) && !tempPath.EndsWith(".exe"))
+                        throw new PlatformNotSupportedException($"File extension: {Path.GetExtension(GamePath)} is not supported on windows");
+                }
             }
             catch (Exception e)
             {
