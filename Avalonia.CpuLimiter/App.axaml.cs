@@ -99,15 +99,10 @@ namespace Avalonia.CpuLimiter
                 {
                     _mainWindowViewModel.HistoryItems.Add(new HistoryItemViewModel(item));
                 }
-
-                _mainWindowViewModel.GamePath = _mainWindowViewModel.HistoryItems[0].Path;
                 
                 await HistoryItemViewModel.RemoveDuplicatedHistoryItemAsync(_mainWindowViewModel.HistoryItems);
                 
-                if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop && desktop.MainWindow is MainWindow mainWindow)
-                {
-                        mainWindow.HistoryComboBox.SelectedIndex = 0;
-                }
+                _mainWindowViewModel.ResetIndexAndItems();
             }
         }
         
@@ -129,8 +124,5 @@ namespace Avalonia.CpuLimiter
         // the program calling this Event to exit;
         // App.Current.ExitApplication.invoke
         public event EventHandler? ExitApplication;
-        
-        
-
     }
 }

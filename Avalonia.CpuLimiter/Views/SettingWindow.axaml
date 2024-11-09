@@ -1,0 +1,71 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:lang="using:Avalonia.CpuLimiter.Lang"
+        xmlns:vm="using:Avalonia.CpuLimiter.ViewModels"
+        mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="300"
+        Width="500" Height="300"
+        x:Class="Avalonia.CpuLimiter.Views.SettingWindow"
+        x:DataType="vm:SettingWindowViewModel"
+        Title="SettingWindow"
+        TransparencyLevelHint="AcrylicBlur"
+        Background="Transparent"
+        ExtendClientAreaToDecorationsHint="True"
+        WindowStartupLocation="CenterScreen"
+        RequestedThemeVariant="Dark">
+        
+        <Design.DataContext>
+                <vm:SettingWindowViewModel/>
+        </Design.DataContext>
+        
+        <Panel>
+        <!-- the windows sytle -->
+        <ExperimentalAcrylicBorder IsHitTestVisible="False" Name="Border">
+                <ExperimentalAcrylicBorder.Material>
+                        <ExperimentalAcrylicMaterial 
+                                BackgroundSource="Digger"
+                                TintColor="Black"
+                                TintOpacity="1"
+                                MaterialOpacity="0.25" />
+                </ExperimentalAcrylicBorder.Material>
+        </ExperimentalAcrylicBorder>
+        
+        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Top" Margin="30 10">
+                <Grid RowDefinitions="Auto Auto Auto Auto Auto" ColumnDefinitions="Auto 200" ShowGridLines="False">
+                        <Grid.Styles>
+                                <Style Selector="TextBlock">
+                                        <Setter Property="FontSize" Value="18"></Setter>
+                                        <Setter Property="FontWeight" Value="Bold"></Setter>
+                                        <Setter Property="Height" Value="50"></Setter>
+                                        <Setter Property="Width" Value="250"></Setter>
+                                        <Setter Property="VerticalAlignment" Value="Center"></Setter>
+                                        <Setter Property="HorizontalAlignment" Value="Left"></Setter>
+                                        <Setter Property="Padding" Value="10"></Setter>
+                                </Style>
+                        </Grid.Styles>
+                        <TextBlock Grid.Row="0" Grid.ColumnSpan="2" Text="Settings"
+                                   FontSize="25"
+                                   
+                                   Margin="160 0"></TextBlock>
+                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Startup Theme"/>
+                        <ToggleSwitch Grid.Row="1" Grid.Column="1" Margin="50 0 0 0"
+                                      OnContent="Dark" OffContent="Light"></ToggleSwitch>
+
+                        <TextBlock Grid.Row="2" Grid.Column="0" Text="Startup Decoration"/>
+                        <Slider Grid.Row="2" Grid.Column="1" Width="100" Height="40"
+                                TickFrequency="1" Minimum="0" Maximum="4" Margin="-0 0 200 0"
+                                Value="{Binding StartupDecoration}"> </Slider>
+                        <TextBlock Grid.Row="3" Grid.Column="0" Text="History Limit"></TextBlock>
+                        <StackPanel Grid.Row="3" Grid.Column="1"  Orientation="Horizontal">
+                        <TextBox Text="{Binding HistoryLimit}"
+                                 Margin="50 0 -10 0" Height="40"
+                                 Width="40" FontSize="18"></TextBox>
+                        <ButtonSpinner Grid.Row="3" Grid.Column="1" Height="40"></ButtonSpinner>
+                        </StackPanel>
+                </Grid>
+
+        </StackPanel>
+        
+</Panel>
+</Window>

@@ -4,6 +4,7 @@ using Avalonia.Controls;
 using Avalonia.CpuLimiter.ViewModels;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using Avalonia.Media;
 using Avalonia.Platform.Storage;
 using Avalonia.ReactiveUI;
 using Avalonia.Styling;
@@ -19,6 +20,9 @@ namespace Avalonia.CpuLimiter.Views
         public MainWindow()
         {
             InitializeComponent();
+
+            this.WhenActivated(action =>
+                action(ViewModel!.InteractionSettingWindow.RegisterHandler(DoOpenSettingsWindowAsync)));
             
             this.WhenAnyValue(x => x.HistoryComboBox.SelectionBoxItem)
                 .Subscribe(Console.WriteLine);
@@ -97,7 +101,7 @@ namespace Avalonia.CpuLimiter.Views
         {
             Console.WriteLine(Width);
 
-            var selectedItem = HistoryComboBox.SelectionBoxItem;
+            var selectedItem = HistoryComboBox.SelectedItem as HistoryItemViewModel;
             
             if (selectedItem is HistoryItemViewModel temp)
             {
@@ -118,18 +122,39 @@ namespace Avalonia.CpuLimiter.Views
         }
         public event EventHandler ClosedApp = App.Current!.OnExitApplicationTriggered;
 
-        private async void OnThemeToggleSwitchClicked(object? sender, RoutedEventArgs e)
+        private void OnSwtichDarkThemeButtonClicked(object? sender, RoutedEventArgs e)
         {
-            Console.WriteLine($@"OnThemeToggleSwitchClicked {RequestedThemeVariant}");
+            RequestedThemeVariant = ThemeVariant.Dark;
+            // Border.Material.TintColor = Colors.Black;
+        }
+
+        private void OnSwatchLightThemeButtonClicked(object? sender, RoutedEventArgs e)
+        {
+            RequestedThemeVariant = ThemeVariant.Light;
+            // Border.Material.TintColor = Colors.White;
+            Border.Material.MaterialOpacity = 0.1;
+        }
+
+        public async Task DoOpenSettingsWindowAsync(
+            IInteractionContext<SettingWindowViewModel, SettingWindowViewModel> interaction)
+        {
+            var settingWindow = new SettingWindow();
+            // keep the same theme with mainwindow
+            settingWindow.RequestedThemeVariant = RequestedThemeVariant;
+            settingWindow.Border.Material.TintColor = Border.Material.TintColor;
             
-            if(RequestedThemeVariant == ThemeVariant.Light)
-                RequestedThemeVariant = ThemeVariant.Dark;
-            else if(RequestedThemeVariant == ThemeVariant.Dark)
-                RequestedThemeVariant = ThemeVariant.Light;
-            else if(RequestedThemeVariant == ThemeVariant.Default)
-                RequestedThemeVariant = ThemeVariant.Light;
+            settingWindow.DataContext = interaction.Input;
             
-            Console.WriteLine($@"OnThemeToggleSwitchClicked {RequestedThemeVariant}");
+            var result = await settingWindow.ShowDialog<SettingWindowViewModel?>(this);
+            interaction.SetOutput(result);
+        }
+
+        private void SyncThemeConfig(Window targetWindow)
+        {
+            // keep the same theme with mainwindow
+            targetWindow.RequestedThemeVariant = this.RequestedThemeVariant;
+            // targetWindow.Material.TintColor = this.Border.Material.TintColor;
+            
         }
     }
 }
