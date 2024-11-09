@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Runtime.InteropServices;
 using System.Security.Principal;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Avalonia.CpuLimiter.Models
 {
@@ -28,7 +24,7 @@ namespace Avalonia.CpuLimiter.Models
 
         public static void RunElevated()
         {
-            ProcessStartInfo procInfo = new ProcessStartInfo();
+            ProcessStartInfo procInfo = new();
             procInfo.UseShellExecute = true;
             procInfo.FileName = Environment.ProcessPath;
             procInfo.Verb = "runas";
@@ -70,16 +66,19 @@ namespace Avalonia.CpuLimiter.Models
 
             };
 
-            Process process = new Process { StartInfo = startInfo };
+            Process process = new() { StartInfo = startInfo };
 
 
 
             process.Start();
-            Win32CpuAffinity win32CpuAffinity = new(cpuCoreNum);
 
-            process = win32CpuAffinity.SetProcessWithLimitedCpu(process);
+            ProcessHelper.SetProcessAffinity(process, cpuCoreNum);
 
             Console.WriteLine($"Process started with PID: {process.Id}");
+            
+            string bitMask = ProcessHelper.GetProcessAffinityBitMask(process);
+
+            Console.WriteLine($"The program is running with affinity bitmask: {bitMask}");
 
             process.WaitForExit();
 
