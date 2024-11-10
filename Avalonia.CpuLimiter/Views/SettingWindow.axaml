@@ -32,16 +32,17 @@
         </ExperimentalAcrylicBorder>
         
         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Top" Margin="30 10">
-                <Grid RowDefinitions="Auto Auto Auto Auto Auto" ColumnDefinitions="Auto 200" ShowGridLines="False">
+                <Border BorderBrush="Gray" BorderThickness="0">
+                                        <Grid RowDefinitions="Auto Auto Auto Auto Auto Auto" ColumnDefinitions="Auto 200" ShowGridLines="False">
                         <Grid.Styles>
                                 <Style Selector="TextBlock">
                                         <Setter Property="FontSize" Value="18"></Setter>
                                         <Setter Property="FontWeight" Value="Bold"></Setter>
-                                        <Setter Property="Height" Value="50"></Setter>
-                                        <Setter Property="Width" Value="250"></Setter>
+                                        <Setter Property="Height" Value="48"></Setter>
+                                        <Setter Property="Width" Value="200"></Setter>
                                         <Setter Property="VerticalAlignment" Value="Center"></Setter>
                                         <Setter Property="HorizontalAlignment" Value="Left"></Setter>
-                                        <Setter Property="Padding" Value="10"></Setter>
+                                        <Setter Property="Padding" Value="10 15 10 5"></Setter>
                                 </Style>
                         </Grid.Styles>
                         <TextBlock Grid.Row="0" Grid.ColumnSpan="2" Text="Settings"
@@ -49,23 +50,93 @@
                                    
                                    Margin="160 0"></TextBlock>
                         <TextBlock Grid.Row="1" Grid.Column="0" Text="Startup Theme"/>
-                        <ToggleSwitch Grid.Row="1" Grid.Column="1" Margin="50 0 0 0"
-                                      OnContent="Dark" OffContent="Light"></ToggleSwitch>
+                        <ToggleSwitch Grid.Row="1" Grid.Column="1" Margin="0 0 0 0"
+                                      OnContent="Dark" OffContent="Light"
+                                      Click="OnToggleThemeButtonClicked"></ToggleSwitch>
 
                         <TextBlock Grid.Row="2" Grid.Column="0" Text="Startup Decoration"/>
                         <Slider Grid.Row="2" Grid.Column="1" Width="100" Height="40"
-                                TickFrequency="1" Minimum="0" Maximum="4" Margin="-0 0 200 0"
+                                TickFrequency="1" Minimum="0" Maximum="4" Margin="-10 0 200 0"
                                 Value="{Binding StartupDecoration}"> </Slider>
                         <TextBlock Grid.Row="3" Grid.Column="0" Text="History Limit"></TextBlock>
                         <StackPanel Grid.Row="3" Grid.Column="1"  Orientation="Horizontal">
                         <TextBox Text="{Binding HistoryLimit}"
-                                 Margin="50 0 -10 0" Height="40"
+                                 Margin="0 0 -10 0" Height="40"
                                  Width="40" FontSize="18"></TextBox>
                         <ButtonSpinner Grid.Row="3" Grid.Column="1" Height="40"></ButtonSpinner>
                         </StackPanel>
+                        <TextBlock Grid.Row="4" Grid.Column="0" Text="Theme Color" ></TextBlock>
+                        <StackPanel Grid.Row="4" Grid.Column="1" Orientation="Vertical">
+                                <Slider Name="ColorSlider" Width="245" Margin="0 -10 10 -20" TickFrequency="1"
+                                        Minimum="0" Maximum="15" TickPlacement="TopLeft"
+                                        IsSnapToTickEnabled="True"
+                                        Value="{Binding ColorDigital}"
+                                        ValueChanged="OnRefreshThemeColor"
+                                        HorizontalAlignment="Left">
+                                        <Slider.Styles>
+                                                <Style Selector="Slider">
+                                                        <Style Selector="^ Thumb">
+                                                                <Setter Property="Foreground" Value="Green"></Setter>
+                                                                <Setter Property="Background" Value="Orange"></Setter>
+                                                                <!-- <Style Selector="Ellipse"> -->
+                                                                <!--     <Setter Property="Fill" Value="Purple"></Setter> -->
+                                                                <!-- </Style> -->
+                                                        </Style>
+                                                </Style>
+                                        </Slider.Styles>
+                                </Slider> 
+                                <StackPanel  Orientation="Horizontal" Margin="0 10 0 10">
+                                <StackPanel.Styles>
+                                        <Style Selector="Rectangle">
+                                                <Setter Property="Width" Value="15"></Setter>
+                                                <Setter Property="Height" Value="15"></Setter>
+                                        </Style>
+                                </StackPanel.Styles>
+                                        <Rectangle Fill="{Binding ColorCollection[0].Hex}"></Rectangle>
+                                        <Rectangle Fill="{Binding ColorCollection[1].Hex}"></Rectangle>
+                                        <Rectangle Fill="{Binding ColorCollection[2].Hex}"></Rectangle>
+                                        <Rectangle Fill="{Binding ColorCollection[3].Hex}"></Rectangle>
+                                        <Rectangle Fill="{Binding ColorCollection[4].Hex}"></Rectangle>
+                                        <Rectangle Fill="{Binding ColorCollection[5].Hex}"></Rectangle>
+                                        <Rectangle Fill="{Binding ColorCollection[6].Hex}"></Rectangle>
+                                        <Rectangle Fill="{Binding ColorCollection[7].Hex}"></Rectangle>
+                                        <!-- <Rectangle Fill="{Binding ColorCollection[8].Hex}"></Rectangle> -->
+                                        <!-- <Rectangle Fill="{Binding ColorCollection[9].Hex}"></Rectangle> -->
+                                        <!-- <Rectangle Fill="{Binding ColorCollection[10].Hex}"></Rectangle> -->
+                                        <Rectangle Fill="{Binding ColorCollection[8].Hex}"></Rectangle>
+                                        <Rectangle Fill="{Binding ColorCollection[9].Hex}"></Rectangle>
+                                        <Rectangle Fill="{Binding ColorCollection[10].Hex}"></Rectangle>
+                                        <Rectangle Fill="{Binding ColorCollection[11].Hex}"></Rectangle>
+                                        <Rectangle Fill="{Binding ColorCollection[12].Hex}"></Rectangle>
+                                        <Rectangle Fill="{Binding ColorCollection[13].Hex}"></Rectangle>
+                                        <Rectangle Fill="{Binding ColorCollection[14].Hex}"></Rectangle>
+                                        <Rectangle Fill="{Binding ColorCollection[15].Hex}"></Rectangle>                       
+                        </StackPanel>
+                        </StackPanel>
+    
+                        <Button Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" Content="Save"
+                                FontSize="16" FontWeight="Bold" Width="70"
+                                Height="36"
+                                Margin="-40 0 40 0 "
+                                Opacity="0.6"
+                                Background="Silver"
+                                BorderBrush="Gray"
+                                BorderThickness="1"
+                                HorizontalAlignment="Center"
+                                HorizontalContentAlignment="Center"
+                                VerticalContentAlignment="Center">
+                                <Button.Styles>
+                                        <!-- <Style Selector="Button[IsFocused=True] ContentPresenter#PART_ContentPresenter "> -->
+                                        <!--         <Setter Property="BorderBrush" Value="Gray"></Setter> -->
+                                        <!--         <Setter Property="BorderThickness" Value="1"></Setter> -->
+                                        <!-- </Style> -->
+                                </Button.Styles>                
+                        </Button>
                 </Grid>
+                </Border>
 
         </StackPanel>
+        <TextBlock Name="AUX" Text="{Binding ColorDigital }" IsVisible="False"></TextBlock>
         
 </Panel>
 </Window>
