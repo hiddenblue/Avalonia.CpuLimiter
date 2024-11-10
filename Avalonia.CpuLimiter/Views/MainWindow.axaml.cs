@@ -56,6 +56,9 @@ namespace Avalonia.CpuLimiter.Views
         private void OnAboutWindowButtonClicked(object? sender, RoutedEventArgs e)
         {
             AboutWindow aboutWindow = AboutWindow.GetInstance();
+            // keep the same theme with mainwindow
+            aboutWindow.RequestedThemeVariant = RequestedThemeVariant;
+            aboutWindow.Border.Material.TintColor = Border.Material.TintColor;
             aboutWindow.Show();
         }
         
@@ -133,6 +136,16 @@ namespace Avalonia.CpuLimiter.Views
             RequestedThemeVariant = ThemeVariant.Light;
             // Border.Material.TintColor = Colors.White;
             Border.Material.MaterialOpacity = 0.1;
+        }
+
+        private void OnToggleThemeButtonClicked(object? sender, RoutedEventArgs e)
+        {
+            if (RequestedThemeVariant == ThemeVariant.Dark)
+                RequestedThemeVariant = ThemeVariant.Light;
+            else
+            {
+                RequestedThemeVariant = ThemeVariant.Dark;
+            }
         }
 
         public async Task DoOpenSettingsWindowAsync(
