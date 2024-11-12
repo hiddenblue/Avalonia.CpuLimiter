@@ -20,7 +20,7 @@ public partial class SettingWindow : Window
 
         if (Design.IsDesignMode)
         {
-            Border.Material.TintColor = Colors.SkyBlue;
+            SettingBorder.Material.TintColor = Colors.SkyBlue;
         }
 
         // this.WhenAnyValue(x => x.ColorSlider.Value)
@@ -32,7 +32,7 @@ public partial class SettingWindow : Window
     {
         int colorIndex = (int)e.NewValue;
 
-        Border.Material.TintColor = CustomColors[colorIndex].Color;
+        SettingBorder.Material.TintColor = CustomColors[colorIndex].Color;
     }
 
 

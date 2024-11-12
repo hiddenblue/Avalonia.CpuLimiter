@@ -1,38 +1,26 @@
 using System.Collections.ObjectModel;
 using Avalonia.Controls;
+using Avalonia.CpuLimiter.Models;
 using Avalonia.Media;
+using Avalonia.Styling;
 using ReactiveUI;
 
 namespace Avalonia.CpuLimiter.ViewModels;
 
-public class CustomColor
-{
-    public string Hex { get; }
-    public Color Color { get; }
 
-    public CustomColor(string hex)
-    {
-        Hex = hex;
-        Color = Color.Parse(hex);
-    }
-}
-
-public enum StartupDecoration
-{
-    FluentTheme,
-    SimpleTheme,
-    // extend
-}
 
 public class SettingWindowViewModel : ViewModelBase
 {
+
     public SettingWindowViewModel()
     {
-        HistoryLimit = 5;
-        // this.WhenAnyValue(x => x._colorDigital)
-        //     .Subscribe()
-
-
+        if (App.Current.ConfigModel is MyConfigModel configModel)
+        {
+            HistoryLimit = configModel.HistoryLimit;
+            // ColorDigital = configModel.
+            // StartupCulture = configModel.StartupCultureConfig;
+            // ThemeVariant = configModel.ThemeVariantConfig;
+        }
     }
 
 
@@ -65,6 +53,22 @@ public class SettingWindowViewModel : ViewModelBase
     {
         get => _colorDigital;
         set => this.RaiseAndSetIfChanged(ref _colorDigital, value);
+    }
+
+    private string _startupCulture;
+    public string StartupCulture
+    {
+        get => _startupCulture;
+        
+        set => this.RaiseAndSetIfChanged(ref _startupCulture, value);
+    }
+    
+    private ThemeVariant _themeVariant;
+
+    public ThemeVariant ThemeVariant
+    {
+        get => _themeVariant;
+        set => this.RaiseAndSetIfChanged(ref _themeVariant, value);
     }
     
     public ObservableCollection<CustomColor> ColorCollection { get; } = new ObservableCollection<CustomColor>
@@ -99,3 +103,21 @@ public class SettingWindowViewModel : ViewModelBase
     
 }
 
+public class CustomColor
+{
+    public string Hex { get; }
+    public Color Color { get; }
+
+    public CustomColor(string hex)
+    {
+        Hex = hex;
+        Color = Color.Parse(hex);
+    }
+
+    public CustomColor(Color color)
+    {
+        Hex = color.ToString();
+        Color = color;
+    }
+
+}

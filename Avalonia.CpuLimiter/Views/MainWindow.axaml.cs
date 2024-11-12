@@ -8,6 +8,7 @@ using Avalonia.Media;
 using Avalonia.Platform.Storage;
 using Avalonia.ReactiveUI;
 using Avalonia.Styling;
+using Microsoft.Extensions.DependencyInjection;
 using MsBox.Avalonia;
 using MsBox.Avalonia.Dto;
 using MsBox.Avalonia.Enums;
@@ -55,11 +56,9 @@ namespace Avalonia.CpuLimiter.Views
         
         private void OnAboutWindowButtonClicked(object? sender, RoutedEventArgs e)
         {
-            AboutWindow aboutWindow = AboutWindow.GetInstance();
-            // keep the same theme with mainwindow
-            aboutWindow.RequestedThemeVariant = RequestedThemeVariant;
-            aboutWindow.Border.Material.TintColor = Border.Material.TintColor;
+            AboutWindow aboutWindow = App.Current.Services.GetRequiredService<AboutWindow>();
             aboutWindow.Show();
+
         }
         
         // project website button
@@ -151,11 +150,7 @@ namespace Avalonia.CpuLimiter.Views
         public async Task DoOpenSettingsWindowAsync(
             IInteractionContext<SettingWindowViewModel, SettingWindowViewModel> interaction)
         {
-            var settingWindow = new SettingWindow();
-            // keep the same theme with mainwindow
-            settingWindow.RequestedThemeVariant = RequestedThemeVariant;
-            settingWindow.Border.Material.TintColor = Border.Material.TintColor;
-            
+            SettingWindow  settingWindow= App.Current.Services.GetRequiredService<SettingWindow>();
             settingWindow.DataContext = interaction.Input;
             
             var result = await settingWindow.ShowDialog<SettingWindowViewModel?>(this);

@@ -22,25 +22,23 @@ namespace Avalonia.CpuLimiter.ViewModels
 {
     public class MainWindowViewModel : ViewModelBase
     {
-        public MainWindowViewModel()
+        public MainWindowViewModel(IHistoryItemFileService historyItemFileService, IClipBoardService clipBoardService,
+            IFilesService filesService)
         {
-            // if (!Design.IsDesignMode)
-            // {
-            //     if(!AdminRunner.IsRunAsAdmin())
-            //     {
-            //         AdminRunner.RunElevated();
-            //         Environment.Exit(0);
-            //     }
-            // }
-
+            this._historyItemFileService = historyItemFileService;
+            this._clipBoardService = clipBoardService;
+            this._filesService = filesService;
+            
             // ChooseExeFileCommand = ReactiveCommand.CreateFromTask(ChooseExeFile);
             RunGameCommand = ReactiveCommand.CreateFromTask(RunGame, canSave);
             RemoveHistoryItemCommand = ReactiveCommand.CreateFromTask<HistoryItemViewModel>( item => RemoveHistoryItemAsync(item) );
             SaveCommand = ReactiveCommand.CreateFromTask(SaveAsync, canSave);
+            
+            // open setting window with local config model
             OpenSettingWindowCommand = ReactiveCommand.CreateFromTask(async () =>
             {
-                var settingModel = new SettingWindowViewModel();
-                var result = await InteractionSettingWindow.Handle(settingModel);
+                SettingWindowViewModel settingModel = App.Current.Services.GetRequiredService<SettingWindowViewModel>();
+                SettingWindowViewModel? result = await InteractionSettingWindow.Handle(settingModel);
             });
             
             this.WhenAnyValue(x => x.CpuCoreCount)
@@ -58,7 +56,6 @@ namespace Avalonia.CpuLimiter.ViewModels
                         GamePath = HistoryItems[SelectedComboboxIndex]?.Path;
                 });
 
-
             if (Design.IsDesignMode)
             {
                 HistoryItems.Add(new HistoryItemViewModel(new HistoryItem()
@@ -68,23 +65,14 @@ namespace Avalonia.CpuLimiter.ViewModels
                     
                     Path = "~/App_Data/CpuCoreHistory.json"
                 }));
-                HistoryItems.Add(new HistoryItemViewModel(new HistoryItem()
-                {
-                    CPUCoreUsed = 2,
-                    LastUsed = new DateTime(2018, 9, 30),
-                    
-                    Path = "~/App_Data/CpuCoreHistory.json"
-                }));
-                HistoryItems.Add(new HistoryItemViewModel(new HistoryItem()
-                {
-                    CPUCoreUsed = 3,
-                    LastUsed = new DateTime(2018, 9, 30),
-                    
-                    Path = "~/App_Data/CpuCoreHistory.json"
-                }));
                 GamePath = "~/App_Data/CpuCoreHistory.json";
             }
+            
         }
+        
+        private IHistoryItemFileService _historyItemFileService;
+        private IClipBoardService _clipBoardService;
+        private IFilesService _filesService;
 
         public ICommand SaveCommand {get;}
 
@@ -92,7 +80,7 @@ namespace Avalonia.CpuLimiter.ViewModels
         private async Task SaveAsync()
         {
             IEnumerable<HistoryItem> itemToSave = HistoryItems.Select(item => item.GetHistoryItem());
-            await HistoryItemFileService.SaveHistoryToFileAsync(itemToSave);
+            await _historyItemFileService.SaveHistoryToFileAsync(itemToSave);
         }
 
         public async Task RunGame()
@@ -103,8 +91,8 @@ namespace Avalonia.CpuLimiter.ViewModels
                 
             else if (!File.Exists(GamePath) &&  !Directory.Exists(GamePath))
                 throw new FileNotFoundException(nameof(GamePath),$@"Path: '{GamePath}' does not exist.");
-            else
-                AdminRunner.RunAsAdmin(4, GamePath);
+            Console.WriteLine(GamePath);
+            AdminRunner.RunAsAdmin(CpuCoreCount, GamePath);
         }
 
         // public ICommand ChooseExeFileCommand { get; }
@@ -288,9 +276,6 @@ namespace Avalonia.CpuLimiter.ViewModels
             }
         }
         
-        // public bool ButtonVisable => 
-        
-        
         // clipboard command
 
         public IClipBoardService ClipBoardService;
@@ -328,6 +313,7 @@ namespace Avalonia.CpuLimiter.ViewModels
         public void ResetIndexAndItems()
         {
             SelectedHistoryItem = HistoryItems[SelectedComboboxIndex];
+            GamePath = SelectedHistoryItem.Path;
         }
         
         // open the setting window
@@ -336,5 +322,9 @@ namespace Avalonia.CpuLimiter.ViewModels
             new Interaction<SettingWindowViewModel, SettingWindowViewModel?>();
 
         public ICommand OpenSettingWindowCommand { get; }
-    }
+        
+        
+        // config 
+
+        public MyConfigModel MainWindowConfigModel { get; set; } }
 }
