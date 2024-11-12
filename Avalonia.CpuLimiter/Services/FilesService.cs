@@ -1,12 +1,8 @@
-﻿using Avalonia.Controls;
-using Avalonia.Controls.Chrome;
-using Avalonia.Platform.Storage;
+﻿using Avalonia.Platform.Storage;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
 using System.Threading.Tasks;
+using Avalonia.Controls.ApplicationLifetimes;
 
 
 namespace Avalonia.CpuLimiter.Services
@@ -14,11 +10,13 @@ namespace Avalonia.CpuLimiter.Services
     public class FilesService : IFilesService
     {
 
-        private readonly Window _target;
+        private readonly IClassicDesktopStyleApplicationLifetime _desktop;
 
-        public FilesService(Window target)
+        public FilesService(IClassicDesktopStyleApplicationLifetime desktop)
         {
-            _target = target;
+            _desktop = desktop;
+
+            
         }
 
         public async Task<IStorageFile?> OpenFilePickerAsync()
@@ -34,20 +32,27 @@ namespace Avalonia.CpuLimiter.Services
                 options.FileTypeFilter = new FilePickerFileType[] { WinexeFileType };
             }
 
-
-            var files = await _target.StorageProvider.OpenFilePickerAsync(options);
-            return files.Count >= 1 ? files[0] : null;
+            if (_desktop.MainWindow?.StorageProvider is { } storageProvider)
+            {
+                var files = await storageProvider.OpenFilePickerAsync(options);
+                return files.Count >= 1 ? files[0] : null;
+            }
+            throw new NullReferenceException("Missing storageProvider instance.");
         }
 
         public async Task<IStorageFile?> SaveFilePickerAsync()
         {
-            return await _target.StorageProvider.SaveFilePickerAsync(new FilePickerSaveOptions()
+            if (_desktop.MainWindow?.StorageProvider is { } storageProvider)
             {
-                Title = "Save Text File"
-            });
+                return await storageProvider.SaveFilePickerAsync(new FilePickerSaveOptions()
+                {
+                    Title = "Save Text File"
+                });
+            }
+            throw new NullReferenceException("Missing storageProvider instance.");
         }
         
-        public static FilePickerFileType WinexeFileType { get; } = new("Windows exe")
+        public FilePickerFileType WinexeFileType { get; } = new("Windows exe")
         {
             Patterns = new[] { "*.exe" },
         };

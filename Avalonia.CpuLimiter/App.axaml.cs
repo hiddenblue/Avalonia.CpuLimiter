@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
+using Avalonia.CpuLimiter.Config;
 using Avalonia.CpuLimiter.Models;
 
 
@@ -18,51 +19,74 @@ namespace Avalonia.CpuLimiter
     {
         public override void Initialize()
         {
+            //dependency injection and load config.json from file
+            Services = ConfigureServices();
+            ConfigModel = ConfigFileService.LoadConfigAsync();
             AvaloniaXamlLoader.Load(this);
         }
+        
+        public MyConfigModel ConfigModel { get; set; } = null!;
+        public new static App? Current => Application.Current as App; 
+        
+        private MainWindowViewModel _mainWindowViewModel;
+        
+        public ServiceProvider? Services { get; private set; }
 
 
-        private readonly MainWindowViewModel _mainWindowViewModel = new MainWindowViewModel();
+        private ServiceProvider ConfigureServices()
+        {
+            if (ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime desktop)
+                throw new PlatformNotSupportedException();
+            var services = new ServiceCollection();
+            services.AddSingleton<IFilesService, FilesService>(_ => new FilesService(desktop));
+            services.AddSingleton<IClipBoardService, ClipBoardService>(_ => new ClipBoardService(desktop));
+            services.AddSingleton<IHistoryItemFileService, HistoryItemFileService>();
+            
+            services.AddSingleton<MainWindowViewModel>();
+            services.AddSingleton<MainWindow>(sp => new MainWindow(){ DataContext = sp.GetRequiredService<MainWindowViewModel>()});
+            services.AddSingleton<SettingWindowViewModel>();
+            services.AddSingleton<SettingWindow>( _ =>
+            {
+                var settingWindow = new SettingWindow()
+                {
+                    RequestedThemeVariant = ConfigModel.ThemeVariantConfig,
+                    DataContext = Services.GetRequiredService<SettingWindowViewModel>()
+                };
+                settingWindow.SettingBorder.Material.TintColor = ConfigModel.UserColor.Color;
+                return settingWindow;
+            });
+            
+            services.AddTransient<AboutWindow>(_ =>
+            {
+                var aboutWindow = new AboutWindow();
+                aboutWindow.RequestedThemeVariant = ConfigModel.ThemeVariantConfig;
+                aboutWindow.AboutBorder.Material.TintColor = ConfigModel.UserColor.Color;
+                // to do theme related
+                return aboutWindow;
+            });
+            return services.BuildServiceProvider();
+        }
 
         public override async void OnFrameworkInitializationCompleted()
         {
-            Lang.Resources.Culture = new CultureInfo("zh-hans-cn");
+            if(!string.IsNullOrWhiteSpace(ConfigModel.StartupCultureConfig))
+                Lang.Resources.Culture = new CultureInfo(ConfigModel.StartupCultureConfig);
             
-            
-            if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+            if(ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             {
-                desktop.MainWindow = new MainWindow
-                {
-                    DataContext = _mainWindowViewModel
-                };
-
-                var services = new ServiceCollection();
-
-                services.AddSingleton<IFilesService>(x => new FilesService(desktop.MainWindow));
-                services.AddSingleton<IClipBoardService>(x => new ClipBoardService(desktop));
-                _mainWindowViewModel.ClipBoardService = services.BuildServiceProvider().GetService<IClipBoardService>()!;
-
-                Services = services.BuildServiceProvider();
-
+                desktop.MainWindow = Services!.GetService<MainWindow>();
+                _mainWindowViewModel = Services.GetRequiredService<MainWindowViewModel>();
+            
                 desktop.ShutdownRequested += DesktopOnShutdownRequested;
 
                 ExitApplication += OnExitApplicationTriggered;
             }
-
             base.OnFrameworkInitializationCompleted();
             
             // init and load from config.json
-
-            await InitMainWindowViewModel();
+            await LoadHistoryItemToMainVM();
         }
 
-        // services provider 
-        // dependency injection 
-
-        public new static App? Current => Application.Current as App;
-
-        public IServiceProvider? Services { get; private set; }
-        
         private bool _canClose;
 
         // save config to local json file
@@ -74,8 +98,8 @@ namespace Avalonia.CpuLimiter
             if(!_canClose)
             {
                 IEnumerable<HistoryItem> itemToSave = _mainWindowViewModel.HistoryItems.Select(item => item.GetHistoryItem());
-
-                await HistoryItemFileService.SaveHistoryToFileAsync(itemToSave);
+                var historyItemFileService = Services!.GetService<IHistoryItemFileService>();
+                await historyItemFileService.SaveHistoryToFileAsync(itemToSave);
                 
                 _canClose = true;
 
@@ -87,11 +111,11 @@ namespace Avalonia.CpuLimiter
         }
         
         
-        // load config from json
-
-        private async Task InitMainWindowViewModel()
+        // load data from history.json
+        private async Task LoadHistoryItemToMainVM()
         {
-            IEnumerable<HistoryItem>? loadItem = await HistoryItemFileService.LoadHistoryFromFileAsync();
+            var historyItemFileService = Services!.GetRequiredService<IHistoryItemFileService>();
+            IEnumerable<HistoryItem>? loadItem = await historyItemFileService.LoadHistoryFromFileAsync();
 
             if (loadItem != null && loadItem.Count() > 0)
             {
@@ -109,7 +133,6 @@ namespace Avalonia.CpuLimiter
         public async void OnExitButtonClicked(object? sender, EventArgs eventArgs)
         {
             ExitApplication?.Invoke(this, EventArgs.Empty);
-
         }
 
         public  void OnExitApplicationTriggered(object? sender, EventArgs eventArgs)
