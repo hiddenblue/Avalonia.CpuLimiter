@@ -8,6 +8,7 @@ using Avalonia.Media;
 using Avalonia.Platform.Storage;
 using Avalonia.ReactiveUI;
 using Avalonia.Styling;
+using DynamicData;
 using Microsoft.Extensions.DependencyInjection;
 using MsBox.Avalonia;
 using MsBox.Avalonia.Dto;
@@ -35,6 +36,19 @@ namespace Avalonia.CpuLimiter.Views
                     Console.WriteLine($@"history combobox selected value {x}");
                     AutoAlterScreenWidth();
                 });
+
+            this.WhenAnyValue(view => view.RequestedThemeVariant)
+                .Subscribe( _ =>
+                {
+                    if (RequestedThemeVariant == ThemeVariant.Dark || RequestedThemeVariant == ThemeVariant.Default)
+                        ToggleThemeButton.IsChecked = true;
+                    else
+                    {
+                        ToggleThemeButton.IsChecked = false;
+                    }
+                });
+            
+            slider.Maximum = Environment.ProcessorCount;
         }
 
         private readonly string _docsWebsiteUrl = "https://github.com/hiddenblue/Avalonia.CpuLimiter";
@@ -91,7 +105,6 @@ namespace Avalonia.CpuLimiter.Views
 
         }
 
-        // Add a scroll event to change slider value. the unit change is 1
         private void  OnPointerWheelChanged(object sender, PointerWheelEventArgs e)
         {
             Console.WriteLine(e.Delta);
@@ -134,7 +147,7 @@ namespace Avalonia.CpuLimiter.Views
         {
             RequestedThemeVariant = ThemeVariant.Light;
             // Border.Material.TintColor = Colors.White;
-            Border.Material.MaterialOpacity = 0.1;
+            MainBorder.Material.MaterialOpacity = 0.1;
         }
 
         private void OnToggleThemeButtonClicked(object? sender, RoutedEventArgs e)
@@ -157,12 +170,10 @@ namespace Avalonia.CpuLimiter.Views
             interaction.SetOutput(result);
         }
 
-        private void SyncThemeConfig(Window targetWindow)
+        private void RefreshThemeColor(CustomColor userColor)
         {
-            // keep the same theme with mainwindow
-            targetWindow.RequestedThemeVariant = this.RequestedThemeVariant;
-            // targetWindow.Material.TintColor = this.Border.Material.TintColor;
-            
+            this.MainBorder.Material.TintColor = userColor.Color;
         }
+
     }
 }

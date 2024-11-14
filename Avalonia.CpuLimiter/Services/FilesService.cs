@@ -23,7 +23,8 @@ namespace Avalonia.CpuLimiter.Services
         {
             FilePickerOpenOptions options = new()
             {
-                Title = "Select executable file",
+                // Title = "Select executable file",
+                Title = $@"{Lang.Resources.FilePickerTitle}",
                 AllowMultiple = false,
             };
 
@@ -46,7 +47,7 @@ namespace Avalonia.CpuLimiter.Services
             {
                 return await storageProvider.SaveFilePickerAsync(new FilePickerSaveOptions()
                 {
-                    Title = "Save Text File"
+                    Title = $"{Lang.Resources.SaveFilePickerTitle}"
                 });
             }
             throw new NullReferenceException("Missing storageProvider instance.");

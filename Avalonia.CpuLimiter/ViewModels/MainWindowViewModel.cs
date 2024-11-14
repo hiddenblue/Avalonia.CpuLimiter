@@ -22,6 +22,51 @@ namespace Avalonia.CpuLimiter.ViewModels
 {
     public class MainWindowViewModel : ViewModelBase
     {
+        // just for preview don't use it.
+        public MainWindowViewModel()
+        {
+            // design mode non-parameter constructor
+            // ChooseExeFileCommand = ReactiveCommand.CreateFromTask(ChooseExeFile);
+            RunGameCommand = ReactiveCommand.CreateFromTask(RunGame, canSave);
+            RemoveHistoryItemCommand = ReactiveCommand.CreateFromTask<HistoryItemViewModel>( item => RemoveHistoryItemAsync(item) );
+            SaveCommand = ReactiveCommand.CreateFromTask(SaveAsync, canSave);
+            
+            // open setting window with local config model
+            OpenSettingWindowCommand = ReactiveCommand.CreateFromTask(async () =>
+            {
+                SettingWindowViewModel settingModel = App.Current.Services.GetRequiredService<SettingWindowViewModel>();
+                SettingWindowViewModel? result = await InteractionSettingWindow.Handle(settingModel);
+            });
+            
+            this.WhenAnyValue(x => x.CpuCoreCount)
+                .Subscribe(x => Console.WriteLine($@"CPU core count: {x}"));
+            
+            this.WhenAnyValue(x => x.GamePath)
+                .Subscribe( x => Console.WriteLine($@"Game path: {x}"));
+        
+            this.WhenAnyValue(x => x.SelectedComboboxIndex)
+                .Subscribe(x =>
+                {
+                    Console.WriteLine($@"change Selected combobox index: {x}");
+                    // refresh gamepath when selectedindex is not -1
+                    if(HistoryItems.Count > 0 ? true : false)
+                        GamePath = HistoryItems[SelectedComboboxIndex]?.Path;
+                });
+        
+            if (Design.IsDesignMode)
+            {
+                HistoryItems.Add(new HistoryItemViewModel(new HistoryItem()
+                {
+                    CPUCoreUsed = 1,
+                    LastUsed = new DateTime(2018, 9, 30),
+                    
+                    Path = "~/App_Data/CpuCoreHistory.json"
+                }));
+                GamePath = "~/App_Data/CpuCoreHistory.json";
+            }
+        }
+        
+        // real constructor
         public MainWindowViewModel(IHistoryItemFileService historyItemFileService, IClipBoardService clipBoardService,
             IFilesService filesService)
         {
@@ -55,6 +100,7 @@ namespace Avalonia.CpuLimiter.ViewModels
                     if(HistoryItems.Count > 0 ? true : false)
                         GamePath = HistoryItems[SelectedComboboxIndex]?.Path;
                 });
+            this.HistoryLimit = App.Current.ConfigModel.HistoryLimit;
 
             if (Design.IsDesignMode)
             {
@@ -113,6 +159,8 @@ namespace Avalonia.CpuLimiter.ViewModels
                 this.RaiseAndSetIfChanged(ref _gamePath, value);
             }
         }
+        
+        public int HistoryLimit { get; set; }
 
         private async Task AddHistoryItemAsync(HistoryItemViewModel historyItem)
         {
@@ -122,9 +170,9 @@ namespace Avalonia.CpuLimiter.ViewModels
                 // determine whether the item was already in HistoryItems
                 await HistoryItemViewModel.SortHistoryItems(HistoryItems);
 
-                if (HistoryItems.Count() > 4)
+                if (HistoryItems.Count() > HistoryLimit)
                 {
-                    var items = HistoryItems.Skip(0).Take(4).ToList();
+                    var items = HistoryItems.Skip(0).Take(HistoryLimit).ToList();
                     HistoryItems.Clear();
                     
                     foreach (var item in items)

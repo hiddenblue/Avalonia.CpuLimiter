@@ -10,7 +10,6 @@ namespace Avalonia.CpuLimiter.Services;
 
 [JsonSourceGenerationOptions(WriteIndented = true)]
 [JsonSerializable(typeof(IEnumerable<HistoryItem>))]
-[JsonSerializable(typeof(MyConfigModel))]
 internal partial class SourceGenerationContext : JsonSerializerContext
 {
 

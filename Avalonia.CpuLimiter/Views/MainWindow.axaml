@@ -5,7 +5,7 @@
         xmlns:lang="using:Avalonia.CpuLimiter.Lang"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="650" d:DesignHeight="450"
+        mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="420"
 		Width= "600" Height="420"
         MaxWidth="900"
         MinWidth="560"
@@ -28,7 +28,7 @@
 
 	<Panel>
 		<!-- the windows sytle -->
-		<ExperimentalAcrylicBorder IsHitTestVisible="False" Name="Border">
+		<ExperimentalAcrylicBorder IsHitTestVisible="False" Name="MainBorder">
 			<ExperimentalAcrylicBorder.Material>
 				<ExperimentalAcrylicMaterial 
 					 BackgroundSource="Digger"
@@ -62,7 +62,8 @@
 							<TextBlock Text="{x:Static lang:Resources.OpenButton}"/>
 						</MenuItem.Header>
 					</MenuItem>
-						<MenuItem Name="SaveButton" Header="{x:Static lang:Resources.SaveButton}" Classes="Menu2" Command="{Binding SaveCommand}"
+						<MenuItem Name="SaveButton" Header="{x:Static lang:Resources.SaveButton}" Classes="Menu2"
+						          Command="{Binding SaveCommand}"
 						          InputGesture="Ctrl+S" HotKey="Ctrl+S"/>
 					<Separator/>
 					<MenuItem Name="ExitButton" Header="{x:Static lang:Resources.ExitButton}" Classes="Menu2" Click="OnExitButtonClicked"
@@ -139,13 +140,7 @@
 						</Style>
 					</Grid.Styles>
 
-					<StackPanel Orientation="Horizontal">
-						<!-- <ToggleSwitch  Grid.Row="0" Grid.Column="0" Name="LanguageSwitch" -->
-						<!--                Content="{x:Static lang:Resources.LanguageSwitch}" -->
-						<!--                FontSize="15" FontWeight="DemiBold" -->
-						<!--                OnContent="" OffContent=""> -->
-						<!-- </ToggleSwitch>	 -->
-						<ToggleButton Name="ToggleThemeButton" Padding="10 7 10 5" Width="50" Height="36" Click="OnToggleThemeButtonClicked">
+						<ToggleButton Name="ToggleThemeButton" Padding="10 7 10 5" Width="50" Height="36" Click="OnToggleThemeButtonClicked" >
 							<StackPanel>
 								<PathIcon Classes="sun" IsVisible="{Binding !#ToggleThemeButton.IsChecked}" Data="{StaticResource WeatherSunnyRegular}"></PathIcon>
 								<PathIcon Classes="moon" IsVisible="{Binding #ToggleThemeButton.IsChecked}" Data="{StaticResource WeatherMoonRegular}"></PathIcon>
@@ -180,17 +175,16 @@
 								</Style>   
 							</ToggleButton.Styles>
 						</ToggleButton>
-					</StackPanel>
 				</Grid>
 
-				<TextBlock Name="ExeFileBlock" FontSize="19" FontWeight="Bold" Foreground="DodgerBlue"
+				<TextBlock Name="ExeFileBlock" FontSize="19" FontWeight="Bold" Foreground="White"
 				           HorizontalAlignment="Center" Padding="20"
 				           Text="{x:Static lang:Resources.ExeFileBlock}"/>
 
 				<StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Tag="stackpanel2">
 					<!-- SelectedItem="{Binding HistoryItems[0]}" -->
-					<ComboBox Name="HistoryComboBox" HorizontalAlignment="Center" Padding="5 0 1 2"
-					          FontSize="17" MinWidth="400" Height="40" MaxWidth="700"
+					<ComboBox Name="HistoryComboBox" HorizontalAlignment="Center" Padding="5 0 1 0"
+					          FontSize="17" MinWidth="400" Height="45" MaxWidth="700"
 					          ItemsSource="{Binding HistoryItems}"
 					          AutoScrollToSelectedItem="True"
 					          SelectedItem="{Binding SelectedHistoryItem }"
@@ -203,9 +197,12 @@
 						</ComboBox.ItemTemplate>
 					</ComboBox>	
 					
-					<Button Name="OpenFilePickerButton" Content=" ... " HorizontalAlignment="Center"
+					<Button Name="OpenFilePickerButton" Content=". . ." HorizontalAlignment="Center"
+					        FontSize="18"
 					        Background="Beige" Foreground="Black"
-					        Margin="5 0 0 0" Padding="10" Width="40"
+					        Opacity="0.8"
+					        Margin="5 0 0 0" Padding="10" Width="45"
+					        Height="{Binding #HistoryComboBox.Height }"
 					        BorderBrush="Black"
 					        ToolTip.Tip="Open the file explorer to select"
 					        Command="{Binding ChooseExeFile}">
@@ -236,9 +233,11 @@
 				<Button FontStyle="Normal" Foreground="Orange" 
 				        Command="{Binding RunGameCommand}"
 				        HorizontalAlignment="Center" VerticalAlignment="Center"
-				        FontSize="17" FontWeight="Bold"
-				        Margin="10 20" Padding="14"
-				        CornerRadius="8"
+				        HorizontalContentAlignment="Center"
+				        VerticalContentAlignment="Center"
+				        FontSize="20" FontWeight="Bold"
+				        Margin="10 25" Padding="12 15"
+				        CornerRadius="5"
 				        ToolTip.Tip="Run the selected Game"
 				        Content="{x:Static lang:Resources.LaunchGameButton}"
 				        HotKey="Enter">
