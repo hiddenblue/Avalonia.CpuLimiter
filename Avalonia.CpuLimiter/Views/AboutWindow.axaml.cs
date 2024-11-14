@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.CpuLimiter.Models;
 using Avalonia.CpuLimiter.Services;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
@@ -17,17 +18,13 @@ public partial class AboutWindow : Window
     public AboutWindow()
     {
         InitializeComponent();
+        AppName.Text = AboutInfo.AppName;
+        AppVersion.Text = AboutInfo.AppVersion;
+        AuthorName.Text = AboutInfo.Author;
+        DotnetVersion.Text = AboutInfo.DotnetVersion;
+        AvaloniaUIVersion.Text = AboutInfo.AvaloniaUiVersion;
+        License.Text = AboutInfo.License;
     }
-
-    // Add singleton AboutWindow
-    public static AboutWindow Instance;
-    
-    public static AboutWindow GetInstance()
-    {
-        Instance = new AboutWindow();
-        return Instance;
-    }
-
     private async void OnCloseButtonClick(object? sender, RoutedEventArgs e)
     {
         this.Close();
@@ -42,11 +39,19 @@ public partial class AboutWindow : Window
         this.Close();
     }
 
-    private readonly string _aboutText = $"Game Launcher: 1.0\n" + 
-                                        $"Author: Hiddenblue\n" +
-                                        $"Dotnet version: 8.0\n" +
-                                        $"AvaloniaUI version: 11.20\n" +
-                                        $"License: GPLV2";
-    
-    
+    private readonly string _aboutText = $"{AboutInfo.AppName}: {AboutInfo.AppVersion}\n" + 
+                                        $"Author: {AboutInfo.Author}\n" +
+                                        $"Dotnet version: {AboutInfo.DotnetVersion}\n" +
+                                        $"AvaloniaUI version: {AboutInfo.AvaloniaUiVersion}\n" +
+                                        $"License: {AboutInfo.License}";
+
+    /***************************************/
+
+    private void RefreshConfig()
+    {
+        AboutBorder.Material.TintColor = App.Current.ConfigModel.UserColor.Color;
+        
+    }
+        /*****************************************/
+
 }

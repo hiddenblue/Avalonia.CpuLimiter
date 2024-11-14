@@ -2,27 +2,27 @@
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Avalonia.Controls.ApplicationLifetimes;
-using Avalonia.Input.Platform;
+using Avalonia.CpuLimiter.Views;
 
 namespace Avalonia.CpuLimiter.Services;
 
 public class ClipBoardService : IClipBoardService
 {
 
-    public ClipBoardService(IApplicationLifetime app)
+    public ClipBoardService(IClassicDesktopStyleApplicationLifetime desktop)
     {
-        if (app is not IClassicDesktopStyleApplicationLifetime desktop|| desktop.MainWindow?.Clipboard is not  {} provider)
-            throw new NullReferenceException("Missing Clipboard instance"); 
-        _provider = provider;
+        _desktop = desktop;
     }
 
-    private readonly IClipboard _provider;
+    private readonly IClassicDesktopStyleApplicationLifetime _desktop;
 
     public  async Task SetClipboardTextAsync(string text)
     {
         try
         {
-            await _provider.SetTextAsync(text);
+            if(_desktop.MainWindow is  MainWindow mainWindow  && mainWindow.Clipboard is {} clipboard)
+                await clipboard.SetTextAsync(text);
+            throw new InvalidOperationException("Cannot set clipboard text on this window.");
         }
         catch (Exception e)
         {
@@ -35,13 +35,18 @@ public class ClipBoardService : IClipBoardService
     {
         try
         {
-            var text =  await _provider.GetTextAsync();
-            text = text.Trim();
-            // remove the quote symbol
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-                text = text.TrimStart('\"').TrimEnd('\"');
-            text = text.Trim();
-            return text;
+            if (_desktop.MainWindow is MainWindow mainWindow && mainWindow.Clipboard is { } clipboard)
+            {
+                var text =  await clipboard.GetTextAsync();
+                text = text!.Trim();
+            
+                // remove the quote symbol in Windows
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                    text = text.TrimStart('\"').TrimEnd('\"');
+                return text.Trim();
+            }
+            throw new InvalidOperationException("Cannot get clipboard text on this window.");
+            
         }
         catch (Exception e)
         {

@@ -23,13 +23,67 @@
     <data name="SettingButton" xml:space="preserve">
         <value>设置</value>
     </data>
-    <data name="LaunchGameButton" xml:space="preserve">
-        <value>启 动 程 序</value>
-    </data>
     <data name="HelpButton" xml:space="preserve">
         <value>帮助</value>
     </data>
+    <data name="OpenButton" xml:space="preserve">
+        <value>打开</value>
+    </data>
+    <data name="SaveButton" xml:space="preserve">
+        <value>保存</value>
+    </data>
+    <data name="ExitButton" xml:space="preserve">
+        <value>退出</value>
+    </data>
+    <data name="CutButton" xml:space="preserve">
+        <value>剪切</value>
+    </data>
+    <data name="CopyButton" xml:space="preserve">
+        <value>复制</value>
+    </data>
+    <data name="PasteButton" xml:space="preserve">
+        <value>粘贴</value>
+    </data>
+    <data name="ConfigButton" xml:space="preserve">
+        <value>配置</value>
+    </data>
+    <data name="LaunchButton" xml:space="preserve">
+        <value>启动</value>
+    </data>
+    <data name="DocsButton" xml:space="preserve">
+        <value>文档</value>
+    </data>
+    <data name="ProjButton" xml:space="preserve">
+        <value>项目网站</value>
+    </data>
+    <data name="AboutButton" xml:space="preserve">
+        <value>关于</value>
+    </data>
     <data name="CPUCoreNumberTextBlock" xml:space="preserve">
         <value>CPU 核心数量</value>
+    </data>
+    <data name="LaunchGameButton" xml:space="preserve">
+    <value> 启 动 程 序 </value>
+    </data>
+    <data name="ExeFileBlock" xml:space="preserve">
+        <value>可 执 行 文 件</value>
+    </data>
+    <data name="ThemeSwitch" xml:space="preserve">
+        <value>主题</value>
+    </data>
+    <data name="LanguageSwitch" xml:space="preserve">
+        <value>语言</value>
+    </data>
+    <data name="DarkThemeButton" xml:space="preserve">
+        <value>黑暗</value>
+    </data>
+    <data name="LightThemeButton" xml:space="preserve">
+        <value>明亮</value>
+    </data>
+    <data name="CopyCloseButton" xml:space="preserve">
+        <value>复制并关闭</value>
+    </data>
+    <data name="CloseButton" xml:space="preserve">
+        <value>关闭</value>
     </data>
 </root>

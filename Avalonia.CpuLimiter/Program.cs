@@ -2,6 +2,7 @@
 using Avalonia.ReactiveUI;
 using System;
 using Avalonia.Logging;
+using Avalonia.Media;
 
 namespace Avalonia.CpuLimiter
 {
@@ -18,8 +19,16 @@ namespace Avalonia.CpuLimiter
         public static AppBuilder BuildAvaloniaApp()
             => AppBuilder.Configure<App>()
                 .UsePlatformDetect()
-                .WithInterFont()
+                // .WithInterFont()
+                .ConfigureFonts(manager =>
+                {
+                    manager.AddFontCollection(new HarmonyOSFontCollection());
+                })
+                .With(new FontManagerOptions(){
+                    DefaultFamilyName = "fonts:HarmonyOS Sans#HarmonyOS Sans SC"})                
                 .LogToTrace(LogEventLevel.Debug)
                 .UseReactiveUI();
     }
 }
+
+

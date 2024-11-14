@@ -4,9 +4,11 @@ using Avalonia.Controls;
 using Avalonia.CpuLimiter.ViewModels;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using Avalonia.Media;
 using Avalonia.Platform.Storage;
 using Avalonia.ReactiveUI;
 using Avalonia.Styling;
+using Microsoft.Extensions.DependencyInjection;
 using MsBox.Avalonia;
 using MsBox.Avalonia.Dto;
 using MsBox.Avalonia.Enums;
@@ -19,6 +21,9 @@ namespace Avalonia.CpuLimiter.Views
         public MainWindow()
         {
             InitializeComponent();
+
+            this.WhenActivated(action =>
+                action(ViewModel!.InteractionSettingWindow.RegisterHandler(DoOpenSettingsWindowAsync)));
             
             this.WhenAnyValue(x => x.HistoryComboBox.SelectionBoxItem)
                 .Subscribe(Console.WriteLine);
@@ -51,8 +56,9 @@ namespace Avalonia.CpuLimiter.Views
         
         private void OnAboutWindowButtonClicked(object? sender, RoutedEventArgs e)
         {
-            AboutWindow aboutWindow = AboutWindow.GetInstance();
+            AboutWindow aboutWindow = App.Current.Services.GetRequiredService<AboutWindow>();
             aboutWindow.Show();
+
         }
         
         // project website button
@@ -60,7 +66,6 @@ namespace Avalonia.CpuLimiter.Views
         private async void OnOpenProjButtonClicked(object? sender, RoutedEventArgs e)
         {
             Uri uri = new(_projectsWebsiteUrl);
-            
             await this._openUri(uri);
         }
 
@@ -98,7 +103,7 @@ namespace Avalonia.CpuLimiter.Views
         {
             Console.WriteLine(Width);
 
-            var selectedItem = HistoryComboBox.SelectionBoxItem;
+            var selectedItem = HistoryComboBox.SelectedItem as HistoryItemViewModel;
             
             if (selectedItem is HistoryItemViewModel temp)
             {
@@ -119,18 +124,45 @@ namespace Avalonia.CpuLimiter.Views
         }
         public event EventHandler ClosedApp = App.Current!.OnExitApplicationTriggered;
 
-        private async void OnThemeToggleSwitchClicked(object? sender, RoutedEventArgs e)
+        private void OnSwtichDarkThemeButtonClicked(object? sender, RoutedEventArgs e)
         {
-            Console.WriteLine($@"OnThemeToggleSwitchClicked {RequestedThemeVariant}");
-            
-            if(RequestedThemeVariant == ThemeVariant.Light)
+            RequestedThemeVariant = ThemeVariant.Dark;
+            // Border.Material.TintColor = Colors.Black;
+        }
+
+        private void OnSwatchLightThemeButtonClicked(object? sender, RoutedEventArgs e)
+        {
+            RequestedThemeVariant = ThemeVariant.Light;
+            // Border.Material.TintColor = Colors.White;
+            Border.Material.MaterialOpacity = 0.1;
+        }
+
+        private void OnToggleThemeButtonClicked(object? sender, RoutedEventArgs e)
+        {
+            if (RequestedThemeVariant == ThemeVariant.Dark)
+                RequestedThemeVariant = ThemeVariant.Light;
+            else
+            {
                 RequestedThemeVariant = ThemeVariant.Dark;
-            else if(RequestedThemeVariant == ThemeVariant.Dark)
-                RequestedThemeVariant = ThemeVariant.Light;
-            else if(RequestedThemeVariant == ThemeVariant.Default)
-                RequestedThemeVariant = ThemeVariant.Light;
+            }
+        }
+
+        public async Task DoOpenSettingsWindowAsync(
+            IInteractionContext<SettingWindowViewModel, SettingWindowViewModel> interaction)
+        {
+            SettingWindow  settingWindow= App.Current.Services.GetRequiredService<SettingWindow>();
+            settingWindow.DataContext = interaction.Input;
             
-            Console.WriteLine($@"OnThemeToggleSwitchClicked {RequestedThemeVariant}");
+            var result = await settingWindow.ShowDialog<SettingWindowViewModel?>(this);
+            interaction.SetOutput(result);
+        }
+
+        private void SyncThemeConfig(Window targetWindow)
+        {
+            // keep the same theme with mainwindow
+            targetWindow.RequestedThemeVariant = this.RequestedThemeVariant;
+            // targetWindow.Material.TintColor = this.Border.Material.TintColor;
+            
         }
     }
 }

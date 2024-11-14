@@ -10,24 +10,31 @@ namespace Avalonia.CpuLimiter.Services;
 
 [JsonSourceGenerationOptions(WriteIndented = true)]
 [JsonSerializable(typeof(IEnumerable<HistoryItem>))]
+[JsonSerializable(typeof(MyConfigModel))]
 internal partial class SourceGenerationContext : JsonSerializerContext
 {
-    
+
 }
 
-public class HistoryItemFileService
+public class HistoryItemFileService : IHistoryItemFileService
 {
-    private static string _configPath = 
-        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Avalonia.CpuLimiter", "history.json");
+    public HistoryItemFileService()
+    {
+        
+    }
+
+    
+    private readonly string _historyDataPath = 
+        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), AboutInfo.AppName, "history.json");
 
     
     // the save config service should with save code in App.axaml.cs
-    public static async Task SaveHistoryToFileAsync(IEnumerable<HistoryItem>? historyItems)
+    public  async Task SaveHistoryToFileAsync(IEnumerable<HistoryItem>? historyItems)
     {
-        if(!Directory.Exists(Path.GetDirectoryName(_configPath)))
-            Directory.CreateDirectory(Path.GetDirectoryName(_configPath)!);
+        if(!Directory.Exists(Path.GetDirectoryName(_historyDataPath)))
+            Directory.CreateDirectory(Path.GetDirectoryName(_historyDataPath)!);
 
-        await using (FileStream fs = File.Open(_configPath, FileMode.Create))
+        await using (FileStream fs = File.Open(_historyDataPath, FileMode.Create))
         {
             await JsonSerializer.SerializeAsync(fs, historyItems, SourceGenerationContext.Default.IEnumerableHistoryItem!);
         }
@@ -36,14 +43,14 @@ public class HistoryItemFileService
     
     // this load config service should work with load code in App.axaml.cs
 
-    public static async Task<IEnumerable<HistoryItem>?> LoadHistoryFromFileAsync()
+    public  async Task<IEnumerable<HistoryItem>?> LoadHistoryFromFileAsync()
     {
         try
         {
-            if(!File.Exists(_configPath))
+            if(!File.Exists(_historyDataPath))
                 return null;
 
-            await using (FileStream fs = File.OpenRead(_configPath))
+            await using (FileStream fs = File.OpenRead(_historyDataPath))
             {
                 return await JsonSerializer.DeserializeAsync<IEnumerable<HistoryItem>>(fs , SourceGenerationContext.Default.IEnumerableHistoryItem!);
             }
@@ -56,7 +63,7 @@ public class HistoryItemFileService
     }
 
     // this option is conflicting with Sourcegenerator
-    private static JsonSerializerOptions _jsonSerializerOptions = new()
+    private  JsonSerializerOptions _jsonSerializerOptions = new()
     {
         WriteIndented = true
     };

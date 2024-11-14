@@ -2,6 +2,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:lang="using:Avalonia.CpuLimiter.Lang"
         mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="250"
         Width="400" Height="250"
         x:Class="Avalonia.CpuLimiter.Views.AboutWindow"
@@ -12,11 +13,10 @@
         ExtendClientAreaToDecorationsHint="True"
         WindowStartupLocation="CenterOwner"
         CornerRadius="10">
-      
         
         <Panel>
                 <!-- the windows sytle -->
-                <ExperimentalAcrylicBorder IsHitTestVisible="False">
+                <ExperimentalAcrylicBorder IsHitTestVisible="False" Name="AboutBorder">
                         <ExperimentalAcrylicBorder.Material>
                                 <ExperimentalAcrylicMaterial
                                         BackgroundSource="Digger"
@@ -34,11 +34,12 @@
                                 <StackPanel Grid.Row="0" Grid.ColumnSpan="2" Orientation="Horizontal"
                                             Margin="10 20 "
                                             HorizontalAlignment="Center">
-                                        <TextBlock Text="Game Launcher" FontSize="16"
+                                        <TextBlock Name="AppName" FontSize="16"
                                                    FontWeight="Bold"
                                                    HorizontalAlignment="Right"></TextBlock>
+                                        <TextBlock Text="  ">  </TextBlock>
                                 
-                                        <TextBlock Grid.Row="0" Grid.Column="1" Text="1.0" FontSize="16"
+                                        <TextBlock Grid.Row="0" Grid.Column="1" Name="AppVersion" FontSize="16"
                                                    FontWeight="Bold" 
                                                    HorizontalAlignment="Center"></TextBlock>
                                 </StackPanel>
@@ -49,14 +50,14 @@
                                                 <Setter Property="Padding" Value="10 0 20 0"/></Style>
                                 </Grid.Styles>
                                 
-                                <TextBlock Classes="left" Grid.Row="1" Grid.Column="0">Author:</TextBlock>
-                                <TextBlock Classes="right" Grid.Row="1" Grid.Column="1">Hiddenblue</TextBlock>
+                                <TextBlock Classes="left" Grid.Row="1" Grid.Column="0" Text="">Author:</TextBlock>
+                                <TextBlock Classes="right"  Name="AuthorName" Grid.Row="1" Grid.Column="1">Hiddenblue</TextBlock>
                                 <TextBlock Classes="left" Grid.Row="2" Grid.Column="0">Dotnet version:</TextBlock>
-                                <TextBlock Classes="right" Grid.Row="2" Grid.Column="1">8.0</TextBlock>
+                                <TextBlock Classes="right" Name="DotnetVersion" Grid.Row="2" Grid.Column="1"></TextBlock>
                                 <TextBlock Classes="left" Grid.Row="3" Grid.Column="0"> AvaloniaUI version:</TextBlock>
-                                <TextBlock Classes="right" Grid.Row="3" Grid.Column="1">11.20</TextBlock>
+                                <TextBlock Classes="right" Name="AvaloniaUIVersion" Grid.Row="3" Grid.Column="1"></TextBlock>
                                 <TextBlock Classes="left" Grid.Row="4" Grid.Column="0">License:</TextBlock> 
-                                <TextBlock Classes="right" Grid.Row="4" Grid.Column="1">GPLV2</TextBlock> 
+                                <TextBlock Classes="right" Name="License" Grid.Row="4" Grid.Column="1">GPLV2</TextBlock> 
                         </Grid> 
      
                 </StackPanel>
@@ -65,14 +66,16 @@
                 
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom"
                             Margin="160 40 0 20">
-                        <Button Content="Copy and Close" FontSize="16" FontWeight="Bold"
+                        <Button Content="{x:Static lang:Resources.CopyCloseButton}" FontSize="16" FontWeight="Bold"
                                 Margin="0 0 6 0"
                                 Padding="10 6"
                                 Background="DodgerBlue"
+                                Opacity="0.8"
                                 Click="OnCopyAndCloseButtonClicked"/>
-                        <Button Content="Close" Click="OnCloseButtonClick"
+                        <Button Content="{x:Static lang:Resources.CloseButton}" Click="OnCloseButtonClick"
                                 HotKey="Escape"
                                 FontSize="16" FontWeight="Normal"
+                                Opacity="0.7"
                                 Margin="0 0 6 0"
                                 Padding="10 6">
                         </Button>

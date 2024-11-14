@@ -45,42 +45,124 @@ namespace Avalonia.CpuLimiter.Lang {
             }
         }
         
-        public static string FileButton {
-            get {
-                return ResourceManager.GetString("FileButton", resourceCulture);
-            }
-        }
-        public static string EditButton {
-            get {
-                return ResourceManager.GetString("EditButton", resourceCulture);
-            }
-        }
-        public static string SettingButton {
-            get {
-                return ResourceManager.GetString("SettingButton", resourceCulture);
-            }
-        }
-        public static string RunButton {
-            get {
-                return ResourceManager.GetString("RunButton", resourceCulture);
-            }
-        }
-        
-        public static string HelpButton {
-            get {
-                return ResourceManager.GetString("HelpButton", resourceCulture);
-            }
-        }
-         public static string LaunchGameButton {
-            get {
-                return ResourceManager.GetString("LaunchGameButton", resourceCulture);
-            }
-        }
-          public static string CPUCoreNumberTextBlock {
-            get {
-                return ResourceManager.GetString("CPUCoreNumberTextBlock", resourceCulture);
-            }
-        }
+    public static string FileButton
+    {
+        get { return ResourceManager.GetString("FileButton", resourceCulture); }
+    }
+
+    public static string EditButton
+    {
+        get { return ResourceManager.GetString("EditButton", resourceCulture); }
+    }
+
+    public static string HelpButton
+    {
+        get { return ResourceManager.GetString("HelpButton", resourceCulture); }
+    }
+
+    public static string RunButton
+    {
+        get { return ResourceManager.GetString("RunButton", resourceCulture); }
+    }
+
+    public static string SettingButton
+    {
+        get { return ResourceManager.GetString("SettingButton", resourceCulture); }
+    }
+
+    public static string LaunchButton
+    {
+        get { return ResourceManager.GetString("LaunchButton", resourceCulture); }
+    }
+
+    public static string CPUCoreNumberTextBlock
+    {
+        get { return ResourceManager.GetString("CPUCoreNumberTextBlock", resourceCulture); }
+    }
+
+    public static string OpenButton
+    {
+        get { return ResourceManager.GetString("OpenButton", resourceCulture); }
+    }
+
+    public static string SaveButton
+    {
+        get { return ResourceManager.GetString("SaveButton", resourceCulture); }
+    }
+
+    public static string ExitButton
+    {
+        get { return ResourceManager.GetString("ExitButton", resourceCulture); }
+    }
+
+    public static string CutButton
+    {
+        get { return ResourceManager.GetString("CutButton", resourceCulture); }
+    }
+
+    public static string CopyButton
+    {
+        get { return ResourceManager.GetString("CopyButton", resourceCulture); }
+    }
+
+    public static string PasteButton
+    {
+        get { return ResourceManager.GetString("PasteButton", resourceCulture); }
+    }
+
+    public static string ThemeSwitch
+    {
+        get { return ResourceManager.GetString("ThemeSwitch", resourceCulture); }
+    }
+
+    public static string ConfigButton
+    {
+        get { return ResourceManager.GetString("ConfigButton", resourceCulture); }
+    }
+
+    public static string DocsButton
+    {
+        get { return ResourceManager.GetString("DocsButton", resourceCulture); }
+    }
+
+    public static string ProjButton
+    {
+        get { return ResourceManager.GetString("ProjButton", resourceCulture); }
+    }
+
+    public static string AboutButton
+    {
+        get { return ResourceManager.GetString("AboutButton", resourceCulture); }
+    }
+
+    public static string LaunchGameButton
+    {
+        get { return ResourceManager.GetString("LaunchGameButton", resourceCulture); }
+    }
+    public static string ExeFileBlock
+    {
+        get { return ResourceManager.GetString("ExeFileBlock", resourceCulture); }
+    }
+     public static string LightThemeButton
+    {
+        get { return ResourceManager.GetString("LightThemeButton", resourceCulture); }
+    }
+     public static string DarkThemeButton
+    {
+        get { return ResourceManager.GetString("DarkThemeButton", resourceCulture); }
+    }
+     public static string CopyCloseButton
+    {
+        get { return ResourceManager.GetString("CopyCloseButton", resourceCulture); }
+    }
+      public static string CloseButton
+    {
+        get { return ResourceManager.GetString("CloseButton", resourceCulture); }
+    }
+      public static string LanguageSwitch
+    {
+        get { return ResourceManager.GetString("LanguageSwitch", resourceCulture); }
+    }
         
     }
 }
