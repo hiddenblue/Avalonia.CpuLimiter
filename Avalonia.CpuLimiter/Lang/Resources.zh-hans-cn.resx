@@ -86,4 +86,43 @@
     <data name="CloseButton" xml:space="preserve">
         <value>关闭</value>
     </data>
+    <data name="SettingStartupThemeTextBlock" xml:space="preserve">
+        <value>启动主题</value>
+    </data>
+    <data name="SettingTitle" xml:space="preserve">
+        <value>设 置</value>
+    </data>
+    <data name="SettingHistoryLimitTextBlock" xml:space="preserve">
+        <value>历史记录上限</value>
+    </data>
+    <data name="SettingThemeColorSliderTextBlock" xml:space="preserve">
+        <value>主题颜色</value>
+    </data>
+    <data name="SettingStartupLanguageToggleChinese" xml:space="preserve">
+        <value>Chinese</value>
+    </data>
+    <data name="SettingStartupLanguageToggleEnglish" xml:space="preserve">
+        <value>English</value>
+    </data>
+    <data name="StartupDecorationSliderTextBlock" xml:space="preserve">
+        <value>启动装饰</value>
+    </data>
+    <data name="FilePickerTitle" xml:space="preserve">
+        <value>选择可执行文件</value>
+    </data>
+    <data name="SaveFilePickerTitle" xml:space="preserve">
+        <value>选择文件保存位置</value>
+    </data>
+    <data name="AboutAuthorText" xml:space="preserve">
+        <value>作    者</value>
+    </data>
+    <data name="AboutDotnetVersionText" xml:space="preserve">
+        <value>Dotnet 版本</value>
+    </data>
+    <data name="AvaloniaUIVersionText" xml:space="preserve">
+        <value>Avalonia 版本</value>
+    </data>
+    <data name="AboutLicenseText" xml:space="preserve">
+        <value>开 源 协 议</value>
+    </data>
 </root>

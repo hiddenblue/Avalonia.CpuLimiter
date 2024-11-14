@@ -20,7 +20,7 @@
                         <ExperimentalAcrylicBorder.Material>
                                 <ExperimentalAcrylicMaterial
                                         BackgroundSource="Digger"
-                                        TintColor="Black"
+                                        TintColor="SkyBlue"
                                         TintOpacity="1"
                                         MaterialOpacity="0.25" />
                         </ExperimentalAcrylicBorder.Material>
@@ -34,29 +34,48 @@
                                 <StackPanel Grid.Row="0" Grid.ColumnSpan="2" Orientation="Horizontal"
                                             Margin="10 20 "
                                             HorizontalAlignment="Center">
-                                        <TextBlock Name="AppName" FontSize="16"
+                                        <TextBlock Name="AppName" FontSize="18"
                                                    FontWeight="Bold"
                                                    HorizontalAlignment="Right"></TextBlock>
-                                        <TextBlock Text="  ">  </TextBlock>
+                                        <TextBlock Text="  ">  </TextBlock> 
                                 
-                                        <TextBlock Grid.Row="0" Grid.Column="1" Name="AppVersion" FontSize="16"
+                                        <TextBlock Grid.Row="0" Grid.Column="1" Name="AppVersion" FontSize="18"
                                                    FontWeight="Bold" 
                                                    HorizontalAlignment="Center"></TextBlock>
                                 </StackPanel>
                                 <Grid.Styles>
+                                        <Style Selector="TextBlock">
+                                                <Setter Property="Height" Value="26"></Setter>
+                                                <Setter Property="FontWeight" Value="Bold"> </Setter>
+                                                <Setter Property="FontSize" Value="15"></Setter>
+                                                <Setter Property="VerticalAlignment" Value="Center"></Setter>
+                                                
+                                        </Style>
                                         <Style Selector="TextBlock.left">
-                                                <Setter Property="Padding" Value="20 0 20 0"/></Style>
+                                                <Setter Property="Padding" Value="0 0 30 0"/>
+                                                <Setter Property="HorizontalAlignment" Value="Left"></Setter>
+                                        </Style>
                                          <Style Selector="TextBlock.right">
-                                                <Setter Property="Padding" Value="10 0 20 0"/></Style>
+                                                <Setter Property="Padding" Value="30 0 0 0"/>
+                                         </Style>
                                 </Grid.Styles>
                                 
-                                <TextBlock Classes="left" Grid.Row="1" Grid.Column="0" Text="">Author:</TextBlock>
-                                <TextBlock Classes="right"  Name="AuthorName" Grid.Row="1" Grid.Column="1">Hiddenblue</TextBlock>
-                                <TextBlock Classes="left" Grid.Row="2" Grid.Column="0">Dotnet version:</TextBlock>
+                                <TextBlock Classes="left" Name="AboutAuthorText" Grid.Row="1" Grid.Column="0"
+                                           Text="{x:Static lang:Resources.AboutAuthorText}"></TextBlock>
+                                
+                                <TextBlock Classes="right" Name="AuthorName" Grid.Row="1" Grid.Column="1"
+                                          ></TextBlock>
+                                
+                                <TextBlock Classes="left" Name="AboutDotnetVersionText" Grid.Row="2" Grid.Column="0"
+                                            Text="{x:Static lang:Resources.AboutDotnetVersionText}"></TextBlock>
                                 <TextBlock Classes="right" Name="DotnetVersion" Grid.Row="2" Grid.Column="1"></TextBlock>
-                                <TextBlock Classes="left" Grid.Row="3" Grid.Column="0"> AvaloniaUI version:</TextBlock>
+                                
+                                <TextBlock Classes="left" Name="AvaloniaUIVersionText" Grid.Row="3" Grid.Column="0"
+                                           Text="{x:Static lang:Resources.AvaloniaUIVersionText}"></TextBlock>
                                 <TextBlock Classes="right" Name="AvaloniaUIVersion" Grid.Row="3" Grid.Column="1"></TextBlock>
-                                <TextBlock Classes="left" Grid.Row="4" Grid.Column="0">License:</TextBlock> 
+                                
+                                <TextBlock Classes="left" Name="AboutLicenseText" Grid.Row="4" Grid.Column="0"
+                                           Text="{x:Static lang:Resources.AboutLicenseText}"></TextBlock> 
                                 <TextBlock Classes="right" Name="License" Grid.Row="4" Grid.Column="1">GPLV2</TextBlock> 
                         </Grid> 
      

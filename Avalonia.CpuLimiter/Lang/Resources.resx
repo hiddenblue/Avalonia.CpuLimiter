@@ -73,7 +73,7 @@
     <value>Launch Game</value>
     </data>
     <data name="ExeFileBlock" xml:space="preserve">
-        <value> Exe File Path</value>
+        <value>Executable File</value>
     </data>
     <data name="ThemeSwitch" xml:space="preserve">
         <value>Theme</value>
@@ -92,5 +92,44 @@
     </data>
     <data name="CloseButton" xml:space="preserve">
         <value>Close</value>
+    </data>
+    <data name="SettingTitle" xml:space="preserve">
+        <value>Setting</value>
+    </data>
+    <data name="SettingStartupLanguageToggleEnglish" xml:space="preserve">
+        <value>英语</value>
+    </data>
+    <data name="SettingStartupLanguageToggleChinese" xml:space="preserve">
+        <value>中文</value>
+    </data>
+    <data name="SettingStartupThemeTextBlock" xml:space="preserve">
+        <value>Startup Theme</value>
+    </data>
+    <data name="StartupDecorationSliderTextBlock" xml:space="preserve">
+        <value>Startup Decoration</value>
+    </data>
+    <data name="SettingHistoryLimitTextBlock" xml:space="preserve">
+        <value>History Limit</value>
+    </data>
+    <data name="SettingThemeColorSliderTextBlock" xml:space="preserve">
+        <value>Theme Color</value>
+    </data>
+    <data name="FilePickerTitle" xml:space="preserve">
+        <value>Select executable file</value>
+    </data>
+    <data name="SaveFilePickerTitle" xml:space="preserve">
+        <value>Choose a Path to save file</value>
+    </data>
+    <data name="AboutAuthorText" xml:space="preserve">
+        <value>Author</value>
+    </data>
+    <data name="AboutDotnetVersionText" xml:space="preserve">
+        <value>Dotnet version:</value>
+    </data>
+    <data name="AvaloniaUIVersionText" xml:space="preserve">
+        <value>AvaloniaUI Version</value>
+    </data>
+    <data name="AboutLicenseText" xml:space="preserve">
+        <value>License</value>
     </data>
 </root>

@@ -143,26 +143,86 @@ namespace Avalonia.CpuLimiter.Lang {
     {
         get { return ResourceManager.GetString("ExeFileBlock", resourceCulture); }
     }
-     public static string LightThemeButton
+    public static string LightThemeButton
     {
         get { return ResourceManager.GetString("LightThemeButton", resourceCulture); }
     }
-     public static string DarkThemeButton
+    public static string DarkThemeButton
     {
         get { return ResourceManager.GetString("DarkThemeButton", resourceCulture); }
     }
-     public static string CopyCloseButton
+    public static string CopyCloseButton
     {
         get { return ResourceManager.GetString("CopyCloseButton", resourceCulture); }
     }
-      public static string CloseButton
+    public static string CloseButton
     {
         get { return ResourceManager.GetString("CloseButton", resourceCulture); }
     }
-      public static string LanguageSwitch
+    public static string LanguageSwitch
     {
         get { return ResourceManager.GetString("LanguageSwitch", resourceCulture); }
     }
+    public static string SettingStartupLanguageToggleEnglish
+    {
+        get { return ResourceManager.GetString("SettingStartupLanguageToggleEnglish", resourceCulture); }
+    }
+
+    public static string SettingStartupLanguageToggleChinese
+    {
+        get { return ResourceManager.GetString("SettingStartupLanguageToggleChinese", resourceCulture); }
+    }
+
+    public static string SettingStartupThemeTextBlock
+    {
+        get { return ResourceManager.GetString("SettingStartupThemeTextBlock", resourceCulture); }
+    }
+
+    public static string StartupDecorationSliderTextBlock
+    {
+        get { return ResourceManager.GetString("StartupDecorationSliderTextBlock", resourceCulture); }
+    }
+
+    public static string SettingHistoryLimitTextBlock
+    {
+        get { return ResourceManager.GetString("SettingHistoryLimitTextBlock", resourceCulture); }
+    }
+
+    public static string SettingThemeColorSliderTextBlock
+    {
+        get { return ResourceManager.GetString("SettingThemeColorSliderTextBlock", resourceCulture); }
+    } 
+    public static string SettingTitle
+    {
+        get { return ResourceManager.GetString("SettingTitle", resourceCulture); }
+    }
+    public static string FilePickerTitle
+    {
+        get { return ResourceManager.GetString("FilePickerTitle", resourceCulture); }
+    }
+    public static string SaveFilePickerTitle
+    {
+        get { return ResourceManager.GetString("SaveFilePickerTitle", resourceCulture); }
+    }
+    public static string AboutAuthorText
+    {
+        get { return ResourceManager.GetString("AboutAuthorText", resourceCulture); }
+    }
+
+    public static string AboutDotnetVersionText
+    {
+        get { return ResourceManager.GetString("AboutDotnetVersionText", resourceCulture); }
+    }
+
+    public static string AvaloniaUIVersionText
+    {
+        get { return ResourceManager.GetString("AvaloniaUIVersionText", resourceCulture); }
+    }
+
+    public static string AboutLicenseText
+    {
+        get { return ResourceManager.GetString("AboutLicenseText", resourceCulture); }
+    } 
         
     }
 }
