@@ -1,6 +1,13 @@
+using System;
 using System.Collections.ObjectModel;
+using System.Security.Cryptography.X509Certificates;
+using System.Text.Json.Serialization;
+using System.Threading.Tasks;
+using System.Windows.Input;
 using Avalonia.Controls;
+using Avalonia.Controls.Primitives;
 using Avalonia.CpuLimiter.Models;
+using Avalonia.CpuLimiter.Services;
 using Avalonia.Media;
 using Avalonia.Styling;
 using ReactiveUI;
@@ -14,13 +21,27 @@ public class SettingWindowViewModel : ViewModelBase
 
     public SettingWindowViewModel()
     {
-        if (App.Current.ConfigModel is MyConfigModel configModel)
+        if (!Design.IsDesignMode)
         {
-            HistoryLimit = configModel.HistoryLimit;
             // ColorDigital = configModel.
-            // StartupCulture = configModel.StartupCultureConfig;
-            // ThemeVariant = configModel.ThemeVariantConfig;
+            _startupCulture = App.Current.ConfigModel.StartupCultureConfig;
+            _themeVariant = App.Current?.ConfigModel.ThemeVariantConfig;
+            _historyLimit = App.Current.ConfigModel.HistoryLimit;
+            _colorDigit = App.Current.ConfigModel.ColorIndex;
         }
+        else
+        {
+            _themeVariant = ThemeVariant.Dark;
+            _historyLimit = 4;
+        }
+
+        SaveSettingsCommand= ReactiveCommand.CreateFromTask(() => SaveSettings());
+        ChangeStartupThemeCommand = ReactiveCommand.CreateFromTask<bool>(ChangeStartupTheme);
+        ChangeAppCultureCommand = ReactiveCommand.CreateFromTask<bool>(ChangeAppCulture);
+        this.WhenAnyValue(vm => vm.HistoryLimit)
+            .Subscribe(Console.WriteLine);
+        this.WhenAnyValue(vm => vm.ColorDigit )
+            .Subscribe(Console.WriteLine);
     }
 
 
@@ -46,13 +67,13 @@ public class SettingWindowViewModel : ViewModelBase
         get => _isDarkTheme;
         set => this.RaiseAndSetIfChanged(ref _isDarkTheme, value);
     }
-    
-    private int _colorDigital = 4;
 
-    public int ColorDigital
+    private int _colorDigit;
+
+    public int ColorDigit
     {
-        get => _colorDigital;
-        set => this.RaiseAndSetIfChanged(ref _colorDigital, value);
+        get => _colorDigit;
+        set => this.RaiseAndSetIfChanged(ref _colorDigit, value);
     }
 
     private string _startupCulture;
@@ -97,6 +118,48 @@ public class SettingWindowViewModel : ViewModelBase
         new CustomColor(Colors.LightSkyBlue.ToString())
     };
 
+    public ICommand ChangeStartupThemeCommand { get; }
+    // True is Dark False is Light
+    private async Task ChangeStartupTheme(bool isChecked)
+    {
+        Console.WriteLine(isChecked);
+        if (isChecked)
+            this.ThemeVariant = ThemeVariant.Light;
+        else
+            this.ThemeVariant = ThemeVariant.Dark;
+    }
+
+    public ICommand SaveSettingsCommand { get; }
+
+    private async Task SaveSettings()
+    {
+        Console.WriteLine("Saving settings");
+        App.Current.ConfigModel.ThemeVariantConfig = this.ThemeVariant;
+        App.Current.ConfigModel.StartupCultureConfig = this.StartupCulture;
+        App.Current.ConfigModel.ColorIndex = ColorDigit;
+        await ConfigFileService.SaveConfigAsync(App.Current.ConfigModel);
+        Console.WriteLine($@"{this.ThemeVariant}, {this.StartupCulture}, {this.ColorCollection[ColorDigit]}");
+    }
+
+    public ICommand ChangeAppCultureCommand { get; }
+
+    private async Task ChangeAppCulture(bool isChecked)
+    {
+        Console.WriteLine(isChecked);
+        if (isChecked)
+        {
+            this.StartupCulture = "";
+        }
+        else
+        {
+            this.StartupCulture = "zh-hans-cn";
+        }
+    }
+
+    
+    //current we use static culture resources, have to restart to switch another culture.
+    
+
 
 
 
@@ -105,6 +168,10 @@ public class SettingWindowViewModel : ViewModelBase
 
 public class CustomColor
 {
+    public CustomColor()
+    {
+        
+    }
     public string Hex { get; }
     public Color Color { get; }
 

@@ -1,14 +1,13 @@
 using System;
 using System.Collections.Generic;
-using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Controls.Primitives;
 using Avalonia.CpuLimiter.ViewModels;
+using Avalonia.Input;
 using Avalonia.Interactivity;
-using Avalonia.Markup.Xaml;
 using Avalonia.Media;
 using Avalonia.Styling;
-using ReactiveUI;
 
 namespace Avalonia.CpuLimiter.Views;
 
@@ -22,6 +21,10 @@ public partial class SettingWindow : Window
         {
             SettingBorder.Material.TintColor = Colors.SkyBlue;
         }
+        
+        if(Application.Current.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+            ResetStateToConfig();
+        
 
         // this.WhenAnyValue(x => x.ColorSlider.Value)
         //     .Subscribe(RefreshThemeColor);
@@ -31,8 +34,15 @@ public partial class SettingWindow : Window
     private void OnRefreshThemeColor(object sender, RangeBaseValueChangedEventArgs e)
     {
         int colorIndex = (int)e.NewValue;
+        Console.WriteLine($@"selected color changed {CustomColors[colorIndex]}");
 
         SettingBorder.Material.TintColor = CustomColors[colorIndex].Color;
+        if (App.Current.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+        {
+            SettingWindowViewModel vm = DataContext as SettingWindowViewModel;
+            vm.ColorDigit = colorIndex;
+        }
+        
     }
 
 
@@ -64,11 +74,83 @@ public partial class SettingWindow : Window
     
     private void OnToggleThemeButtonClicked(object? sender, RoutedEventArgs e)
     {
-        if (RequestedThemeVariant == ThemeVariant.Dark)
-            RequestedThemeVariant = ThemeVariant.Light;
+
+        if (sender is ToggleButton toggleButton)
+        {
+            SettingWindowViewModel vm = DataContext as SettingWindowViewModel;
+            if (toggleButton.IsChecked == true)
+            {
+                vm.ThemeVariant = ThemeVariant.Light;
+                RequestedThemeVariant = ThemeVariant.Light;
+                Console.WriteLine("configmodel theme variant is set to Light");
+            }
+            else
+            {
+                vm.ThemeVariant = ThemeVariant.Dark;
+                RequestedThemeVariant = ThemeVariant.Dark;
+                Console.WriteLine("configmodel theme variant is set to Dark");
+            }
+        }
+    }
+
+    private void  OnPointerWheelChanged(object sender, PointerWheelEventArgs e)
+    {
+        Console.WriteLine(e.Delta);
+        // e.Delta.Y value is vary between [-2, 2]
+        ColorSlider.Value += e.Delta.Y;
+    }
+
+
+    // triggered when actived
+    private void ResetStateToConfig()
+    {
+        var tempConfig = App.Current.ConfigModel;
+        
+        
+        
+        if (tempConfig.StartupCultureConfig == "")
+            StartupLanguageToggle.IsChecked = true;
         else
         {
+            StartupLanguageToggle.IsChecked = false;
+        }
+
+        if (tempConfig.ThemeVariantConfig == ThemeVariant.Dark || tempConfig.ThemeVariantConfig == ThemeVariant.Default)
+        {
+            StartupThemeToggle.IsChecked = false;
             RequestedThemeVariant = ThemeVariant.Dark;
+        }
+        else
+        {
+            StartupThemeToggle.IsChecked = true;
+            RequestedThemeVariant = ThemeVariant.Light;
+        }
+
+
+    }
+
+    private void OnHistoryLimitSpinnerChanged(object sender, SpinEventArgs e)
+    {
+        var spinner = (Spinner)sender;
+
+        if (spinner.Content is TextBox textBox)
+        {
+            if (int.TryParse(textBox.Text, out int limitValue))
+            {
+                if (e.Direction == SpinDirection.Increase)
+                    limitValue += 1;
+                else
+                {
+                    limitValue -= 1;
+                }
+
+                if (DataContext is SettingWindowViewModel vm)
+                {
+                    vm.HistoryLimit = limitValue;
+                    App.Current.ConfigModel.HistoryLimit = limitValue;
+                }
+            }
+
         }
     }
 
