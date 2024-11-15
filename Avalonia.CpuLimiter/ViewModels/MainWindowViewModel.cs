@@ -32,10 +32,12 @@ namespace Avalonia.CpuLimiter.ViewModels
             SaveCommand = ReactiveCommand.CreateFromTask(SaveAsync, canSave);
             
             // open setting window with local config model
+            InteractionSettingWindow  = new Interaction<SettingWindowViewModel, MyConfigModel?>();
             OpenSettingWindowCommand = ReactiveCommand.CreateFromTask(async () =>
             {
-                SettingWindowViewModel settingModel = App.Current.Services.GetRequiredService<SettingWindowViewModel>();
-                SettingWindowViewModel? result = await InteractionSettingWindow.Handle(settingModel);
+                SettingWindowViewModel settingModel =
+                    App.Current.Services.GetRequiredService<SettingWindowViewModel>();
+                MyConfigModel? result = await InteractionSettingWindow.Handle(settingModel);
             });
             
             this.WhenAnyValue(x => x.CpuCoreCount)
@@ -74,16 +76,21 @@ namespace Avalonia.CpuLimiter.ViewModels
             this._clipBoardService = clipBoardService;
             this._filesService = filesService;
             
-            // ChooseExeFileCommand = ReactiveCommand.CreateFromTask(ChooseExeFile);
+            ChooseExeFileCommand = ReactiveCommand.CreateFromTask(ChooseExeFile,
+                this.WhenAnyValue(vm => vm.HistoryItems.Count, count => count < this.HistoryLimit));
+            
             RunGameCommand = ReactiveCommand.CreateFromTask(RunGame, canSave);
-            RemoveHistoryItemCommand = ReactiveCommand.CreateFromTask<HistoryItemViewModel>( item => RemoveHistoryItemAsync(item) );
+            
+            RemoveHistoryItemCommand = ReactiveCommand.CreateFromTask<HistoryItemViewModel>( RemoveHistoryItemAsync );
             SaveCommand = ReactiveCommand.CreateFromTask(SaveAsync, canSave);
             
             // open setting window with local config model
+            InteractionSettingWindow  = new Interaction<SettingWindowViewModel, MyConfigModel?>();
             OpenSettingWindowCommand = ReactiveCommand.CreateFromTask(async () =>
             {
-                SettingWindowViewModel settingModel = App.Current.Services.GetRequiredService<SettingWindowViewModel>();
-                SettingWindowViewModel? result = await InteractionSettingWindow.Handle(settingModel);
+                SettingWindowViewModel settingModel =
+                    App.Current.Services.GetRequiredService<SettingWindowViewModel>();
+                MyConfigModel? result = await InteractionSettingWindow.Handle(settingModel);
             });
             
             this.WhenAnyValue(x => x.CpuCoreCount)
@@ -101,6 +108,7 @@ namespace Avalonia.CpuLimiter.ViewModels
                         GamePath = HistoryItems[SelectedComboboxIndex]?.Path;
                 });
             this.HistoryLimit = App.Current.ConfigModel.HistoryLimit;
+            Console.WriteLine($@"vm startup history limit.{this.HistoryLimit}");
 
             if (Design.IsDesignMode)
             {
@@ -141,7 +149,7 @@ namespace Avalonia.CpuLimiter.ViewModels
             AdminRunner.RunAsAdmin(CpuCoreCount, GamePath);
         }
 
-        // public ICommand ChooseExeFileCommand { get; }
+        public ICommand ChooseExeFileCommand { get; }
 
         public ICommand RunGameCommand { get; }
 
@@ -228,6 +236,8 @@ namespace Avalonia.CpuLimiter.ViewModels
                 Console.WriteLine(e);
             }
         }
+
+        public int HostCpuCoreCount => Environment.ProcessorCount;
         
         //slider cpu core
 
@@ -366,8 +376,7 @@ namespace Avalonia.CpuLimiter.ViewModels
         
         // open the setting window
 
-        public Interaction<SettingWindowViewModel, SettingWindowViewModel?> InteractionSettingWindow { get; } =
-            new Interaction<SettingWindowViewModel, SettingWindowViewModel?>();
+        public Interaction<SettingWindowViewModel, MyConfigModel?> InteractionSettingWindow { get; }
 
         public ICommand OpenSettingWindowCommand { get; }
         

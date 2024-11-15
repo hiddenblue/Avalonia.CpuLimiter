@@ -1,14 +1,13 @@
 using System;
 using System.Threading.Tasks;
 using Avalonia.Controls;
+using Avalonia.CpuLimiter.Models;
 using Avalonia.CpuLimiter.ViewModels;
 using Avalonia.Input;
 using Avalonia.Interactivity;
-using Avalonia.Media;
 using Avalonia.Platform.Storage;
 using Avalonia.ReactiveUI;
 using Avalonia.Styling;
-using DynamicData;
 using Microsoft.Extensions.DependencyInjection;
 using MsBox.Avalonia;
 using MsBox.Avalonia.Dto;
@@ -35,6 +34,12 @@ namespace Avalonia.CpuLimiter.Views
                 {
                     Console.WriteLine($@"history combobox selected value {x}");
                     AutoAlterScreenWidth();
+                });
+            this.WhenAnyValue(view => view.HistoryComboBox.ItemCount)
+                .Subscribe(count =>
+                {
+                    if (count > 0)
+                        HistoryComboBox.SelectedIndex = 0;
                 });
 
             this.WhenAnyValue(view => view.RequestedThemeVariant)
@@ -68,11 +73,12 @@ namespace Avalonia.CpuLimiter.Views
             await this._openUri(url);
         }
         
-        private void OnAboutWindowButtonClicked(object? sender, RoutedEventArgs e)
+        
+        private bool _isAboutWindowOpened = false;
+        private async void OnAboutWindowButtonClicked(object? sender, RoutedEventArgs e)
         {
-            AboutWindow aboutWindow = App.Current.Services.GetRequiredService<AboutWindow>();
-            aboutWindow.Show();
-
+                AboutWindow aboutWindow = App.Current.Services.GetRequiredService<AboutWindow>();
+                await aboutWindow.ShowDialog(this);
         }
         
         // project website button
@@ -160,19 +166,25 @@ namespace Avalonia.CpuLimiter.Views
             }
         }
 
+
         public async Task DoOpenSettingsWindowAsync(
-            IInteractionContext<SettingWindowViewModel, SettingWindowViewModel> interaction)
+            IInteractionContext<SettingWindowViewModel, MyConfigModel> interaction)
         {
             SettingWindow  settingWindow= App.Current.Services.GetRequiredService<SettingWindow>();
+            // the mvm create a settingWindowsViewModel in interaction as datacontext
             settingWindow.DataContext = interaction.Input;
             
-            var result = await settingWindow.ShowDialog<SettingWindowViewModel?>(this);
+            var result = await settingWindow.ShowDialog<MyConfigModel?>(this);
             interaction.SetOutput(result);
+            
+            RefreshThemeColor();
         }
 
-        private void RefreshThemeColor(CustomColor userColor)
+        private void RefreshThemeColor()
         {
-            this.MainBorder.Material.TintColor = userColor.Color;
+            var tempConfig = App.Current.ConfigModel;
+            this.MainBorder.Material.TintColor = App.Current.ColorCollection[tempConfig.ColorIndex].Color;
+            RequestedThemeVariant = tempConfig.ThemeVariantConfig;
         }
 
     }

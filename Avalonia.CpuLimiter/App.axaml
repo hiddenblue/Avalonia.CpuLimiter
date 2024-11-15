@@ -16,7 +16,6 @@
     
      <Application.Resources>
          <FontFamily x:Key="HarmonyOS Sans"> avares://Avalonia.CpuLimiter/Assets/Fonts#HarmonyOS Sans SC</FontFamily>
-         <FontFamily x:Key="Fira Code"> avares://Avalonia.CpuLimiter/Assets/Fonts2#Fira Code</FontFamily>
      </Application.Resources>
     
      <TrayIcon.Icons>
