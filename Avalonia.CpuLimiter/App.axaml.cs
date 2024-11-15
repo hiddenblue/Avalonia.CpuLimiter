@@ -6,11 +6,13 @@ using Avalonia.Markup.Xaml;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
-using Avalonia.CpuLimiter.Config;
+using Avalonia.Controls;
 using Avalonia.CpuLimiter.Models;
+using Avalonia.Media;
 
 
 namespace Avalonia.CpuLimiter
@@ -19,9 +21,6 @@ namespace Avalonia.CpuLimiter
     {
         public override void Initialize()
         {
-            //dependency injection and load config.json from file
-            Services = ConfigureServices();
-            ConfigModel = ConfigFileService.LoadConfigAsync();
             AvaloniaXamlLoader.Load(this);
         }
         
@@ -31,7 +30,6 @@ namespace Avalonia.CpuLimiter
         private MainWindowViewModel _mainWindowViewModel;
         
         public ServiceProvider? Services { get; private set; }
-
 
         private ServiceProvider ConfigureServices()
         {
@@ -43,16 +41,23 @@ namespace Avalonia.CpuLimiter
             services.AddSingleton<IHistoryItemFileService, HistoryItemFileService>();
             
             services.AddSingleton<MainWindowViewModel>();
-            services.AddSingleton<MainWindow>(sp => new MainWindow(){ DataContext = sp.GetRequiredService<MainWindowViewModel>()});
-            services.AddSingleton<SettingWindowViewModel>();
-            services.AddSingleton<SettingWindow>( _ =>
+            services.AddSingleton<MainWindow>(sp =>
             {
-                var settingWindow = new SettingWindow()
+                MainWindow mainWindow=  new()
                 {
+                    DataContext = sp.GetRequiredService<MainWindowViewModel>(),
                     RequestedThemeVariant = ConfigModel.ThemeVariantConfig,
-                    DataContext = Services.GetRequiredService<SettingWindowViewModel>()
                 };
-                settingWindow.SettingBorder.Material.TintColor = ConfigModel.UserColor.Color;
+                mainWindow.MainBorder.Material.TintColor = ColorCollection[ConfigModel.ColorIndex].Color;
+                return mainWindow;
+            });
+            
+            services.AddTransient<SettingWindowViewModel>();
+            services.AddTransient<SettingWindow>( _ =>
+            {
+                var settingWindow = new SettingWindow();
+      
+                settingWindow.SettingBorder.Material.TintColor = ColorCollection[ConfigModel.ColorIndex].Color;
                 return settingWindow;
             });
             
@@ -60,31 +65,46 @@ namespace Avalonia.CpuLimiter
             {
                 var aboutWindow = new AboutWindow();
                 aboutWindow.RequestedThemeVariant = ConfigModel.ThemeVariantConfig;
-                aboutWindow.AboutBorder.Material.TintColor = ConfigModel.UserColor.Color;
+                aboutWindow.AboutBorder.Material.TintColor = ColorCollection[ConfigModel.ColorIndex].Color;
                 // to do theme related
                 return aboutWindow;
             });
             return services.BuildServiceProvider();
         }
 
-        public override async void OnFrameworkInitializationCompleted()
+        public override void OnFrameworkInitializationCompleted()
         {
-            if(!string.IsNullOrWhiteSpace(ConfigModel.StartupCultureConfig))
-                Lang.Resources.Culture = new CultureInfo(ConfigModel.StartupCultureConfig);
-            
             if(ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             {
-                desktop.MainWindow = Services!.GetService<MainWindow>();
-                _mainWindowViewModel = Services.GetRequiredService<MainWindowViewModel>();
-            
+                //dependency injection and load config.json from file
+                Services = ConfigureServices();
+                ConfigModel = ConfigFileService.LoadConfig();
+                
+                if(!string.IsNullOrWhiteSpace(ConfigModel.StartupCultureConfig))
+                    Lang.Resources.Culture = new CultureInfo(ConfigModel.StartupCultureConfig);
+                
+                try
+                {
+                    desktop.MainWindow = Services.GetService<MainWindow>();
+                    _mainWindowViewModel = desktop.MainWindow.DataContext as MainWindowViewModel;
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                    throw;
+                }
                 desktop.ShutdownRequested += DesktopOnShutdownRequested;
 
                 ExitApplication += OnExitApplicationTriggered;
             }
             base.OnFrameworkInitializationCompleted();
-            
-            // init and load from config.json
-            await LoadHistoryItemToMainVM();
+
+            if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime normal)
+            {
+                // init and load from config.json
+                LoadHistoryItemToMainVM();
+            }
+
         }
 
         private bool _canClose;
@@ -147,5 +167,31 @@ namespace Avalonia.CpuLimiter
         // the program calling this Event to exit;
         // App.Current.ExitApplication.invoke
         public event EventHandler? ExitApplication;
+        
+        public Collection<CustomColor> ColorCollection { get; } = new Collection<CustomColor>
+        {
+            new CustomColor("#e95815"),
+            new CustomColor("#f1a100"),
+            new CustomColor("#f0c400"),
+            new CustomColor("#e7e542"),
+        
+            new CustomColor("#bbd53e"),
+            new CustomColor("#4fb142"),
+            new CustomColor("#068bce"),
+            // new CustomColor("#014da1"),
+        
+            // new CustomColor("#192c92"),
+            // new CustomColor("#522a8b"),
+            new CustomColor("#b01e4f"),
+            new CustomColor("#e83a17"),
+        
+            new CustomColor(Colors.Silver.ToString()),
+            new CustomColor(Colors.Gray.ToString()),
+            new CustomColor(Colors.Black.ToString()),
+            new CustomColor(Colors.Aqua.ToString()),
+            new CustomColor(Colors.SkyBlue.ToString()),
+            new CustomColor(Colors.DeepSkyBlue.ToString()),
+            new CustomColor(Colors.LightSkyBlue.ToString())
+        };
     }
 }

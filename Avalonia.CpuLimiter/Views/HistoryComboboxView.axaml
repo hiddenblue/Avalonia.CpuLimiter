@@ -9,23 +9,31 @@
              x:DataType="vm:HistoryItemViewModel">
     
                 <Grid ColumnDefinitions="* Auto"
-                      ToolTip.Tip="{Binding LastUsed}"
+                      
                       RowDefinitions="30" Margin="0" MinWidth="40">
                     <TextBox Grid.Column="0" Text="{Binding Path}"
                              IsReadOnly="{Binding $parent.IsFocused}"
                              HorizontalAlignment="Left"
+                             ToolTip.Tip="{Binding LastUsed}"
                              VerticalContentAlignment="Center"
-                             FontSize="16" Height="20" Margin="0 5 1 5"
+                             FontSize="16" Height="20" Margin="0 0 1 0"
                              MinWidth="300"
                              Padding="0 0 0 0"
                              BorderThickness="0"
-                             Background="Transparent"/>
-                    <Button Grid.Column="1" Padding="1 10 0 10"
+                             Background="Transparent">
+                        <TextBox.Styles>
+                            <Style Selector="TextBox:pointerover /template/ Border#PART_BorderElement">
+                                <Setter Property="Background" Value="Transparent"></Setter>
+                            </Style>
+                        </TextBox.Styles>
+                    </TextBox>
+                    <Button Grid.Column="1" Padding="1 0 0 0"
                             Margin="8 0" Width="38" Height="38"
                             IsVisible="{Binding }"
                             Command="{Binding $parent[Window].((vm:MainWindowViewModel)DataContext).RemoveHistoryItemCommand}"
-                            CommandParameter="{Binding .}">
-                        <PathIcon Data="{StaticResource DeleteRegular}" Padding="0 10" IsVisible="True"/>
+                            CommandParameter="{Binding .}"
+                            ToolTip.Tip="Click to delete record">
+                        <PathIcon Data="{StaticResource DeleteRegular}" Padding="0 10"/>
                     </Button>
                 </Grid>
 </UserControl>

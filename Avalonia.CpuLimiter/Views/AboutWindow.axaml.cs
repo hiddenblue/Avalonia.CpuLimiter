@@ -47,11 +47,6 @@ public partial class AboutWindow : Window
 
     /***************************************/
 
-    private void RefreshConfig()
-    {
-        AboutBorder.Material.TintColor = App.Current.ConfigModel.UserColor.Color;
-        
-    }
         /*****************************************/
 
 }

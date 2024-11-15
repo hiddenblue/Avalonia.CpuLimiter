@@ -34,9 +34,4 @@ public partial class HistoryComboboxView : UserControl
     //     HistoryComboBox.SelectedIndex = 0;
     // }
 
-    private async void ResourcesChanged(object? sender, ResourcesChangedEventArgs e)
-    {
-        // todo
-    }
-    
 }
