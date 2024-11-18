@@ -5,8 +5,8 @@
         xmlns:vm="using:Avalonia.CpuLimiter.ViewModels"
         xmlns:views="using:Avalonia.CpuLimiter.Views"
         xmlns:lang="using:Avalonia.CpuLimiter.Lang"
-        mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="350"
-        Width="500" Height="350"
+        mc:Ignorable="d" d:DesignWidth="580" d:DesignHeight="300"
+        Width="500" Height="300"
         x:Class="Avalonia.CpuLimiter.Views.SettingWindow"
         x:DataType="vm:SettingWindowViewModel"
         Title="SettingWindow"
@@ -32,24 +32,24 @@
                 </ExperimentalAcrylicBorder.Material>
         </ExperimentalAcrylicBorder>
         
-        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Top" Margin="30 10">
-                <Border BorderBrush="Gray" BorderThickness="0">
-                                        <Grid RowDefinitions="Auto Auto Auto Auto Auto Auto Auto" ColumnDefinitions="Auto 200" ShowGridLines="True">
+        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Top" Margin="20 0">
+                <Grid RowDefinitions="Auto Auto Auto Auto Auto Auto Auto" ColumnDefinitions="200 260" ShowGridLines="False">
                         <Grid.Styles>
                                 <Style Selector="TextBlock">
                                         <Setter Property="FontSize" Value="18"></Setter>
                                         <Setter Property="FontWeight" Value="Bold"></Setter>
                                         <Setter Property="Height" Value="48"></Setter>
-                                        <Setter Property="Width" Value="200"></Setter>
+                                        <!-- <Setter Property="Width" Value=""></Setter> -->
                                         <Setter Property="VerticalAlignment" Value="Center"></Setter>
                                         <Setter Property="HorizontalAlignment" Value="Left"></Setter>
                                         <Setter Property="Padding" Value="10 15 10 5"></Setter>
                                 </Style>
                         </Grid.Styles>
                         <TextBlock Grid.Row="0" Grid.ColumnSpan="2" Text="{x:Static lang:Resources.SettingTitle}"
+                                   HorizontalAlignment="Center"
                                    FontSize="25"
                                    
-                                   Margin="160 0"></TextBlock>
+                                   Margin="160 0 160 10"></TextBlock>
                                                 
                         <TextBlock Name="LanguageText" Grid.Row="1" Grid.Column="0" Text="{x:Static lang:Resources.LanguageSwitch}"/>
                         <ToggleSwitch Name="StartupLanguageToggle" Grid.Row="1" Grid.Column="1" Margin="0 0 0 0"
@@ -69,15 +69,15 @@
 
 
                         
-                        <TextBlock Name="StartupDecorationSliTextBlock" Grid.Row="3" Grid.Column="0"
-                                   Text="{x:Static lang:Resources.StartupDecorationSliderTextBlock}"/>
-                        <ToggleSwitch Grid.Row="3" Grid.Column="1"></ToggleSwitch>
+                        <!-- <TextBlock Name="StartupDecorationSliTextBlock" Grid.Row="3" Grid.Column="0" -->
+                        <!--            Text="{x:Static lang:Resources.StartupDecorationSliderTextBlock}"/> -->
+                        <!-- <ToggleSwitch Grid.Row="3" Grid.Column="1"></ToggleSwitch> -->
                         
                         <TextBlock Name="HistoryLimitTextBlock" Grid.Row="4" Grid.Column="0"
                                    Text="{x:Static lang:Resources.SettingHistoryLimitTextBlock}"></TextBlock>
                         <StackPanel Grid.Row="4" Grid.Column="1"  Orientation="Horizontal">
                         <ButtonSpinner Width="120" Height="40" ButtonSpinnerLocation="Right"
-                                       Margin="5 0" Background="Gray" Opacity="0.5"
+                                       Margin="0 0" Background="Gray" Opacity="0.5"
                                        HorizontalContentAlignment="Center"
                                        AllowSpin="True"
                                        ShowButtonSpinner="True"
@@ -161,7 +161,7 @@
                                 Content="{x:Static lang:Resources.SaveButton}"
                                 FontSize="16" FontWeight="Bold" Width="70"
                                 Height="36"
-                                Margin="-40 0 40 0 "
+                                Margin="0 0 0 0 "
                                 Opacity="0.6"
                                 Background="Silver"
                                 BorderBrush="Gray"
@@ -179,8 +179,6 @@
                                 </Button.Styles>                
                         </Button>
                 </Grid>
-                </Border>
-
         </StackPanel>
         <TextBlock Name="AUX" Text="{Binding ColorDigit }" IsVisible="False"> </TextBlock>
         

@@ -1,27 +1,68 @@
 using System;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Avalonia.Controls;
+using Avalonia.CpuLimiter.Models;
+using Avalonia.CpuLimiter.Services;
 using Avalonia.CpuLimiter.ViewModels;
 using Avalonia.Input;
 using Avalonia.Interactivity;
-using Avalonia.Media;
 using Avalonia.Platform.Storage;
 using Avalonia.ReactiveUI;
 using Avalonia.Styling;
-using DynamicData;
 using Microsoft.Extensions.DependencyInjection;
 using MsBox.Avalonia;
 using MsBox.Avalonia.Dto;
 using MsBox.Avalonia.Enums;
 using ReactiveUI;
+using Serilog;
 
 namespace Avalonia.CpuLimiter.Views
 {
     public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
     {
+        // dummpy
+
         public MainWindow()
         {
             InitializeComponent();
+
+            this.WhenActivated(action =>
+                action(ViewModel!.InteractionSettingWindow.RegisterHandler(DoOpenSettingsWindowAsync)));
+
+            this.WhenAnyValue(x => x.HistoryComboBox.SelectionBoxItem)
+                .Subscribe(Console.WriteLine);
+            this.WhenAnyValue(x => x.HistoryComboBox.SelectedIndex)
+                .Subscribe(x => Console.WriteLine($@"history combobox selected index {x}"));
+            this.WhenAnyValue(x => x.HistoryComboBox.SelectedValue)
+                .Subscribe(x =>
+                {
+                    Console.WriteLine($@"history combobox selected value {x}");
+                    AutoAlterScreenWidth();
+                });
+            this.WhenAnyValue(view => view.HistoryComboBox.ItemCount)
+                .Subscribe(count =>
+                {
+                    if (count > 0)
+                        HistoryComboBox.SelectedIndex = 0;
+                });
+
+            this.WhenAnyValue(view => view.RequestedThemeVariant)
+                .Subscribe(_ =>
+                {
+                    if (RequestedThemeVariant == ThemeVariant.Dark || RequestedThemeVariant == ThemeVariant.Default)
+                        ToggleThemeButton.IsChecked = true;
+                    else
+                    {
+                        ToggleThemeButton.IsChecked = false;
+                    }
+                });
+        }
+
+        public MainWindow(ILogger logger)
+        {
+            InitializeComponent();
+            this._logger = logger;
 
             this.WhenActivated(action =>
                 action(ViewModel!.InteractionSettingWindow.RegisterHandler(DoOpenSettingsWindowAsync)));
@@ -36,6 +77,12 @@ namespace Avalonia.CpuLimiter.Views
                     Console.WriteLine($@"history combobox selected value {x}");
                     AutoAlterScreenWidth();
                 });
+            this.WhenAnyValue(view => view.HistoryComboBox.ItemCount)
+                .Subscribe(count =>
+                {
+                    if (count > 0)
+                        HistoryComboBox.SelectedIndex = 0;
+                });
 
             this.WhenAnyValue(view => view.RequestedThemeVariant)
                 .Subscribe( _ =>
@@ -49,7 +96,17 @@ namespace Avalonia.CpuLimiter.Views
                 });
             
             slider.Maximum = Environment.ProcessorCount;
+            
+            // let the window  hides to tayicon rather than be closed 
+            this.Closing += (sender, args) =>
+            {
+                (((Window)sender!)).Hide();
+                args.Cancel = true;
+
+            };
+
         }
+        private ILogger _logger;
 
         private readonly string _docsWebsiteUrl = "https://github.com/hiddenblue/Avalonia.CpuLimiter";
         
@@ -68,11 +125,12 @@ namespace Avalonia.CpuLimiter.Views
             await this._openUri(url);
         }
         
-        private void OnAboutWindowButtonClicked(object? sender, RoutedEventArgs e)
+        
+        private bool _isAboutWindowOpened = false;
+        private async void OnAboutWindowButtonClicked(object? sender, RoutedEventArgs e)
         {
-            AboutWindow aboutWindow = App.Current.Services.GetRequiredService<AboutWindow>();
-            aboutWindow.Show();
-
+                AboutWindow aboutWindow = App.Current.Services.GetRequiredService<AboutWindow>();
+                await aboutWindow.ShowDialog(this);
         }
         
         // project website button
@@ -120,13 +178,16 @@ namespace Avalonia.CpuLimiter.Views
             
             if (selectedItem is HistoryItemViewModel temp)
             {
-                Console.WriteLine($@"Width: {Width}");
-                Console.WriteLine($@"Width_compare: {temp.Path.Length * 14}");
+                    var scaleParameter = 14;
+                    if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                        scaleParameter = 16;
+                    Console.WriteLine($@"Width: {Width}");
+                    Console.WriteLine($@"Width_compare: {temp.Path.Length * scaleParameter}");
                 
-                if(Width < temp.Path.Length * 14 )
-                    Width = temp.Path.Length * 14;
-                if(Width > temp.Path.Length * 14 * 1.4)
-                    Width = temp.Path.Length * 14;
+                    if(Width < temp.Path.Length * scaleParameter )
+                        Width = temp.Path.Length * scaleParameter;
+                    if(Width > temp.Path.Length * scaleParameter * 1.4)
+                        Width = temp.Path.Length * scaleParameter;
             }
         }
 
@@ -160,20 +221,27 @@ namespace Avalonia.CpuLimiter.Views
             }
         }
 
+
         public async Task DoOpenSettingsWindowAsync(
-            IInteractionContext<SettingWindowViewModel, SettingWindowViewModel> interaction)
+            IInteractionContext<SettingWindowViewModel, MyConfigModel> interaction)
         {
             SettingWindow  settingWindow= App.Current.Services.GetRequiredService<SettingWindow>();
+            // the mvm create a settingWindowsViewModel in interaction as datacontext
             settingWindow.DataContext = interaction.Input;
             
-            var result = await settingWindow.ShowDialog<SettingWindowViewModel?>(this);
+            var result = await settingWindow.ShowDialog<MyConfigModel?>(this);
             interaction.SetOutput(result);
+            
+            RefreshThemeColor();
         }
 
-        private void RefreshThemeColor(CustomColor userColor)
+        private void RefreshThemeColor()
         {
-            this.MainBorder.Material.TintColor = userColor.Color;
+            var tempConfig = App.Current.ConfigModel;
+            this.MainBorder.Material.TintColor = App.Current.ColorCollection[tempConfig.ColorIndex].Color;
+            RequestedThemeVariant = tempConfig.ThemeVariantConfig;
         }
+
 
     }
 }

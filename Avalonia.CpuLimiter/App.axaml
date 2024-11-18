@@ -2,6 +2,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Class="Avalonia.CpuLimiter.App"
              xmlns:local="using:Avalonia.CpuLimiter"
+             xmlns:lang="using:Avalonia.CpuLimiter.Lang"
              RequestedThemeVariant="Default">
              <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
 
@@ -16,21 +17,22 @@
     
      <Application.Resources>
          <FontFamily x:Key="HarmonyOS Sans"> avares://Avalonia.CpuLimiter/Assets/Fonts#HarmonyOS Sans SC</FontFamily>
-         <FontFamily x:Key="Fira Code"> avares://Avalonia.CpuLimiter/Assets/Fonts2#Fira Code</FontFamily>
      </Application.Resources>
     
      <TrayIcon.Icons>
          <TrayIcons>
              <TrayIcon Icon="/Assets/avalonia-logo.ico" 
-                       ToolTipText="Game Launcher">
+                       ToolTipText="Game Launcher"
+                       Clicked="OnTrayIconClicked">
                  <TrayIcon.Menu>
                      <NativeMenu>
-                                 <NativeMenuItem Header="Open File"/>
-                                 <NativeMenuItem Header="Restore Window"/>
-                                 <NativeMenuItem Header="Launcher Program"/>
-                                 <NativeMenuItem Header="Settings"/>
+                                 <NativeMenuItem Click="OnRestoreButtonClicked" Header="{x:Static lang:Resources.TrayRestoreButton}">
+                                 </NativeMenuItem>
+                                 <NativeMenuItem Header="{x:Static lang:Resources.TrayOpenFileButton}" Click="OnOpenFileButtonClicked" />
+                                 <NativeMenuItem Header="{x:Static lang:Resources.TrayLaunchButton}" Click="OnLaunchProgramButtonClicked"/>
+                                 <NativeMenuItem Header="{x:Static lang:Resources.TrayOpenSettingButton}" Click="OnOpenSettingButtonClicked"/>
                                  <NativeMenuItemSeparator />
-                                 <NativeMenuItem Header="Exit Program"  Click="OnExitButtonClicked"/>
+                                 <NativeMenuItem Header="{x:Static lang:Resources.TrayExitButton}"  Click="OnExitButtonClicked"/>
                      </NativeMenu>
                  </TrayIcon.Menu>
              </TrayIcon>

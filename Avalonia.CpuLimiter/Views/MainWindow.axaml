@@ -56,7 +56,7 @@
 				</Menu.Styles>
 				
 				<MenuItem Name="FileButton" Classes="Menu1" Header="{x:Static lang:Resources.FileButton}">
-					<MenuItem Name="OpenButton" Classes="Menu2" Command="{Binding ChooseExeFile}"
+					<MenuItem Name="OpenButton" Classes="Menu2" Command="{Binding ChooseExeFileCommand}"
 					          InputGesture="Ctrl+O" HotKey="Ctrl+O">
 						<MenuItem.Header>
 							<TextBlock Text="{x:Static lang:Resources.OpenButton}"/>
@@ -71,13 +71,17 @@
 				</MenuItem>
 				
 				<MenuItem Name="EditButton" Classes="Menu1" Header="{x:Static lang:Resources.EditButton}">
-					<MenuItem Name="CutButton" Header="{x:Static lang:Resources.CutButton}" Classes="Menu2" Command="{Binding CutTextToClipboard}"
+					<MenuItem Name="CutButton" Header="{x:Static lang:Resources.CutButton}" Classes="Menu2"
+					          Command="{Binding CutTextToClipboard}"
 					          InputGesture="Ctrl+x" HotKey="Ctrl+x"
 							  CommandParameter="{Binding #Auxiliary.Text}"/>
-					<MenuItem Name="CopyButton" Header="{x:Static lang:Resources.CopyButton}" Classes="Menu2" Command="{Binding CopyTextToClipboard}"
+					
+					<MenuItem Name="CopyButton" Header="{x:Static lang:Resources.CopyButton}" Classes="Menu2"
+					          Command="{Binding CopyTextToClipboard}"
 					          InputGesture="Ctrl+c" HotKey="Ctrl+c"
 							  CommandParameter="{Binding #Auxiliary.Text}"/>
-					<MenuItem Name="PasteButton" Header="{x:Static lang:Resources.PasteButton}" Classes="Menu2" Command="{Binding PastePathFromClipboard}"
+					<MenuItem Name="PasteButton" Header="{x:Static lang:Resources.PasteButton}" Classes="Menu2"
+					          Command="{Binding PastePathFromClipboard}"
 					          InputGesture="Ctrl+v" HotKey="Ctrl+v"/>
 				</MenuItem>
 				
@@ -106,7 +110,8 @@
 				</MenuItem>
 				
 				<MenuItem Name="RunButton" Classes="Menu1" Header="{x:Static lang:Resources.RunButton}">
-					<MenuItem Name="LaunchButton" Header="{x:Static lang:Resources.LaunchButton}" Classes="Menu2" Command="{Binding RunGameCommand}"
+					<MenuItem Name="LaunchButton" Header="{x:Static lang:Resources.LaunchButton}" Classes="Menu2"
+					          Command="{Binding RunGameCommand}"
 					          InputGesture="Ctrl+R" HotKey="Ctrl+R"/>    
 				</MenuItem>
 				
@@ -140,10 +145,13 @@
 						</Style>
 					</Grid.Styles>
 
-						<ToggleButton Name="ToggleThemeButton" Padding="10 7 10 5" Width="50" Height="36" Click="OnToggleThemeButtonClicked" >
+						<ToggleButton Name="ToggleThemeButton" Padding="10 7 10 5" Width="50" Height="36"
+						              Click="OnToggleThemeButtonClicked">
 							<StackPanel>
-								<PathIcon Classes="sun" IsVisible="{Binding !#ToggleThemeButton.IsChecked}" Data="{StaticResource WeatherSunnyRegular}"></PathIcon>
-								<PathIcon Classes="moon" IsVisible="{Binding #ToggleThemeButton.IsChecked}" Data="{StaticResource WeatherMoonRegular}"></PathIcon>
+								<PathIcon Classes="sun" IsVisible="{Binding !#ToggleThemeButton.IsChecked}"
+								          Data="{StaticResource WeatherSunnyRegular}"></PathIcon>
+								<PathIcon Classes="moon" IsVisible="{Binding #ToggleThemeButton.IsChecked}"
+								          Data="{StaticResource WeatherMoonRegular}"></PathIcon>
 							</StackPanel>
 							<ToggleButton.Styles>
 								<Style Selector="ToggleButton">
@@ -173,11 +181,14 @@
 									<Setter Property="BorderBrush" Value="LightGray"></Setter>
 									<Setter Property="BorderThickness" Value="1"></Setter>
 								</Style>   
+								<Style Selector="ToolTip">
+									<Setter Property="FontWeight" Value="Normal"></Setter>
+								</Style>
 							</ToggleButton.Styles>
 						</ToggleButton>
 				</Grid>
 
-				<TextBlock Name="ExeFileBlock" FontSize="19" FontWeight="Bold" Foreground="White"
+				<TextBlock Name="ExeFileBlock" FontSize="19" FontWeight="Bold"
 				           HorizontalAlignment="Center" Padding="20"
 				           Text="{x:Static lang:Resources.ExeFileBlock}"/>
 
@@ -204,13 +215,24 @@
 					        Margin="5 0 0 0" Padding="10" Width="45"
 					        Height="{Binding #HistoryComboBox.Height }"
 					        BorderBrush="Black"
-					        ToolTip.Tip="Open the file explorer to select"
-					        Command="{Binding ChooseExeFile}">
-						</Button>
+	
+					        Command="{Binding ChooseExeFileCommand}">
+						<Button.Styles>
+							<Style Selector="Button">
+								<Setter Property="ToolTip.Tip" Value="Open the file explorer to select"></Setter>
+							</Style>
+							<Style Selector="Button:disabled">
+								<Setter Property="ToolTip.Tip"
+								        Value="555">
+								        <!-- Value="{Binding HistoryLimit, StringFormat='no more than {0} records. change it via setting'}"> -->
+								</Setter>
+							</Style>
+						</Button.Styles>
+					</Button>
 				</StackPanel>
 				<Separator Margin="0 30"/>
 				<Slider Name="slider" BorderBrush="Orange" Minimum="1"
-				        Maximum="16" IsSnapToTickEnabled="True" TickFrequency="1" TickPlacement="TopLeft"
+				        Maximum="8" IsSnapToTickEnabled="True" TickFrequency="1" TickPlacement="TopLeft"
 				        Width="400" Value="{Binding CpuCoreCount}"
 				        ToolTip.Tip="Adjust the cpu core numbers used by the Game program"
 				        PointerWheelChanged="OnPointerWheelChanged">
@@ -228,7 +250,11 @@
 					         CornerRadius="5"
 					         Width="1" MinWidth="40" Height="40" TextAlignment="Center"
 					         Text="{Binding CpuCoreCount}" FontSize="19"
-					         FontWeight="Bold" IsReadOnly="False"></TextBox>
+					         FontWeight="Bold" IsReadOnly="False"
+					         ToolTip.Tip="{Binding HostCpuCoreCount,
+					         StringFormat='Your has {0} logical CPU core. Value must be between 0~{0}'}">
+						
+					</TextBox>
 				</StackPanel>
 				<Button FontStyle="Normal" Foreground="Orange" 
 				        Command="{Binding RunGameCommand}"

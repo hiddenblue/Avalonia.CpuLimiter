@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Avalonia.CpuLimiter", "Aval
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Avalonia.CpuLimitertTest", "Avalonia.CpuLimitertTest\Avalonia.CpuLimitertTest.csproj", "{1C057D32-A048-4D47-874B-474E60F6CFC4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestDemo", "TestDemo\TestDemo.csproj", "{09CAA7AF-C50B-4ED8-9351-FC7620588247}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{1C057D32-A048-4D47-874B-474E60F6CFC4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1C057D32-A048-4D47-874B-474E60F6CFC4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1C057D32-A048-4D47-874B-474E60F6CFC4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{09CAA7AF-C50B-4ED8-9351-FC7620588247}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{09CAA7AF-C50B-4ED8-9351-FC7620588247}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{09CAA7AF-C50B-4ED8-9351-FC7620588247}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{09CAA7AF-C50B-4ED8-9351-FC7620588247}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
