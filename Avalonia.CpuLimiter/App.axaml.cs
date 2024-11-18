@@ -14,7 +14,6 @@ using Avalonia.Controls;
 using Avalonia.CpuLimiter.Models;
 using Avalonia.Media;
 
-
 namespace Avalonia.CpuLimiter
 {
     public partial class App : Application
@@ -24,61 +23,26 @@ namespace Avalonia.CpuLimiter
             AvaloniaXamlLoader.Load(this);
         }
         
-        public MyConfigModel ConfigModel { get; set; } = null!;
+        public MyConfigModel ConfigModel { get; set; }
         public new static App? Current => Application.Current as App; 
         
         private MainWindowViewModel _mainWindowViewModel;
         
         public ServiceProvider? Services { get; private set; }
 
-        private ServiceProvider ConfigureServices()
-        {
-            if (ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime desktop)
-                throw new PlatformNotSupportedException();
-            var services = new ServiceCollection();
-            services.AddSingleton<IFilesService, FilesService>(_ => new FilesService(desktop));
-            services.AddSingleton<IClipBoardService, ClipBoardService>(_ => new ClipBoardService(desktop));
-            services.AddSingleton<IHistoryItemFileService, HistoryItemFileService>();
-            
-            services.AddSingleton<MainWindowViewModel>();
-            services.AddSingleton<MainWindow>(sp =>
-            {
-                MainWindow mainWindow=  new()
-                {
-                    DataContext = sp.GetRequiredService<MainWindowViewModel>(),
-                    RequestedThemeVariant = ConfigModel.ThemeVariantConfig,
-                };
-                mainWindow.MainBorder.Material.TintColor = ColorCollection[ConfigModel.ColorIndex].Color;
-                return mainWindow;
-            });
-            
-            services.AddTransient<SettingWindowViewModel>();
-            services.AddTransient<SettingWindow>( _ =>
-            {
-                var settingWindow = new SettingWindow();
-      
-                settingWindow.SettingBorder.Material.TintColor = ColorCollection[ConfigModel.ColorIndex].Color;
-                return settingWindow;
-            });
-            
-            services.AddTransient<AboutWindow>(_ =>
-            {
-                var aboutWindow = new AboutWindow();
-                aboutWindow.RequestedThemeVariant = ConfigModel.ThemeVariantConfig;
-                aboutWindow.AboutBorder.Material.TintColor = ColorCollection[ConfigModel.ColorIndex].Color;
-                // to do theme related
-                return aboutWindow;
-            });
-            return services.BuildServiceProvider();
-        }
-
         public override void OnFrameworkInitializationCompleted()
         {
             if(ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             {
                 //dependency injection and load config.json from file
-                Services = ConfigureServices();
+                // Services.Add
+                var services = new ServiceCollection();
+                
+                services.AddSerilogConfiguration();
+                
                 ConfigModel = ConfigFileService.LoadConfig();
+                
+                this.Services = services.InitServices(ApplicationLifetime, ConfigModel);
                 
                 if(!string.IsNullOrWhiteSpace(ConfigModel.StartupCultureConfig))
                     Lang.Resources.Culture = new CultureInfo(ConfigModel.StartupCultureConfig);
@@ -87,6 +51,12 @@ namespace Avalonia.CpuLimiter
                 {
                     desktop.MainWindow = Services.GetService<MainWindow>();
                     _mainWindowViewModel = desktop.MainWindow.DataContext as MainWindowViewModel;
+                    
+                    // assign a lot delegate to mainwindow
+                    _openFileFromMWVM += _mainWindowViewModel.ChooseExeFile;
+                    _launchProgramFromMWVM += _mainWindowViewModel.RunGame;
+                    _OpenSettingFromMWVM += _mainWindowViewModel.OpenSettingWindow;
+
                 }
                 catch (Exception e)
                 {
@@ -96,6 +66,7 @@ namespace Avalonia.CpuLimiter
                 desktop.ShutdownRequested += DesktopOnShutdownRequested;
 
                 ExitApplication += OnExitApplicationTriggered;
+                
             }
             base.OnFrameworkInitializationCompleted();
 
@@ -149,13 +120,13 @@ namespace Avalonia.CpuLimiter
                 _mainWindowViewModel.ResetIndexAndItems();
             }
         }
-        
-        public async void OnExitButtonClicked(object? sender, EventArgs eventArgs)
+
+        private async void  OnExitButtonClicked(object? sender, EventArgs eventArgs)
         {
             ExitApplication?.Invoke(this, EventArgs.Empty);
         }
 
-        public  void OnExitApplicationTriggered(object? sender, EventArgs eventArgs)
+        public async void OnExitApplicationTriggered(object? sender, EventArgs eventArgs)
         {
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             {
@@ -167,7 +138,59 @@ namespace Avalonia.CpuLimiter
         // the program calling this Event to exit;
         // App.Current.ExitApplication.invoke
         public event EventHandler? ExitApplication;
+
+        private Func<Task> _openFileFromMWVM;
+
+        private async void  OnOpenFileButtonClicked(object? sender, EventArgs eventArgs)
+        {
+            if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+                if (desktop.MainWindow != null)
+                    desktop.MainWindow.WindowState = WindowState.Normal;
+            await _openFileFromMWVM();
+        }
+
+
+        private async void OnRestoreButtonClicked(object? sender, EventArgs eventArgs)
+        {
+            if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop && desktop.MainWindow != null)
+                    desktop.MainWindow.Show(); 
+        }
+
+        private Func<Task> _launchProgramFromMWVM;
+
+        private async void OnLaunchProgramButtonClicked(object? sender, EventArgs eventArgs)
+        {
+            if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop && desktop.MainWindow != null)
+                _launchProgramFromMWVM();
+        }
         
+        private Func<Task> _OpenSettingFromMWVM;
+
+        private async void OnOpenSettingButtonClicked(object? sender, EventArgs eventArgs)
+        {
+            await _OpenSettingFromMWVM();
+        }
+
+        private DateTime? _lastTrayIconClicked;
+
+        private async void OnTrayIconClicked(object? sender, EventArgs eventArgs)
+        {
+            if (_lastTrayIconClicked == null)
+            {
+                _lastTrayIconClicked = DateTime.Now;
+                return;
+            }
+
+            if(DateTime.Now.Subtract((DateTime)_lastTrayIconClicked).TotalMilliseconds > 600)
+                _lastTrayIconClicked = DateTime.Now;
+            else
+            {
+                if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop && desktop.MainWindow != null)
+                    desktop.MainWindow.Show();
+                _lastTrayIconClicked = null;
+            }
+        }
+
         public Collection<CustomColor> ColorCollection { get; } = new Collection<CustomColor>
         {
             new CustomColor("#e95815"),
@@ -194,4 +217,6 @@ namespace Avalonia.CpuLimiter
             new CustomColor(Colors.LightSkyBlue.ToString())
         };
     }
+    
+
 }

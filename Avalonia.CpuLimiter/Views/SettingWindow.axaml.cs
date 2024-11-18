@@ -1,18 +1,22 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Controls.Primitives;
+using Avalonia.CpuLimiter.Services;
 using Avalonia.CpuLimiter.ViewModels;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.Styling;
+using Serilog;
 
 namespace Avalonia.CpuLimiter.Views;
 
-public partial class SettingWindow : Window
+public partial class SettingWindow : Window, ILinuxScreen
 {
+    // dummy
     public SettingWindow()
     {
         InitializeComponent();
@@ -25,10 +29,26 @@ public partial class SettingWindow : Window
         if(Application.Current.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             ResetStateToConfig();
         
-
-        // this.WhenAnyValue(x => x.ColorSlider.Value)
-        //     .Subscribe(RefreshThemeColor);
+        AddScreenWidth();
     }
+    
+    public SettingWindow(ILogger logger)
+    {
+        InitializeComponent();
+        this._logger = logger;
+
+        if (Design.IsDesignMode)
+        {
+            SettingBorder.Material.TintColor = Colors.SkyBlue;
+        }
+        
+        if(Application.Current.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+            ResetStateToConfig();
+        
+        AddScreenWidth();
+    }
+    
+    private ILogger _logger;
 
 
     private void OnRefreshThemeColor(object sender, RangeBaseValueChangedEventArgs e)
@@ -133,24 +153,31 @@ public partial class SettingWindow : Window
     {
         var spinner = (Spinner)sender;
 
-        if (spinner.Content is TextBox textBox)
+        if (spinner.Content is TextBox textBox && int.TryParse(textBox.Text, out int limitValue))
         {
-            if (int.TryParse(textBox.Text, out int limitValue))
+            if (e.Direction == SpinDirection.Increase)
+                limitValue += 1;
+            else
             {
-                if (e.Direction == SpinDirection.Increase)
-                    limitValue += 1;
-                else
-                {
-                    limitValue -= 1;
-                }
-
-                if (DataContext is SettingWindowViewModel vm)
-                {
-                    vm.HistoryLimit = limitValue;
-                    App.Current.ConfigModel.HistoryLimit = limitValue;
-                }
+                limitValue -= 1;
             }
 
+            if (DataContext is SettingWindowViewModel vm)
+            {
+                vm.HistoryLimit = limitValue;
+                App.Current.ConfigModel.HistoryLimit = limitValue;
+            }
+
+        }
+    }
+    
+    public void AddScreenWidth()
+    {
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+        {
+            Console.WriteLine($@"mainwindow width {Width}, height {Height}");
+            this.Width *= 1.1;
+            Console.WriteLine($@" Width: {Width}");
         }
     }
 

@@ -1,7 +1,15 @@
 ﻿using Avalonia.ReactiveUI;
 using System;
+using System.IO;
+using System.Linq;
+using System.Threading;
+using Avalonia.CpuLimiter.Models;
 using Avalonia.Logging;
 using Avalonia.Media;
+using Avalonia.LinuxFramebuffer;
+using Microsoft.Extensions.Configuration;
+using Serilog;
+using Logger = Serilog.Core.Logger;
 
 namespace Avalonia.CpuLimiter
 {
@@ -13,11 +21,20 @@ namespace Avalonia.CpuLimiter
         [STAThread]
         public static void Main(string[] args)
         {
-            // if(!AdminRunner.IsRunAsAdmin())
-            // {
-            //     AdminRunner.RunElevated();
-            //      Environment.Exit(0);
-            // }
+
+            if(!AdminRunner.IsRunAsAdmin())
+            {
+                Console.WriteLine("is not run as admin");
+                Console.WriteLine("try run as admin");
+                // AdminRunner.RunElevated();
+                // Environment.Exit(0);
+            }
+            
+            // load logging system;
+            
+            
+
+            Console.WriteLine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData));
             BuildAvaloniaApp()
                 .StartWithClassicDesktopLifetime(args);
         }
@@ -34,7 +51,7 @@ namespace Avalonia.CpuLimiter
                 .With(new FontManagerOptions(){
                     DefaultFamilyName = "fonts:HarmonyOS Sans#HarmonyOS Sans SC"
                 })                
-                .LogToTrace(LogEventLevel.Debug)
+                .LogToTrace(LogEventLevel.Information)
                 .UseReactiveUI();
     }
 }

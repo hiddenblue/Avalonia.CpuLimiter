@@ -16,6 +16,7 @@ using Avalonia.CpuLimiter.Models;
 using Avalonia.CpuLimiter.Services;
 using Avalonia.CpuLimiter.Views;
 using Avalonia.Platform.Storage;
+using Serilog;
 using ArgumentNullException = System.ArgumentNullException;
 
 namespace Avalonia.CpuLimiter.ViewModels
@@ -33,23 +34,18 @@ namespace Avalonia.CpuLimiter.ViewModels
             
             // open setting window with local config model
             InteractionSettingWindow  = new Interaction<SettingWindowViewModel, MyConfigModel?>();
-            OpenSettingWindowCommand = ReactiveCommand.CreateFromTask(async () =>
-            {
-                SettingWindowViewModel settingModel =
-                    App.Current.Services.GetRequiredService<SettingWindowViewModel>();
-                MyConfigModel? result = await InteractionSettingWindow.Handle(settingModel);
-            });
+            OpenSettingWindowCommand = ReactiveCommand.CreateFromTask(OpenSettingWindow);
             
             this.WhenAnyValue(x => x.CpuCoreCount)
-                .Subscribe(x => Console.WriteLine($@"CPU core count: {x}"));
+                .Subscribe(x => _logger.Debug($@"CPU core count: {x}"));
             
             this.WhenAnyValue(x => x.GamePath)
-                .Subscribe( x => Console.WriteLine($@"Game path: {x}"));
+                .Subscribe( x => _logger.Debug($@"Game path: {x}"));
         
             this.WhenAnyValue(x => x.SelectedComboboxIndex)
                 .Subscribe(x =>
                 {
-                    Console.WriteLine($@"change Selected combobox index: {x}");
+                    _logger.Debug($@"change Selected combobox index: {x}");
                     // refresh gamepath when selectedindex is not -1
                     if(HistoryItems.Count > 0 ? true : false)
                         GamePath = HistoryItems[SelectedComboboxIndex]?.Path;
@@ -70,11 +66,12 @@ namespace Avalonia.CpuLimiter.ViewModels
         
         // real constructor
         public MainWindowViewModel(IHistoryItemFileService historyItemFileService, IClipBoardService clipBoardService,
-            IFilesService filesService)
+            IFilesService filesService, ILogger logger)
         {
             this._historyItemFileService = historyItemFileService;
             this._clipBoardService = clipBoardService;
             this._filesService = filesService;
+            this._logger = logger;
             
             ChooseExeFileCommand = ReactiveCommand.CreateFromTask(ChooseExeFile,
                 this.WhenAnyValue(vm => vm.HistoryItems.Count, count => count < this.HistoryLimit));
@@ -86,29 +83,25 @@ namespace Avalonia.CpuLimiter.ViewModels
             
             // open setting window with local config model
             InteractionSettingWindow  = new Interaction<SettingWindowViewModel, MyConfigModel?>();
-            OpenSettingWindowCommand = ReactiveCommand.CreateFromTask(async () =>
-            {
-                SettingWindowViewModel settingModel =
-                    App.Current.Services.GetRequiredService<SettingWindowViewModel>();
-                MyConfigModel? result = await InteractionSettingWindow.Handle(settingModel);
-            });
+            
+            OpenSettingWindowCommand = ReactiveCommand.CreateFromTask(OpenSettingWindow);
             
             this.WhenAnyValue(x => x.CpuCoreCount)
-                .Subscribe(x => Console.WriteLine($@"CPU core count: {x}"));
+                .Subscribe(x => _logger.Debug($@"CPU core count: {x}"));
             
             this.WhenAnyValue(x => x.GamePath)
-                .Subscribe( x => Console.WriteLine($@"Game path: {x}"));
+                .Subscribe( x => _logger.Debug($@"Game path: {x}"));
 
             this.WhenAnyValue(x => x.SelectedComboboxIndex)
                 .Subscribe(x =>
                 {
-                    Console.WriteLine($@"change Selected combobox index: {x}");
+                    _logger.Debug($@"change Selected combobox index: {x}");
                     // refresh gamepath when selectedindex is not -1
                     if(HistoryItems.Count > 0 ? true : false)
                         GamePath = HistoryItems[SelectedComboboxIndex]?.Path;
                 });
             this.HistoryLimit = App.Current.ConfigModel.HistoryLimit;
-            Console.WriteLine($@"vm startup history limit.{this.HistoryLimit}");
+            _logger.Debug($@"vm startup history limit.{this.HistoryLimit}");
 
             if (Design.IsDesignMode)
             {
@@ -127,6 +120,7 @@ namespace Avalonia.CpuLimiter.ViewModels
         private IHistoryItemFileService _historyItemFileService;
         private IClipBoardService _clipBoardService;
         private IFilesService _filesService;
+        private ILogger _logger;
 
         public ICommand SaveCommand {get;}
 
@@ -145,7 +139,7 @@ namespace Avalonia.CpuLimiter.ViewModels
                 
             else if (!File.Exists(GamePath) &&  !Directory.Exists(GamePath))
                 throw new FileNotFoundException(nameof(GamePath),$@"Path: '{GamePath}' does not exist.");
-            Console.WriteLine(GamePath);
+            _logger.Debug(GamePath);
             AdminRunner.RunAsAdmin(CpuCoreCount, GamePath);
         }
 
@@ -163,7 +157,7 @@ namespace Avalonia.CpuLimiter.ViewModels
 
             set
             {
-                Console.WriteLine($@"Game path: '{value}'");
+                _logger.Debug($@"Game path: '{value}'");
                 this.RaiseAndSetIfChanged(ref _gamePath, value);
             }
         }
@@ -195,7 +189,7 @@ namespace Avalonia.CpuLimiter.ViewModels
             }
             else
             {
-                Console.WriteLine($@"History item: {historyItem.Path} already exists");
+                _logger.Debug($@"History item: {historyItem.Path} already exists");
                 
                 // todo refresh the date of history item
             }
@@ -233,7 +227,7 @@ namespace Avalonia.CpuLimiter.ViewModels
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                _logger.Debug(e.ToString());
             }
         }
 
@@ -272,40 +266,40 @@ namespace Avalonia.CpuLimiter.ViewModels
 
         private async Task RemoveHistoryItemAsync(HistoryItemViewModel historyItem)
         { 
-            Console.WriteLine(historyItem);
-            Console.WriteLine(HistoryItems.Contains(historyItem));
+            _logger.Debug("{@historyItem)}", historyItem);
+            _logger.Debug("{HistoryItems.Contains(historyItem)}", HistoryItems.Contains(historyItem));
 
             try
             {
                 var index = HistoryItems.IndexOf(historyItem);
                 HistoryItems.RemoveAt(index);
                 await HistoryItemViewModel.SortHistoryItems(HistoryItems);
-                Console.WriteLine($@"Removed history item: {historyItem.Path}");
+                _logger.Debug($@"Removed history item: {historyItem.Path}");
                 if(HistoryItems.Count == 0) GamePath = null;
 
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
-                Console.WriteLine($@"Failed to remove history item: {historyItem.Path}");
+                _logger.Debug("{@e}", e);
+                _logger.Debug($@"Failed to remove history item: {historyItem.Path}");
             }
         }
         
         private async Task RemoveHistoryItemAsync(int index)
         { 
-            Console.WriteLine($"to remove index : {index}");
+            _logger.Debug($"to remove index : {index}");
             try
             {
                 HistoryItems.RemoveAt(index);
                 await HistoryItemViewModel.SortHistoryItems(HistoryItems);
-                Console.WriteLine($@"Removed history item index: {index}");
+                _logger.Debug($@"Removed history item index: {index}");
                 if(HistoryItems.Count == 0) GamePath = null;
 
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
-                Console.WriteLine($@"Failed to remove history index : {index}");
+                _logger.Error("{e}", e);
+                _logger.Debug($@"Failed to remove history index : {index}");
             }
         }
 
@@ -317,7 +311,7 @@ namespace Avalonia.CpuLimiter.ViewModels
 
             set
             {
-                Console.WriteLine(value);
+                _logger.Debug("{value}", value);
                 this.RaiseAndSetIfChanged(ref _selectedComboboxIndex, value);
             }
         }
@@ -358,7 +352,7 @@ namespace Avalonia.CpuLimiter.ViewModels
             }
             else
             {
-                Console.WriteLine($@"Clipboard text is empty");
+                _logger.Debug($@"Clipboard text is empty");
             }
         }
 
@@ -379,6 +373,13 @@ namespace Avalonia.CpuLimiter.ViewModels
         public Interaction<SettingWindowViewModel, MyConfigModel?> InteractionSettingWindow { get; }
 
         public ICommand OpenSettingWindowCommand { get; }
+
+        public async Task OpenSettingWindow()
+        {
+            SettingWindowViewModel settingModel =
+                App.Current.Services.GetRequiredService<SettingWindowViewModel>();
+            MyConfigModel? result = await InteractionSettingWindow.Handle(settingModel); 
+        }
         
         
         // config 

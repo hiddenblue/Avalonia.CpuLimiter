@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Avalonia;
@@ -10,13 +11,16 @@ using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Microsoft.Extensions.DependencyInjection;
 using ReactiveUI;
+using Serilog;
 
 namespace Avalonia.CpuLimiter.Views;
 
-public partial class AboutWindow : Window
+public partial class AboutWindow : Window, ILinuxScreen
 {
-    public AboutWindow()
+    public AboutWindow(ILogger logger)
     {
+        
+        this._logger = logger;
         InitializeComponent();
         AppName.Text = AboutInfo.AppName;
         AppVersion.Text = AboutInfo.AppVersion;
@@ -24,7 +28,11 @@ public partial class AboutWindow : Window
         DotnetVersion.Text = AboutInfo.DotnetVersion;
         AvaloniaUIVersion.Text = AboutInfo.AvaloniaUiVersion;
         License.Text = AboutInfo.License;
+        
+        AddScreenWidth();
     }
+    
+    private ILogger _logger;
     private async void OnCloseButtonClick(object? sender, RoutedEventArgs e)
     {
         this.Close();
@@ -49,4 +57,13 @@ public partial class AboutWindow : Window
 
         /*****************************************/
 
+        public void AddScreenWidth()
+        {
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+            {
+                Console.WriteLine($@"mainwindow width {Width}, height {Height}");
+                this.Width *= 1.1;
+                Console.WriteLine($@" Width: {Width}");
+            }
+        }
 }

@@ -125,4 +125,19 @@
     <data name="AboutLicenseText" xml:space="preserve">
         <value>开 源 协 议</value>
     </data>
+    <data name="TrayRestoreButton" xml:space="preserve">
+        <value>显示窗口</value>
+    </data>
+    <data name="TrayLaunchButton" xml:space="preserve">
+        <value>启动程序</value>
+    </data>
+    <data name="TrayExitButton" xml:space="preserve">
+        <value>退出程序</value>
+    </data>
+    <data name="TrayOpenFileButton" xml:space="preserve">
+        <value>打开文件</value>
+    </data>
+    <data name="TrayOpenSettingButton" xml:space="preserve">
+        <value>设置</value>
+    </data>
 </root>

@@ -11,6 +11,7 @@ using Avalonia.CpuLimiter.Services;
 using Avalonia.Media;
 using Avalonia.Styling;
 using ReactiveUI;
+using Serilog;
 
 namespace Avalonia.CpuLimiter.ViewModels;
 
@@ -18,7 +19,7 @@ namespace Avalonia.CpuLimiter.ViewModels;
 
 public class SettingWindowViewModel : ViewModelBase
 {
-
+    //dummy constructor
     public SettingWindowViewModel()
     {
         if (!Design.IsDesignMode)
@@ -43,6 +44,29 @@ public class SettingWindowViewModel : ViewModelBase
         this.WhenAnyValue(vm => vm.ColorDigit )
             .Subscribe(Console.WriteLine);
     }
+
+    public SettingWindowViewModel(ILogger logger)
+    {
+        this._logger = logger;
+        
+        // ColorDigital = configModel.
+        _startupCulture = App.Current.ConfigModel.StartupCultureConfig;
+        _themeVariant = App.Current?.ConfigModel.ThemeVariantConfig;
+        _historyLimit = App.Current.ConfigModel.HistoryLimit;
+        _colorDigit = App.Current.ConfigModel.ColorIndex;
+
+        SaveSettingsCommand= ReactiveCommand.CreateFromTask(() => SaveSettings());
+        ChangeStartupThemeCommand = ReactiveCommand.CreateFromTask<bool>(ChangeStartupTheme);
+        ChangeAppCultureCommand = ReactiveCommand.CreateFromTask<bool>(ChangeAppCulture);
+        this.WhenAnyValue(vm => vm.HistoryLimit)
+            .Subscribe(Console.WriteLine);
+        this.WhenAnyValue(vm => vm.ColorDigit )
+            .Subscribe(Console.WriteLine);
+        
+        
+    }
+    
+    private ILogger _logger;
 
 
     private int _historyLimit;

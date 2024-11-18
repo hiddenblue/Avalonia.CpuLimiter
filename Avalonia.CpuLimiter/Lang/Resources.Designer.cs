@@ -223,6 +223,29 @@ namespace Avalonia.CpuLimiter.Lang {
     {
         get { return ResourceManager.GetString("AboutLicenseText", resourceCulture); }
     } 
-        
+    public static string TrayOpenFileButton
+    {
+        get { return ResourceManager.GetString("TrayOpenFileButton", resourceCulture); }
+    }
+
+    public static string TrayRestoreButton
+    {
+        get { return ResourceManager.GetString("TrayRestoreButton", resourceCulture); }
+    }
+
+    public static string TrayLaunchButton
+    {
+        get { return ResourceManager.GetString("TrayLaunchButton", resourceCulture); }
+    }
+
+    public static string TrayOpenSettingButton
+    {
+        get { return ResourceManager.GetString("TrayOpenSettingButton", resourceCulture); }
+    }
+
+    public static string TrayExitButton
+    {
+        get { return ResourceManager.GetString("TrayExitButton", resourceCulture); }
+    }    
     }
 }
