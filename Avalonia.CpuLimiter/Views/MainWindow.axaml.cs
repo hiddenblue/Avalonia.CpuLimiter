@@ -1,4 +1,6 @@
 using System;
+using System.Diagnostics;
+using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Avalonia.Controls;
@@ -10,6 +12,7 @@ using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
 using Avalonia.ReactiveUI;
 using Avalonia.Styling;
+using DynamicData.Kernel;
 using Microsoft.Extensions.DependencyInjection;
 using MsBox.Avalonia;
 using MsBox.Avalonia.Dto;
@@ -66,15 +69,15 @@ namespace Avalonia.CpuLimiter.Views
 
             this.WhenActivated(action =>
                 action(ViewModel!.InteractionSettingWindow.RegisterHandler(DoOpenSettingsWindowAsync)));
-            
+
             this.WhenAnyValue(x => x.HistoryComboBox.SelectionBoxItem)
-                .Subscribe(Console.WriteLine);
+                .Subscribe(x => _logger.Debug("HistoryComboBox.SelectionBoxItem: {0}",x?.ToString()));
             this.WhenAnyValue(x => x.HistoryComboBox.SelectedIndex)
-                .Subscribe( x => Console.WriteLine($@"history combobox selected index {x}"));
+                .Subscribe( x => _logger.Debug($@"history combobox selected index {x}"));
             this.WhenAnyValue(x => x.HistoryComboBox.SelectedValue)
                 .Subscribe(x =>
                 {
-                    Console.WriteLine($@"history combobox selected value {x}");
+                    _logger.Debug($"history combobox selected value {x}");
                     AutoAlterScreenWidth();
                 });
             this.WhenAnyValue(view => view.HistoryComboBox.ItemCount)
@@ -97,13 +100,18 @@ namespace Avalonia.CpuLimiter.Views
             
             slider.Maximum = Environment.ProcessorCount;
             
-            // let the window  hides to tayicon rather than be closed 
+            // let the window  hides to tayicon rather than be closed
+
+#if DEBUG
+            
+#else
             this.Closing += (sender, args) =>
             {
                 (((Window)sender!)).Hide();
                 args.Cancel = true;
 
             };
+#endif
 
         }
         private ILogger _logger;
@@ -121,12 +129,23 @@ namespace Avalonia.CpuLimiter.Views
 
         private async void OnDocsButtonClicked(object? sender, RoutedEventArgs e)
         {
-            Uri url = new Uri(_docsWebsiteUrl);
-            await this._openUri(url);
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                Uri url = new Uri(_docsWebsiteUrl);
+                await this._openUri(url);
+            }
+            else
+            {
+                Process.Start(new ProcessStartInfo
+                {
+                    FileName = _docsWebsiteUrl,
+                    UseShellExecute = true,
+                    UserName = App.Current.UserName,
+                });
+            }
         }
-        
-        
-        private bool _isAboutWindowOpened = false;
+
+
         private async void OnAboutWindowButtonClicked(object? sender, RoutedEventArgs e)
         {
                 AboutWindow aboutWindow = App.Current.Services.GetRequiredService<AboutWindow>();
@@ -137,8 +156,20 @@ namespace Avalonia.CpuLimiter.Views
 
         private async void OnOpenProjButtonClicked(object? sender, RoutedEventArgs e)
         {
-            Uri uri = new(_projectsWebsiteUrl);
-            await this._openUri(uri);
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                Uri url = new Uri(_projectsWebsiteUrl);
+                await this._openUri(url);
+            }
+            else
+            {
+                Process.Start(new ProcessStartInfo
+                {
+                    FileName = _projectsWebsiteUrl,
+                    UseShellExecute = true,
+                    UserName = App.Current.UserName,
+                });
+            }
         }
 
         private async void OnExitButtonClicked(object? sender, RoutedEventArgs e)
@@ -165,24 +196,24 @@ namespace Avalonia.CpuLimiter.Views
 
         private void  OnPointerWheelChanged(object sender, PointerWheelEventArgs e)
         {
-            Console.WriteLine(e.Delta);
+            _logger.Debug("PointerWheelChanged e.Delta: {0}",e.Delta);
             // e.Delta.Y value is vary between [-2, 2]
             slider.Value += e.Delta.Y;
         }
 
         private async void AutoAlterScreenWidth()
         {
-            Console.WriteLine(Width);
+            _logger.Debug("Screen Width: {0}", Width);
 
             var selectedItem = HistoryComboBox.SelectedItem as HistoryItemViewModel;
             
-            if (selectedItem is HistoryItemViewModel temp)
+            if (selectedItem is { } temp)
             {
                     var scaleParameter = 14;
                     if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-                        scaleParameter = 16;
-                    Console.WriteLine($@"Width: {Width}");
-                    Console.WriteLine($@"Width_compare: {temp.Path.Length * scaleParameter}");
+                        scaleParameter = 15;
+                    _logger.Debug($"Width: {Width}");
+                    _logger.Debug($@"Width_compare: {temp.Path.Length * scaleParameter}");
                 
                     if(Width < temp.Path.Length * scaleParameter )
                         Width = temp.Path.Length * scaleParameter;
