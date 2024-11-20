@@ -8,25 +8,25 @@ namespace Avalonia.CpuLimiter.Services;
 
 public class ClipBoardService : IClipBoardService
 {
+    private readonly IClassicDesktopStyleApplicationLifetime _desktop;
 
     public ClipBoardService(IClassicDesktopStyleApplicationLifetime desktop)
     {
         _desktop = desktop;
     }
 
-    private readonly IClassicDesktopStyleApplicationLifetime _desktop;
-
-    public  async Task SetClipboardTextAsync(string text)
+    public async Task SetClipboardTextAsync(string text)
     {
         try
         {
-            if(_desktop.MainWindow is  MainWindow mainWindow  && mainWindow.Clipboard is {} clipboard)
+            if (_desktop.MainWindow is MainWindow mainWindow && mainWindow.Clipboard is { } clipboard)
                 await clipboard.SetTextAsync(text);
+            App.Current?.logger.Error("Cannot set clipboard text on this window.");
             throw new InvalidOperationException("Cannot set clipboard text on this window.");
         }
         catch (Exception e)
         {
-            Console.WriteLine(e);
+            App.Current?.logger.Error("{method} raise error {exception}", "SetClipboardTextAsync", e.ToString());
             throw;
         }
     }
@@ -37,23 +37,21 @@ public class ClipBoardService : IClipBoardService
         {
             if (_desktop.MainWindow is MainWindow mainWindow && mainWindow.Clipboard is { } clipboard)
             {
-                var text =  await clipboard.GetTextAsync();
+                string? text = await clipboard.GetTextAsync();
                 text = text!.Trim();
-            
+
                 // remove the quote symbol in Windows
                 if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
                     text = text.TrimStart('\"').TrimEnd('\"');
                 return text.Trim();
             }
+
             throw new InvalidOperationException("Cannot get clipboard text on this window.");
-            
         }
         catch (Exception e)
         {
-            Console.WriteLine(e);
+            App.Current?.logger.Error(e.ToString());
             throw;
         }
-
-    } 
-
+    }
 }

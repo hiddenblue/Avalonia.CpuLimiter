@@ -10,7 +10,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Avalonia.CpuLimiter\Avalonia.CpuLimiter.csproj" />
+        <ProjectReference Include="..\Avalonia.CpuLimiter\Avalonia.CpuLimiter.csproj"/>
     </ItemGroup>
 
 </Project>

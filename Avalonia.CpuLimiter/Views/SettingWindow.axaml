@@ -15,172 +15,173 @@
         ExtendClientAreaToDecorationsHint="True"
         WindowStartupLocation="CenterScreen"
         RequestedThemeVariant="Dark">
-        
-        <Design.DataContext>
-                <vm:SettingWindowViewModel/>
-        </Design.DataContext>
-        
-        <Panel>
+
+    <Design.DataContext>
+        <vm:SettingWindowViewModel />
+    </Design.DataContext>
+
+    <Panel>
         <!-- the windows sytle -->
         <ExperimentalAcrylicBorder IsHitTestVisible="False" Name="SettingBorder">
-                <ExperimentalAcrylicBorder.Material>
-                        <ExperimentalAcrylicMaterial 
-                                BackgroundSource="Digger"
-                                TintColor="Black"
-                                TintOpacity="1"
-                                MaterialOpacity="0.25" />
-                </ExperimentalAcrylicBorder.Material>
+            <ExperimentalAcrylicBorder.Material>
+                <ExperimentalAcrylicMaterial
+                    BackgroundSource="Digger"
+                    TintColor="Black"
+                    TintOpacity="1"
+                    MaterialOpacity="0.25" />
+            </ExperimentalAcrylicBorder.Material>
         </ExperimentalAcrylicBorder>
-        
+
         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Top" Margin="20 0">
-                <Grid RowDefinitions="Auto Auto Auto Auto Auto Auto Auto" ColumnDefinitions="200 260" ShowGridLines="False">
-                        <Grid.Styles>
-                                <Style Selector="TextBlock">
-                                        <Setter Property="FontSize" Value="18"></Setter>
-                                        <Setter Property="FontWeight" Value="Bold"></Setter>
-                                        <Setter Property="Height" Value="48"></Setter>
-                                        <!-- <Setter Property="Width" Value=""></Setter> -->
-                                        <Setter Property="VerticalAlignment" Value="Center"></Setter>
-                                        <Setter Property="HorizontalAlignment" Value="Left"></Setter>
-                                        <Setter Property="Padding" Value="10 15 10 5"></Setter>
+            <Grid RowDefinitions="Auto Auto Auto Auto Auto Auto Auto" ColumnDefinitions="200 260" ShowGridLines="False">
+                <Grid.Styles>
+                    <Style Selector="TextBlock">
+                        <Setter Property="FontSize" Value="18" />
+                        <Setter Property="FontWeight" Value="Bold" />
+                        <Setter Property="Height" Value="48" />
+                        <!-- <Setter Property="Width" Value=""></Setter> -->
+                        <Setter Property="VerticalAlignment" Value="Center" />
+                        <Setter Property="HorizontalAlignment" Value="Left" />
+                        <Setter Property="Padding" Value="10 15 10 5" />
+                    </Style>
+                </Grid.Styles>
+                <TextBlock Grid.Row="0" Grid.ColumnSpan="2" Text="{x:Static lang:Resources.SettingTitle}"
+                           HorizontalAlignment="Center"
+                           FontSize="25"
+
+                           Margin="160 0 160 10" />
+
+                <TextBlock Name="LanguageText" Grid.Row="1" Grid.Column="0"
+                           Text="{x:Static lang:Resources.LanguageSwitch}" />
+                <ToggleSwitch Name="StartupLanguageToggle" Grid.Row="1" Grid.Column="1" Margin="0 0 0 0"
+                              OnContent="{x:Static lang:Resources.SettingStartupLanguageToggleEnglish}"
+                              OffContent="{x:Static lang:Resources.SettingStartupLanguageToggleChinese}"
+                              Command="{Binding ChangeAppCultureCommand}"
+                              CommandParameter="{Binding #StartupLanguageToggle.IsChecked}" />
+
+
+                <TextBlock Name="StartupThemeTextBlock" Grid.Row="2" Grid.Column="0"
+                           Text="{x:Static lang:Resources.SettingStartupThemeTextBlock}" />
+                <ToggleSwitch Name="StartupThemeToggle" Grid.Row="2" Grid.Column="1" Margin="0 0 0 0"
+                              OnContent="{x:Static lang:Resources.LightThemeButton}"
+                              OffContent="{x:Static lang:Resources.DarkThemeButton}"
+                              Command="{Binding ChangeStartupThemeCommand}"
+                              CommandParameter="{Binding #StartupThemeToggle.IsChecked}"
+                              Click="OnToggleThemeButtonClicked" />
+
+
+                <!-- <TextBlock Name="StartupDecorationSliTextBlock" Grid.Row="3" Grid.Column="0" -->
+                <!--            Text="{x:Static lang:Resources.StartupDecorationSliderTextBlock}"/> -->
+                <!-- <ToggleSwitch Grid.Row="3" Grid.Column="1"></ToggleSwitch> -->
+
+                <TextBlock Name="HistoryLimitTextBlock" Grid.Row="4" Grid.Column="0"
+                           Text="{x:Static lang:Resources.SettingHistoryLimitTextBlock}" />
+                <StackPanel Grid.Row="4" Grid.Column="1" Orientation="Horizontal">
+                    <ButtonSpinner Width="120" Height="40" ButtonSpinnerLocation="Right"
+                                   Margin="0 0" Background="Gray" Opacity="0.5"
+                                   HorizontalContentAlignment="Center"
+                                   AllowSpin="True"
+                                   ShowButtonSpinner="True"
+                                   Spin="OnHistoryLimitSpinnerChanged"
+                                   VerticalContentAlignment="Center">
+                        <TextBox Width="5" Background="Transparent"
+                                 Text="{Binding HistoryLimit}"
+                                 FontSize="18" Foreground="White">
+                            <!-- inner textbox -->
+                            <TextBox.Styles>
+                                <Style Selector="TextBox:pointerover /template/ Border#PART_BorderElement">
+                                    <Setter Property="Background" Value="Transparent" />
                                 </Style>
-                        </Grid.Styles>
-                        <TextBlock Grid.Row="0" Grid.ColumnSpan="2" Text="{x:Static lang:Resources.SettingTitle}"
-                                   HorizontalAlignment="Center"
-                                   FontSize="25"
-                                   
-                                   Margin="160 0 160 10"></TextBlock>
-                                                
-                        <TextBlock Name="LanguageText" Grid.Row="1" Grid.Column="0" Text="{x:Static lang:Resources.LanguageSwitch}"/>
-                        <ToggleSwitch Name="StartupLanguageToggle" Grid.Row="1" Grid.Column="1" Margin="0 0 0 0"
-                                      OnContent="{x:Static lang:Resources.SettingStartupLanguageToggleEnglish}"
-                                      OffContent="{x:Static lang:Resources.SettingStartupLanguageToggleChinese}" Command="{Binding ChangeAppCultureCommand}"
-                                      CommandParameter="{Binding #StartupLanguageToggle.IsChecked}"></ToggleSwitch>
+                                <Style Selector="TextBox:focus-within:focus">
+                                    <Setter Property="Background" Value="Transparent" />
+                                </Style>
+                                <Style Selector="TextBox">
+                                    <Setter Property="HorizontalContentAlignment" Value="Center" />
+                                    <Setter Property="VerticalContentAlignment" Value="Center" />
+                                    <Setter Property="BorderBrush" Value="Transparent" />
+                                    <Setter Property="BorderThickness" Value="0" />
+                                </Style>
+                            </TextBox.Styles>
+                        </TextBox>
+                    </ButtonSpinner>
+                </StackPanel>
 
-                                                
-                        <TextBlock Name="StartupThemeTextBlock" Grid.Row="2" Grid.Column="0"
-                                   Text="{x:Static lang:Resources.SettingStartupThemeTextBlock}"/>
-                        <ToggleSwitch Name="StartupThemeToggle" Grid.Row="2" Grid.Column="1" Margin="0 0 0 0"
-                                      OnContent="{x:Static lang:Resources.LightThemeButton}"
-                                      OffContent="{x:Static lang:Resources.DarkThemeButton}"
-                                      Command="{Binding ChangeStartupThemeCommand}"
-                                      CommandParameter="{Binding #StartupThemeToggle.IsChecked}"
-                                      Click="OnToggleThemeButtonClicked"></ToggleSwitch>
+                <TextBlock Name="ThemeColorSliderTextBlock" Grid.Row="5" Grid.Column="0"
+                           Text="{x:Static lang:Resources.SettingThemeColorSliderTextBlock}" />
+                <StackPanel Grid.Row="5" Grid.Column="1" Orientation="Vertical">
+                    <Slider Name="ColorSlider" Width="245" Margin="0 -10 10 -20" TickFrequency="1"
+                            Minimum="0" Maximum="15" TickPlacement="TopLeft"
+                            IsSnapToTickEnabled="True"
+                            Value="{Binding ColorDigit}"
+                            ValueChanged="OnRefreshThemeColor"
+                            PointerWheelChanged="OnPointerWheelChanged"
+                            HorizontalAlignment="Left">
+                        <Slider.Styles>
+                            <!-- <Style Selector="Slider#ColorSlider:horizontal"> -->
+                            <!--         <Style Selector="^ /template/ Thumb"> -->
+                            <!--                 <Setter Property="Background" Value="{Binding ColorCollection[8].Hex }"></Setter> -->
+                            <!--                 <Setter Property="BorderBrush" Value="Silver"></Setter> -->
+                            <!--                 <Setter Property="BorderThickness" Value="1"></Setter> -->
+                            <!--                 <Style Selector="^ Border"> -->
+                            <!--                         <Setter Property="Opacity" Value="0.8"></Setter> -->
+                            <!--                 </Style> -->
+                            <!--         </Style> -->
+                            <!-- </Style> -->
+                            <Style Selector="Slider#ColorSlider:horizontal">
+                                <Style Selector="^ /template/ Thumb">
+                                    <Setter Property="Background" Value="White" />
+                                    <Setter Property="Opacity" Value="0.7" />
+                                    <Setter Property="BorderBrush" Value="Silver" />
+                                    <Setter Property="BorderThickness" Value="1" />
+                                    <Style Selector="^ Border">
+                                        <Setter Property="Opacity" Value="0.8" />
+                                    </Style>
+                                </Style>
+                            </Style>
 
+                            <Style Selector="Slider#ColorSlider:pointerover:focus-within:focus:pressed">
+                                <Style Selector="^ /template/ Thumb">
+                                    <Setter Property="Background" Value="Orange" />
+                                    <Setter Property="BorderBrush" Value="DeepSkyBlue" />
+                                    <Setter Property="BorderThickness" Value="1" />
+                                    <Style Selector="^ Border">
+                                        <Setter Property="Opacity" Value="0.8" />
+                                    </Style>
+                                </Style>
+                            </Style>
 
-                        
-                        <!-- <TextBlock Name="StartupDecorationSliTextBlock" Grid.Row="3" Grid.Column="0" -->
-                        <!--            Text="{x:Static lang:Resources.StartupDecorationSliderTextBlock}"/> -->
-                        <!-- <ToggleSwitch Grid.Row="3" Grid.Column="1"></ToggleSwitch> -->
-                        
-                        <TextBlock Name="HistoryLimitTextBlock" Grid.Row="4" Grid.Column="0"
-                                   Text="{x:Static lang:Resources.SettingHistoryLimitTextBlock}"></TextBlock>
-                        <StackPanel Grid.Row="4" Grid.Column="1"  Orientation="Horizontal">
-                        <ButtonSpinner Width="120" Height="40" ButtonSpinnerLocation="Right"
-                                       Margin="0 0" Background="Gray" Opacity="0.5"
-                                       HorizontalContentAlignment="Center"
-                                       AllowSpin="True"
-                                       ShowButtonSpinner="True"
-                                       Spin="OnHistoryLimitSpinnerChanged"
-                                       VerticalContentAlignment="Center">
-                                <TextBox Width="5" Background="Transparent"
-                                         Text="{Binding HistoryLimit}"
-                                         FontSize="18" Foreground="White">
-                                        <!-- inner textbox -->
-                                        <TextBox.Styles>
-                                                <Style Selector="TextBox:pointerover /template/ Border#PART_BorderElement">
-                                                        <Setter Property="Background" Value="Transparent"></Setter>
-                                                </Style>
-                                                <Style Selector="TextBox:focus-within:focus">
-                                                        <Setter Property="Background" Value="Transparent"></Setter>
-                                                </Style>
-                                                <Style Selector="TextBox">
-                                                        <Setter Property="HorizontalContentAlignment" Value="Center"></Setter>
-                                                        <Setter Property="VerticalContentAlignment" Value="Center"></Setter>
-                                                        <Setter Property="BorderBrush" Value="Transparent"></Setter>
-                                                        <Setter Property="BorderThickness" Value="0"></Setter>
-                                                </Style>
-                                        </TextBox.Styles>
-                                </TextBox>
-                        </ButtonSpinner>
-                        </StackPanel>
-                        
-                        <TextBlock Name="ThemeColorSliderTextBlock" Grid.Row="5" Grid.Column="0"
-                                   Text="{x:Static lang:Resources.SettingThemeColorSliderTextBlock}" ></TextBlock>
-                        <StackPanel Grid.Row="5" Grid.Column="1" Orientation="Vertical">
-                                <Slider Name="ColorSlider" Width="245" Margin="0 -10 10 -20" TickFrequency="1"
-                                        Minimum="0" Maximum="15" TickPlacement="TopLeft"
-                                        IsSnapToTickEnabled="True"
-                                        Value="{Binding ColorDigit}"
-                                        ValueChanged="OnRefreshThemeColor"
-                                        PointerWheelChanged="OnPointerWheelChanged"
-                                        HorizontalAlignment="Left">
-                                        <Slider.Styles>
-                                                <!-- <Style Selector="Slider#ColorSlider:horizontal"> -->
-                                                <!--         <Style Selector="^ /template/ Thumb"> -->
-                                                <!--                 <Setter Property="Background" Value="{Binding ColorCollection[8].Hex }"></Setter> -->
-                                                <!--                 <Setter Property="BorderBrush" Value="Silver"></Setter> -->
-                                                <!--                 <Setter Property="BorderThickness" Value="1"></Setter> -->
-                                                <!--                 <Style Selector="^ Border"> -->
-                                                <!--                         <Setter Property="Opacity" Value="0.8"></Setter> -->
-                                                <!--                 </Style> -->
-                                                <!--         </Style> -->
-                                                <!-- </Style> -->
-                                                <Style Selector="Slider#ColorSlider:horizontal">
-                                                        <Style Selector="^ /template/ Thumb">
-                                                                <Setter Property="Background" Value="White"></Setter>
-                                                                <Setter Property="Opacity" Value="0.7"></Setter>
-                                                                <Setter Property="BorderBrush" Value="Silver"></Setter>
-                                                                <Setter Property="BorderThickness" Value="1"></Setter>
-                                                                <Style Selector="^ Border">
-                                                                        <Setter Property="Opacity" Value="0.8"></Setter>
-                                                                </Style>
-                                                        </Style>
-                                                </Style>
-                                                
-                                                <Style Selector="Slider#ColorSlider:pointerover:focus-within:focus:pressed">
-                                                        <Style Selector="^ /template/ Thumb">
-                                                                <Setter Property="Background" Value="Orange" ></Setter>
-                                                                <Setter Property="BorderBrush" Value="DeepSkyBlue"></Setter>
-                                                                <Setter Property="BorderThickness" Value="1"></Setter>
-                                                                <Style Selector="^ Border">
-                                                                        <Setter Property="Opacity" Value="0.8"></Setter>
-                                                                </Style>
-                                                        </Style>
-                                                </Style>
-              
-                                        </Slider.Styles>
-                                </Slider> 
-                                
-                                <!-- the color stripe here-->
-                                <views:ColorStripe1/>
-          
-                        </StackPanel>
-    
-                        <Button Name="SaveButton" Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="2"
-                                Content="{x:Static lang:Resources.SaveButton}"
-                                FontSize="16" FontWeight="Bold" Width="70"
-                                Height="36"
-                                Margin="0 0 0 0 "
-                                Opacity="0.6"
-                                Background="Silver"
-                                BorderBrush="Gray"
-                                BorderThickness="1"
-                                HorizontalAlignment="Center"
-                                HorizontalContentAlignment="Center"
-                                VerticalContentAlignment="Center"
-                                Command="{Binding SaveSettingsCommand}">
-                                <Button.Styles>
-                                        <Style Selector="#SaveButton:pointerover /template/ ContentPresenter">
-                                                <Setter Property="Background" Value="Black"></Setter>
-                                                <Setter Property="Opacity" Value="1"></Setter>
-                                        </Style>
-            
-                                </Button.Styles>                
-                        </Button>
-                </Grid>
+                        </Slider.Styles>
+                    </Slider>
+
+                    <!-- the color stripe here-->
+                    <views:ColorStripe1 />
+
+                </StackPanel>
+
+                <Button Name="SaveButton" Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="2"
+                        Content="{x:Static lang:Resources.SaveButton}"
+                        FontSize="16" FontWeight="Bold" Width="70"
+                        Height="36"
+                        Margin="0 0 0 0 "
+                        Opacity="0.6"
+                        Background="Silver"
+                        BorderBrush="Gray"
+                        BorderThickness="1"
+                        HorizontalAlignment="Center"
+                        HorizontalContentAlignment="Center"
+                        VerticalContentAlignment="Center"
+                        Command="{Binding SaveSettingsCommand}">
+                    <Button.Styles>
+                        <Style Selector="#SaveButton:pointerover /template/ ContentPresenter">
+                            <Setter Property="Background" Value="Black" />
+                            <Setter Property="Opacity" Value="1" />
+                        </Style>
+
+                    </Button.Styles>
+                </Button>
+            </Grid>
         </StackPanel>
-        <TextBlock Name="AUX" Text="{Binding ColorDigit }" IsVisible="False"> </TextBlock>
-        
-</Panel>
+        <TextBlock Name="AUX" Text="{Binding ColorDigit }" IsVisible="False" />
+
+    </Panel>
 </Window>

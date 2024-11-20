@@ -1,11 +1,8 @@
-
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using Avalonia.CpuLimiter.Models;
 
 namespace Avalonia.CpuLimitertTest;
-
-
 
 public class ProcessHelperTest
 {
@@ -42,7 +39,7 @@ public class ProcessHelperTest
     public void TestnintBitMask(nint value, string expectedOutput)
     {
         // Arrange
-        var consoleOutput = new StringWriter();
+        StringWriter? consoleOutput = new();
         Console.SetOut(consoleOutput);
 
         // Act
@@ -51,9 +48,8 @@ public class ProcessHelperTest
 
         // Assert
         Assert.Equal(expectedOutput, actualOutput);
-
     }
-    
+
     [Theory]
     [InlineData(0, 0)]
     [InlineData(1, 1)]
@@ -73,15 +69,13 @@ public class ProcessHelperTest
         // Assert
         Assert.Equal(expectedCount, count);
     }
-    
+
     [Fact]
     public void TestGetProcessAffinity_Windows1()
     {
         if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-        {
             // Skip the test if not running on Windows
             return;
-        }
 
         // Arrange
         Process currentProcess = Process.GetCurrentProcess();
@@ -92,14 +86,13 @@ public class ProcessHelperTest
         // Assert
         Assert.True(affinity == 16);
     }
+
     [Fact]
     public void TestGetProcessAffinity_Windows2()
     {
         if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-        {
             // Skip the test if not running on Windows
             return;
-        }
 
         // Act
         int affinity = ProcessHelper.GetProcessAffinity(17892);
@@ -107,15 +100,13 @@ public class ProcessHelperTest
         // Assert
         Assert.True(affinity > 0);
     }
-    
+
     [Fact]
     public void TestGetProcessAffinity_Linux()
     {
         if (!RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-        {
             // Skip the test if not running on Linux
             return;
-        }
 
         // Arrange
         Process currentProcess = Process.GetCurrentProcess();
@@ -132,10 +123,8 @@ public class ProcessHelperTest
     {
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ||
             RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-        {
             // Skip the test if running on a supported platform
             return;
-        }
 
         // Arrange
         Process currentProcess = Process.GetCurrentProcess();
@@ -143,15 +132,13 @@ public class ProcessHelperTest
         // Act & Assert
         Assert.Throws<PlatformNotSupportedException>(() => ProcessHelper.GetProcessAffinity(currentProcess));
     }
-    
+
     [Fact]
     public void TestGetProcessAffinityBitMask_Windows()
     {
         if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-        {
             // Skip the test if not running on Windows
             return;
-        }
 
         // Arrange
         int processId = Process.GetCurrentProcess().Id;
@@ -167,10 +154,8 @@ public class ProcessHelperTest
     public void TestGetProcessAffinityBitMask_Linux()
     {
         if (!RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-        {
             // Skip the test if not running on Linux
             return;
-        }
 
         // Arrange
         int processId = Process.GetCurrentProcess().Id;
@@ -187,10 +172,8 @@ public class ProcessHelperTest
     {
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ||
             RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-        {
             // Skip the test if running on a supported platform
             return;
-        }
 
         // Arrange
         int processId = Process.GetCurrentProcess().Id;

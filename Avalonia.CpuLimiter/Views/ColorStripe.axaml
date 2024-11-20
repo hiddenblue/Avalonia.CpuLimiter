@@ -7,27 +7,27 @@
              x:Class="Avalonia.CpuLimiter.Views.ColorStripe1"
              x:DataType="vm:SettingWindowViewModel">
 
-                <ItemsRepeater ItemsSource="{Binding ColorCollection}">
-                        <ItemsRepeater.Layout>
-                                <StackLayout Orientation="Horizontal"></StackLayout>
-                        </ItemsRepeater.Layout>
-                        
-                        <ItemsRepeater.Styles>
-                                <Style Selector="ItemsRepeater">
-                                        <Setter Property="Margin" Value=" 0 6 0 10"></Setter>
-                                </Style>
-                                <Style Selector="Rectangle">
-                                        <Setter Property="Width" Value="15"></Setter>
-                                        <Setter Property="Height" Value="15"></Setter>
-                                        <Setter Property="Opacity" Value="0.75"></Setter>
-                                </Style>
-                        </ItemsRepeater.Styles>
-                        
-                        <ItemsRepeater.ItemTemplate>
-                               <DataTemplate DataType="vm:CustomColor">
-                                       <Rectangle Fill="{Binding Hex}"></Rectangle>
-                               </DataTemplate>
-                       </ItemsRepeater.ItemTemplate> 
-                        
-                </ItemsRepeater>
+    <ItemsRepeater ItemsSource="{Binding ColorCollection}">
+        <ItemsRepeater.Layout>
+            <StackLayout Orientation="Horizontal" />
+        </ItemsRepeater.Layout>
+
+        <ItemsRepeater.Styles>
+            <Style Selector="ItemsRepeater">
+                <Setter Property="Margin" Value=" 0 6 0 10" />
+            </Style>
+            <Style Selector="Rectangle">
+                <Setter Property="Width" Value="15" />
+                <Setter Property="Height" Value="15" />
+                <Setter Property="Opacity" Value="0.75" />
+            </Style>
+        </ItemsRepeater.Styles>
+
+        <ItemsRepeater.ItemTemplate>
+            <DataTemplate DataType="vm:CustomColor">
+                <Rectangle Fill="{Binding Hex}" />
+            </DataTemplate>
+        </ItemsRepeater.ItemTemplate>
+
+    </ItemsRepeater>
 </UserControl>

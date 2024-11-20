@@ -13,93 +13,90 @@
         ExtendClientAreaToDecorationsHint="True"
         WindowStartupLocation="CenterOwner"
         CornerRadius="10">
-        
-        <Panel>
-                <!-- the windows sytle -->
-                <ExperimentalAcrylicBorder IsHitTestVisible="False" Name="AboutBorder">
-                        <ExperimentalAcrylicBorder.Material>
-                                <ExperimentalAcrylicMaterial
-                                        BackgroundSource="Digger"
-                                        TintColor="SkyBlue"
-                                        TintOpacity="1"
-                                        MaterialOpacity="0.25" />
-                        </ExperimentalAcrylicBorder.Material>
-                </ExperimentalAcrylicBorder>
-                <StackPanel HorizontalAlignment="Center" Margin="0 20">
-                        <!-- Title -->
 
-                        <Grid RowDefinitions="Auto * * * *" ColumnDefinitions="Auto *" ShowGridLines="False">
-                                
+    <Panel>
+        <!-- the windows sytle -->
+        <ExperimentalAcrylicBorder IsHitTestVisible="False" Name="AboutBorder">
+            <ExperimentalAcrylicBorder.Material>
+                <ExperimentalAcrylicMaterial
+                    BackgroundSource="Digger"
+                    TintColor="SkyBlue"
+                    TintOpacity="1"
+                    MaterialOpacity="0.25" />
+            </ExperimentalAcrylicBorder.Material>
+        </ExperimentalAcrylicBorder>
+        <StackPanel HorizontalAlignment="Center" Margin="0 20">
+            <!-- Title -->
 
-                                <StackPanel Grid.Row="0" Grid.ColumnSpan="2" Orientation="Horizontal"
-                                            Margin="10 20 "
-                                            HorizontalAlignment="Center">
-                                        <TextBlock Name="AppName" FontSize="18"
-                                                   FontWeight="Bold"
-                                                   HorizontalAlignment="Right"></TextBlock>
-                                        <TextBlock Text="  ">  </TextBlock> 
-                                
-                                        <TextBlock Grid.Row="0" Grid.Column="1" Name="AppVersion" FontSize="18"
-                                                   FontWeight="Bold" 
-                                                   HorizontalAlignment="Center"></TextBlock>
-                                </StackPanel>
-                                <Grid.Styles>
-                                        <Style Selector="TextBlock">
-                                                <Setter Property="Height" Value="26"></Setter>
-                                                <Setter Property="FontWeight" Value="Bold"> </Setter>
-                                                <Setter Property="FontSize" Value="15"></Setter>
-                                                <Setter Property="VerticalAlignment" Value="Center"></Setter>
-                                                
-                                        </Style>
-                                        <Style Selector="TextBlock.left">
-                                                <Setter Property="Padding" Value="0 0 30 0"/>
-                                                <Setter Property="HorizontalAlignment" Value="Left"></Setter>
-                                        </Style>
-                                         <Style Selector="TextBlock.right">
-                                                <Setter Property="Padding" Value="30 0 0 0"/>
-                                         </Style>
-                                </Grid.Styles>
-                                
-                                <TextBlock Classes="left" Name="AboutAuthorText" Grid.Row="1" Grid.Column="0"
-                                           Text="{x:Static lang:Resources.AboutAuthorText}"></TextBlock>
-                                
-                                <TextBlock Classes="right" Name="AuthorName" Grid.Row="1" Grid.Column="1"
-                                          ></TextBlock>
-                                
-                                <TextBlock Classes="left" Name="AboutDotnetVersionText" Grid.Row="2" Grid.Column="0"
-                                            Text="{x:Static lang:Resources.AboutDotnetVersionText}"></TextBlock>
-                                <TextBlock Classes="right" Name="DotnetVersion" Grid.Row="2" Grid.Column="1"></TextBlock>
-                                
-                                <TextBlock Classes="left" Name="AvaloniaUIVersionText" Grid.Row="3" Grid.Column="0"
-                                           Text="{x:Static lang:Resources.AvaloniaUIVersionText}"></TextBlock>
-                                <TextBlock Classes="right" Name="AvaloniaUIVersion" Grid.Row="3" Grid.Column="1"></TextBlock>
-                                
-                                <TextBlock Classes="left" Name="AboutLicenseText" Grid.Row="4" Grid.Column="0"
-                                           Text="{x:Static lang:Resources.AboutLicenseText}"></TextBlock> 
-                                <TextBlock Classes="right" Name="License" Grid.Row="4" Grid.Column="1">GPLV2</TextBlock> 
-                        </Grid> 
-     
+            <Grid RowDefinitions="Auto * * * *" ColumnDefinitions="Auto *" ShowGridLines="False">
+
+
+                <StackPanel Grid.Row="0" Grid.ColumnSpan="2" Orientation="Horizontal"
+                            Margin="10 20 "
+                            HorizontalAlignment="Center">
+                    <TextBlock Name="AppName" FontSize="18"
+                               FontWeight="Bold"
+                               HorizontalAlignment="Right" />
+                    <TextBlock Text="  " />
+
+                    <TextBlock Name="AppVersion" FontSize="18"
+                               FontWeight="Bold"
+                               HorizontalAlignment="Center" />
                 </StackPanel>
-                
-                
-                
-                <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom"
-                            Margin="160 40 0 20">
-                        <Button Content="{x:Static lang:Resources.CopyCloseButton}" FontSize="16" FontWeight="Bold"
-                                Margin="0 0 6 0"
-                                Padding="10 6"
-                                Background="DodgerBlue"
-                                Opacity="0.8"
-                                Click="OnCopyAndCloseButtonClicked"/>
-                        <Button Content="{x:Static lang:Resources.CloseButton}" Click="OnCloseButtonClick"
-                                HotKey="Escape"
-                                FontSize="16" FontWeight="Normal"
-                                Opacity="0.7"
-                                Margin="0 0 6 0"
-                                Padding="10 6">
-                        </Button>
-                </StackPanel>
-        </Panel>
+                <Grid.Styles>
+                    <Style Selector="TextBlock">
+                        <Setter Property="Height" Value="26" />
+                        <Setter Property="FontWeight" Value="Bold" />
+                        <Setter Property="FontSize" Value="15" />
+                        <Setter Property="VerticalAlignment" Value="Center" />
+
+                    </Style>
+                    <Style Selector="TextBlock.left">
+                        <Setter Property="Padding" Value="0 0 30 0" />
+                        <Setter Property="HorizontalAlignment" Value="Left" />
+                    </Style>
+                    <Style Selector="TextBlock.right">
+                        <Setter Property="Padding" Value="30 0 0 0" />
+                    </Style>
+                </Grid.Styles>
+
+                <TextBlock Classes="left" Name="AboutAuthorText" Grid.Row="1" Grid.Column="0"
+                           Text="{x:Static lang:Resources.AboutAuthorText}" />
+
+                <TextBlock Classes="right" Name="AuthorName" Grid.Row="1" Grid.Column="1" />
+
+                <TextBlock Classes="left" Name="AboutDotnetVersionText" Grid.Row="2" Grid.Column="0"
+                           Text="{x:Static lang:Resources.AboutDotnetVersionText}" />
+                <TextBlock Classes="right" Name="DotnetVersion" Grid.Row="2" Grid.Column="1" />
+
+                <TextBlock Classes="left" Name="AvaloniaUIVersionText" Grid.Row="3" Grid.Column="0"
+                           Text="{x:Static lang:Resources.AvaloniaUIVersionText}" />
+                <TextBlock Classes="right" Name="AvaloniaUIVersion" Grid.Row="3" Grid.Column="1" />
+
+                <TextBlock Classes="left" Name="AboutLicenseText" Grid.Row="4" Grid.Column="0"
+                           Text="{x:Static lang:Resources.AboutLicenseText}" />
+                <TextBlock Classes="right" Name="License" Grid.Row="4" Grid.Column="1">GPLV2</TextBlock>
+            </Grid>
+
+        </StackPanel>
+
+
+        <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom"
+                    Margin="160 40 0 20">
+            <Button Content="{x:Static lang:Resources.CopyCloseButton}" FontSize="16" FontWeight="Bold"
+                    Margin="0 0 6 0"
+                    Padding="10 6"
+                    Background="DodgerBlue"
+                    Opacity="0.8"
+                    Click="OnCopyAndCloseButtonClicked" />
+            <Button Content="{x:Static lang:Resources.CloseButton}" Click="OnCloseButtonClick"
+                    HotKey="Escape"
+                    FontSize="16" FontWeight="Normal"
+                    Opacity="0.7"
+                    Margin="0 0 6 0"
+                    Padding="10 6" />
+        </StackPanel>
+    </Panel>
 
 
 </Window>

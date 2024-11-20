@@ -10,6 +10,12 @@ namespace Avalonia.CpuLimiter.ViewModels;
 
 public class HistoryItemViewModel : ViewModelBase
 {
+    private int? _CPUCoreUsed;
+
+    private DateTime? _lastUsed;
+
+    private string? _path;
+
     public HistoryItemViewModel()
     {
     }
@@ -21,21 +27,17 @@ public class HistoryItemViewModel : ViewModelBase
         CPUCoreUsed = historyItem.CPUCoreUsed;
     }
 
-    private string? _path;
     public string? Path
     {
         get => _path;
         set => this.RaiseAndSetIfChanged(ref _path, value);
     }
 
-    private DateTime? _lastUsed;
     public DateTime? LastUsed
     {
         get => _lastUsed;
         set => this.RaiseAndSetIfChanged(ref _lastUsed, value);
     }
-
-    private int? _CPUCoreUsed;
 
     public int? CPUCoreUsed
     {
@@ -45,11 +47,11 @@ public class HistoryItemViewModel : ViewModelBase
 
     public HistoryItem GetHistoryItem()
     {
-        return new HistoryItem()
+        return new HistoryItem
         {
-            Path = this.Path,
-            CPUCoreUsed = this.CPUCoreUsed,
-            LastUsed = this.LastUsed,
+            Path = Path,
+            CPUCoreUsed = CPUCoreUsed,
+            LastUsed = LastUsed
         };
     }
 
@@ -57,9 +59,7 @@ public class HistoryItemViewModel : ViewModelBase
     {
         // call the base item equal function
         if (obj is HistoryItemViewModel other)
-        {
             return Path == other.Path && LastUsed == other.LastUsed && CPUCoreUsed == other.CPUCoreUsed;
-        }
         return false;
     }
 
@@ -67,27 +67,24 @@ public class HistoryItemViewModel : ViewModelBase
     {
         return (Path, CPUCoreUsed, LastUsed).GetHashCode();
     }
-    
-    
+
+
     public static async Task RemoveDuplicatedHistoryItemAsync(ObservableCollection<HistoryItemViewModel> historyItems)
     {
         List<HistoryItemViewModel> distinctItems = historyItems.Distinct().ToList();
         historyItems.Clear();
-        for (var i = 0; i < distinctItems.Count; i++)
-        {
-            historyItems.Add(distinctItems[i]);
-        } 
+        for (var i = 0; i < distinctItems.Count; i++) historyItems.Add(distinctItems[i]);
     }
 
     public static async Task SortHistoryItems(ObservableCollection<HistoryItemViewModel> historyItems)
     {
-        var tempList = historyItems.OrderByDescending(x => x.LastUsed).ToList();
+        List<HistoryItemViewModel>? tempList = historyItems.OrderByDescending(x => x.LastUsed).ToList();
         historyItems.Clear();
-        for (int i = 0; i < tempList.Count(); i++)
-        {
-            historyItems.Add(tempList[i]);
-        }
+        for (var i = 0; i < tempList.Count(); i++) historyItems.Add(tempList[i]);
     }
 
-    public override string ToString() => GetHistoryItem().ToString();
+    public override string ToString()
+    {
+        return GetHistoryItem().ToString();
+    }
 }
