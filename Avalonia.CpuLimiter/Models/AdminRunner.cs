@@ -18,7 +18,7 @@ public class AdminRunner
     {
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {
-            Console.WriteLine("Running in Windows");
+            Console.WriteLine("IsRunAsAdmin: Running in Windows");
             WindowsIdentity identity = WindowsIdentity.GetCurrent();
             WindowsPrincipal principal = new(identity);
 
@@ -29,7 +29,7 @@ public class AdminRunner
             RuntimeInformation.IsOSPlatform(OSPlatform.OSX) ||
             RuntimeInformation.IsOSPlatform(OSPlatform.FreeBSD))
         {
-            Console.WriteLine("Running in unix-like System: Linux / macos / unix");
+            Console.WriteLine("IsRunAsAdmin: Running in unix-like System: Linux / macos / unix");
             return getuid() == 0;
         }
 
@@ -50,18 +50,18 @@ public class AdminRunner
             {
                 Process? process = Process.Start(procInfo);
 
-                while (!process!.StandardOutput.EndOfStream)
-                {
-                    string? standardOutput = process.StandardOutput.ReadLine();
-
-                    if (standardOutput!.Contains("Password:"))
-                    {
-                        string? passwd = Console.ReadLine();
-                        StreamWriter myStreamWriter = process.StandardInput;
-                        myStreamWriter.WriteLineAsync(passwd);
-                        break;
-                    }
-                }
+                // while (!process!.StandardOutput.EndOfStream)
+                // {
+                //     string? standardOutput = process.StandardOutput.ReadLine();
+                //
+                //     if (standardOutput!.Contains("Password:"))
+                //     {
+                //         string? passwd = Console.ReadLine();
+                //         StreamWriter myStreamWriter = process.StandardInput;
+                //         myStreamWriter.WriteLineAsync(passwd);
+                //         break;
+                //     }
+                // }
             }
 
             Console.WriteLine("AdminRunner: Continue to run");

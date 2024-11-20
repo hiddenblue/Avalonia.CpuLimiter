@@ -6,7 +6,7 @@ using Avalonia.CpuLimiter.Models;
 using Avalonia.Styling;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
-using Serilog.Events;
+using LogEventLevel = Serilog.Events.LogEventLevel;
 
 namespace Avalonia.CpuLimiter.Services;
 
@@ -45,6 +45,18 @@ public class ConfigFileService
 
     public static async Task SaveConfigAsync(MyConfigModel configModel)
     {
+        // temporary logger. close before running avalonia   
+        Log.Logger = new LoggerConfiguration()
+            .MinimumLevel.Verbose()
+            .WriteTo.File(
+                "logs/logconfig.txt",
+                outputTemplate:
+                "{Timestamp:yyyy-MM-dd HH:mm:ss.ff} [{Level:u3}] {Message:lj}{NewLine}{Exception}")
+            .WriteTo.Console(outputTemplate:
+                "{Timestamp:yyyy-MM-dd HH:mm:ss.ff} [{Level:u3}] {Message:lj}{NewLine}{Exception}")
+            .CreateLogger();
+
+
         if (!Directory.Exists(Path.GetDirectoryName(configPath)))
             Directory.CreateDirectory(Path.GetDirectoryName(configPath) ?? throw new InvalidOperationException());
 
@@ -57,7 +69,7 @@ public class ConfigFileService
         }
         else
         {
-            _logger.Information("try to save a config file, but it doesn't exist.");
+            Log.Information("try to save a config file, but it doesn't exist.");
             oldConfig = string.Empty;
         }
 
@@ -70,15 +82,32 @@ public class ConfigFileService
         }
         catch (Exception e)
         {
-            _logger.Error("An error occured", e.Message);
+            Log.Error("An error occured", e.Message);
             // when code above not working, recover the old config
             await File.WriteAllTextAsync(configPath, oldConfig);
             throw;
+        }
+        finally
+        {
+            Log.CloseAndFlush();
         }
     }
 
     public static async Task<MyConfigModel> LoadConfigAsync()
     {
+        // temporary logger. close before running avalonia   
+        Log.Logger = new LoggerConfiguration()
+            .MinimumLevel.Verbose()
+            .WriteTo.File(
+                "logs/log.txt",
+                rollingInterval: RollingInterval.Month,
+                retainedFileCountLimit: 31,
+                outputTemplate:
+                "{Timestamp:yyyy-MM-dd HH:mm:ss.ff} [{Level:u3}] {Message:lj}{NewLine}{Exception}")
+            .WriteTo.Console(outputTemplate:
+                "{Timestamp:yyyy-MM-dd HH:mm:ss.ff} [{Level:u3}] {Message:lj}{NewLine}{Exception}")
+            .CreateLogger();
+
         try
         {
             if (Path.Exists(configPath))
@@ -106,36 +135,51 @@ public class ConfigFileService
         }
         catch (JsonException)
         {
-            _logger.Error("Failed to load config file");
+            Log.Error("Failed to load config file");
             await SaveConfigAsync(GetDefaultConfigModel());
-            _logger.Information("Create a default config file");
+            Log.Information("Create a default config file");
             return GetDefaultConfigModel();
         }
         catch (FileNotFoundException)
         {
             await SaveConfigAsync(GetDefaultConfigModel());
-            _logger.Information("Create a default config file");
-            _logger.Warning("No config file found, using default config");
+            Log.Information("Create a default config file");
+            Log.Warning("No config file found, using default config");
             return GetDefaultConfigModel();
         }
         catch (NullReferenceException)
         {
             await SaveConfigAsync(GetDefaultConfigModel());
-            _logger.Information("The config file could not be loaded");
-            _logger.Warning("No config file found, using default config");
+            Log.Information("The config file could not be loaded");
+            Log.Warning("No config file found, using default config");
             return GetDefaultConfigModel();
         }
         catch (Exception e)
         {
-            _logger.Error(e.Message);
-            _logger.Error("Failed to load config file exception");
+            Log.Error(e.Message);
+            Log.Error("Failed to load config file exception");
             throw;
+        }
+        finally
+        {
+            Log.CloseAndFlush();
         }
     }
 
 
     public static MyConfigModel LoadConfig()
     {
+        // temporary logger. close before running avalonia   
+        Log.Logger = new LoggerConfiguration()
+            .MinimumLevel.Verbose()
+            .WriteTo.File(
+                "Logs/log.txt",
+                outputTemplate:
+                "{Timestamp:yyyy-MM-dd HH:mm:ss.ff} [{Level:u3}] {Message:lj}{NewLine}{Exception}")
+            .WriteTo.Console(outputTemplate:
+                "{Timestamp:yyyy-MM-dd HH:mm:ss.ff} [{Level:u3}] {Message:lj}{NewLine}{Exception}")
+            .CreateLogger();
+
         try
         {
             if (Path.Exists(configPath))
@@ -163,30 +207,34 @@ public class ConfigFileService
         }
         catch (JsonException)
         {
-            _logger.Error("Failed to load config file");
+            Log.Error("Failed to load config file");
             SaveConfigAsync(GetDefaultConfigModel());
-            _logger.Information("Create a default config file");
+            Log.Information("Create a default config file");
             return GetDefaultConfigModel();
         }
         catch (FileNotFoundException)
         {
             SaveConfigAsync(GetDefaultConfigModel());
-            _logger.Information("Create a default config file");
-            _logger.Warning("No config file found, using default config");
+            Log.Information("Create a default config file");
+            Log.Warning("No config file found, using default config");
             return GetDefaultConfigModel();
         }
         catch (NullReferenceException)
         {
             SaveConfigAsync(GetDefaultConfigModel());
-            _logger.Information("The config file could not be loaded");
-            _logger.Warning("No config file found, using default config");
+            Log.Information("The config file could not be loaded");
+            Log.Warning("No config file found, using default config");
             return GetDefaultConfigModel();
         }
         catch (Exception e)
         {
-            _logger.Error(e.ToString());
-            _logger.Error("Failed to load config file exception");
+            Log.Error(e.ToString());
+            Log.Error("Failed to load config file exception");
             throw;
+        }
+        finally
+        {
+            Log.CloseAndFlush();
         }
     }
 }

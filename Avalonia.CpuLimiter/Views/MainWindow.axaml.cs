@@ -99,16 +99,20 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
         slider.Maximum = Environment.ProcessorCount;
 
         // let the window  hides to tayicon rather than be closed
+        
 
 #if DEBUG
 
 #else
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        {
             this.Closing += (sender, args) =>
             {
                 (((Window)sender!)).Hide();
                 args.Cancel = true;
-
             };
+        }
+
 #endif
     }
 
