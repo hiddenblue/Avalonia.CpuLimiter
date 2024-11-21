@@ -1,41 +1,40 @@
 <Application xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Class="Avalonia.CpuLimiter.App"
-             xmlns:local="using:Avalonia.CpuLimiter"
              xmlns:lang="using:Avalonia.CpuLimiter.Lang"
              RequestedThemeVariant="Default">
-             <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
+    <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
 
-    <Application.DataTemplates>
-    </Application.DataTemplates>
-  
     <Application.Styles>
         <FluentTheme />
         <!-- <SimpleTheme/> -->
-		<StyleInclude Source="avares://Avalonia.CpuLimiter/Icons.axaml"/>
+        <StyleInclude Source="avares://Avalonia.CpuLimiter/Icons.axaml" />
     </Application.Styles>
-    
-     <Application.Resources>
-         <FontFamily x:Key="HarmonyOS Sans"> avares://Avalonia.CpuLimiter/Assets/Fonts#HarmonyOS Sans SC</FontFamily>
-     </Application.Resources>
-    
-     <TrayIcon.Icons>
-         <TrayIcons>
-             <TrayIcon Icon="/Assets/avalonia-logo.ico" 
-                       ToolTipText="Game Launcher"
-                       Clicked="OnTrayIconClicked">
-                 <TrayIcon.Menu>
-                     <NativeMenu>
-                                 <NativeMenuItem Click="OnRestoreButtonClicked" Header="{x:Static lang:Resources.TrayRestoreButton}">
-                                 </NativeMenuItem>
-                                 <NativeMenuItem Header="{x:Static lang:Resources.TrayOpenFileButton}" Click="OnOpenFileButtonClicked" />
-                                 <NativeMenuItem Header="{x:Static lang:Resources.TrayLaunchButton}" Click="OnLaunchProgramButtonClicked"/>
-                                 <NativeMenuItem Header="{x:Static lang:Resources.TrayOpenSettingButton}" Click="OnOpenSettingButtonClicked"/>
-                                 <NativeMenuItemSeparator />
-                                 <NativeMenuItem Header="{x:Static lang:Resources.TrayExitButton}"  Click="OnExitButtonClicked"/>
-                     </NativeMenu>
-                 </TrayIcon.Menu>
-             </TrayIcon>
-         </TrayIcons>
-     </TrayIcon.Icons>
+
+    <Application.Resources>
+        <FontFamily x:Key="HarmonyOS Sans"> avares://Avalonia.CpuLimiter/Assets/Fonts#HarmonyOS Sans SC</FontFamily>
+    </Application.Resources>
+
+    <TrayIcon.Icons>
+        <TrayIcons>
+            <TrayIcon Icon="/Assets/avalonia-logo.ico"
+                      ToolTipText="Game Launcher"
+                      Clicked="OnTrayIconClicked">
+                <TrayIcon.Menu>
+                    <NativeMenu>
+                        <NativeMenuItem Click="OnRestoreButtonClicked"
+                                        Header="{x:Static lang:Resources.TrayRestoreButton}" />
+                        <NativeMenuItem Header="{x:Static lang:Resources.TrayOpenFileButton}"
+                                        Click="OnOpenFileButtonClicked" />
+                        <NativeMenuItem Header="{x:Static lang:Resources.TrayLaunchButton}"
+                                        Click="OnLaunchProgramButtonClicked" />
+                        <NativeMenuItem Header="{x:Static lang:Resources.TrayOpenSettingButton}"
+                                        Click="OnOpenSettingButtonClicked" />
+                        <NativeMenuItemSeparator />
+                        <NativeMenuItem Header="{x:Static lang:Resources.TrayExitButton}" Click="OnExitButtonClicked" />
+                    </NativeMenu>
+                </TrayIcon.Menu>
+            </TrayIcon>
+        </TrayIcons>
+    </TrayIcon.Icons>
 </Application>

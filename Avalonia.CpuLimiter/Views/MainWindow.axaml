@@ -6,7 +6,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="420"
-		Width= "600" Height="420"
+        Width="600" Height="420"
         MaxWidth="900"
         MinWidth="560"
         x:Class="Avalonia.CpuLimiter.Views.MainWindow"
@@ -14,7 +14,7 @@
         x:CompileBindings="True"
         Icon="/Assets/avalonia-logo.ico"
         Title="Game Launcher"
-		TransparencyLevelHint="AcrylicBlur"
+        TransparencyLevelHint="AcrylicBlur"
         Background="Transparent"
         ExtendClientAreaToDecorationsHint="True"
         WindowStartupLocation="CenterScreen"
@@ -23,255 +23,255 @@
     <Design.DataContext>
         <!-- This only sets the DataContext for the previewer in an IDE,
              to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
-        <vm:MainWindowViewModel/>
+        <vm:MainWindowViewModel />
     </Design.DataContext>
 
-	<Panel>
-		<!-- the windows sytle -->
-		<ExperimentalAcrylicBorder IsHitTestVisible="False" Name="MainBorder">
-			<ExperimentalAcrylicBorder.Material>
-				<ExperimentalAcrylicMaterial 
-					 BackgroundSource="Digger"
-					 TintColor="SkyBlue"
-					 TintOpacity="1"
-					 MaterialOpacity="0.25" />
-			</ExperimentalAcrylicBorder.Material>
-		</ExperimentalAcrylicBorder>
-		
-		<!-- window menu -->
-		<DockPanel>
-			<DockPanel.Styles>
-				<Style Selector="TextBlock.Menu2">
-					<!-- <Setter Property="LetterSpacing" Value="2"></Setter> -->
-				</Style>
-			</DockPanel.Styles>
-			<Menu DockPanel.Dock="Top" HorizontalAlignment="Left" FontSize="15" Margin="10 0">
-				<Menu.Styles>
-					<Style Selector="MenuItem.Menu1">
-						<Setter Property="Margin" Value="8 0 8 0"/>
-					<Setter Property="FontWeight" Value="Medium"></Setter>
-					</Style>
-					<Style Selector="MenuItem.Menu2">
-						<Setter Property="FontSize" Value="14"/></Style>
-				</Menu.Styles>
-				
-				<MenuItem Name="FileButton" Classes="Menu1" Header="{x:Static lang:Resources.FileButton}">
-					<MenuItem Name="OpenButton" Classes="Menu2" Command="{Binding ChooseExeFileCommand}"
-					          InputGesture="Ctrl+O" HotKey="Ctrl+O">
-						<MenuItem.Header>
-							<TextBlock Text="{x:Static lang:Resources.OpenButton}"/>
-						</MenuItem.Header>
-					</MenuItem>
-						<MenuItem Name="SaveButton" Header="{x:Static lang:Resources.SaveButton}" Classes="Menu2"
-						          Command="{Binding SaveCommand}"
-						          InputGesture="Ctrl+S" HotKey="Ctrl+S"/>
-					<Separator/>
-					<MenuItem Name="ExitButton" Header="{x:Static lang:Resources.ExitButton}" Classes="Menu2" Click="OnExitButtonClicked"
-					          InputGesture="Escape" HotKey="Escape"/>
-				</MenuItem>
-				
-				<MenuItem Name="EditButton" Classes="Menu1" Header="{x:Static lang:Resources.EditButton}">
-					<MenuItem Name="CutButton" Header="{x:Static lang:Resources.CutButton}" Classes="Menu2"
-					          Command="{Binding CutTextToClipboard}"
-					          InputGesture="Ctrl+x" HotKey="Ctrl+x"
-							  CommandParameter="{Binding #Auxiliary.Text}"/>
-					
-					<MenuItem Name="CopyButton" Header="{x:Static lang:Resources.CopyButton}" Classes="Menu2"
-					          Command="{Binding CopyTextToClipboard}"
-					          InputGesture="Ctrl+c" HotKey="Ctrl+c"
-							  CommandParameter="{Binding #Auxiliary.Text}"/>
-					<MenuItem Name="PasteButton" Header="{x:Static lang:Resources.PasteButton}" Classes="Menu2"
-					          Command="{Binding PastePathFromClipboard}"
-					          InputGesture="Ctrl+v" HotKey="Ctrl+v"/>
-				</MenuItem>
-				
-				<MenuItem Name="SettingButton" Classes="Menu1" Header="{x:Static lang:Resources.SettingButton}">
-					<MenuItem Name="ThemeButton" Classes="Menu2">
-						<MenuItem.Header>
-							<TextBlock 
-								Text="{x:Static lang:Resources.ThemeSwitch}">
-							</TextBlock>
-						</MenuItem.Header>
-						<MenuItem Click="OnSwtichDarkThemeButtonClicked">
-							<MenuItem.Header>
-								<TextBlock Name="DarkThemeButton" Text="{x:Static lang:Resources.DarkThemeButton}"
-								           ></TextBlock>
-							</MenuItem.Header>
-						</MenuItem>
-						<MenuItem Click="OnSwatchLightThemeButtonClicked">
-							<MenuItem.Header>
-								<TextBlock Name="LightThemeButton" Text="{x:Static lang:Resources.LightThemeButton}"></TextBlock>
-							</MenuItem.Header>
-						</MenuItem>
-					</MenuItem>
-						<MenuItem Name="ConfigButton" Header="{x:Static lang:Resources.ConfigButton}" Classes="Menu2"
-						          Command="{Binding OpenSettingWindowCommand }"
-						          InputGesture="Ctrl+K" HotKey="Ctrl+K"/>
-				</MenuItem>
-				
-				<MenuItem Name="RunButton" Classes="Menu1" Header="{x:Static lang:Resources.RunButton}">
-					<MenuItem Name="LaunchButton" Header="{x:Static lang:Resources.LaunchButton}" Classes="Menu2"
-					          Command="{Binding RunGameCommand}"
-					          InputGesture="Ctrl+R" HotKey="Ctrl+R"/>    
-				</MenuItem>
-				
-				<MenuItem Name="HelpButton" Classes="Menu1" Header="{x:Static lang:Resources.HelpButton}">
-					<MenuItem Name="DocsButton" Header="{x:Static lang:Resources.DocsButton}" Classes="Menu2" Click="OnDocsButtonClicked"
-							  ToolTip.Tip="Click to open docs in browser" InputGesture="Ctrl+D" HotKey="Ctrl+D"/>
-					<Separator/>
-					<MenuItem Name="ProjButton" Header="{x:Static lang:Resources.ProjButton}" Classes="Menu2" Click="OnOpenProjButtonClicked"
-					          InputGesture="Ctrl+W" HotKey="Ctrl+W"/>
-					<MenuItem Name="AboutButton" Header="{x:Static lang:Resources.AboutButton}" Classes="Menu2" Click="OnAboutWindowButtonClicked"
-					          InputGesture="F1" HotKey="F1"/>
-				</MenuItem>
-			</Menu>
-			<!-- content -->
-			<StackPanel>
-				<Grid RowDefinitions="Auto" ColumnDefinitions="Auto Auto"
-				      Margin="10 10 30 -20"
-				      HorizontalAlignment="Right" VerticalAlignment="Center" ShowGridLines="False">
-					<Grid.Styles>
-						<Style Selector="TextBlock">
-							<Setter Property="VerticalAlignment" Value="Top"></Setter>
-							<Setter Property="HorizontalAlignment" Value="Right"></Setter>
-							<Setter Property="FontWeight" Value="Bold"></Setter>
-						</Style>
-					</Grid.Styles>
-					<Grid.Styles>
-						<Style Selector="ToggleSwitch">
-							<Setter Property="VerticalAlignment" Value="Top"></Setter>
-							<Setter Property="HorizontalAlignment" Value="Right"></Setter>
-							<Setter Property="FontWeight" Value="Bold"></Setter>
-						</Style>
-					</Grid.Styles>
+    <Panel>
+        <!-- the windows sytle -->
+        <ExperimentalAcrylicBorder IsHitTestVisible="False" Name="MainBorder">
+            <ExperimentalAcrylicBorder.Material>
+                <ExperimentalAcrylicMaterial
+                    BackgroundSource="Digger"
+                    TintColor="SkyBlue"
+                    TintOpacity="1"
+                    MaterialOpacity="0.25" />
+            </ExperimentalAcrylicBorder.Material>
+        </ExperimentalAcrylicBorder>
 
-						<ToggleButton Name="ToggleThemeButton" Padding="10 7 10 5" Width="50" Height="36"
-						              Click="OnToggleThemeButtonClicked">
-							<StackPanel>
-								<PathIcon Classes="sun" IsVisible="{Binding !#ToggleThemeButton.IsChecked}"
-								          Data="{StaticResource WeatherSunnyRegular}"></PathIcon>
-								<PathIcon Classes="moon" IsVisible="{Binding #ToggleThemeButton.IsChecked}"
-								          Data="{StaticResource WeatherMoonRegular}"></PathIcon>
-							</StackPanel>
-							<ToggleButton.Styles>
-								<Style Selector="ToggleButton">
-									<Setter Property="CornerRadius" Value="5"></Setter>
-									<Setter Property="BorderBrush" Value="LightGray"></Setter>
-									<Setter Property="BorderThickness" Value="1"></Setter>
-								</Style>
-								<Style Selector="ToggleButton > PathIcon">
-									<Setter Property="Height" Value="20"></Setter>
-									<Setter Property="Width" Value="40"></Setter>
-								</Style>
-								<Style Selector="ToggleButton">
-									<Setter Property="Foreground" Value="Black"></Setter>
-									<Setter Property="Background" Value="Black"></Setter>
-								</Style>
-								<Style Selector="ToggleButton[IsFocused=True]">
-									<Setter Property="BorderBrush" Value="LightGray"></Setter>
-									<Setter Property="BorderThickness" Value="1"></Setter> 
-								</Style>
-								<Style Selector="ToggleButton:checked /template/ ContentPresenter#PART_ContentPresenter">
-									<Setter Property="Background" Value="Transparent"></Setter>
-								</Style>
-								<Style Selector="ToggleButton:unchecked /template/ ContentPresenter#PART_ContentPresenter">
-									<Setter Property="Background" Value="Transparent"></Setter>
-								</Style>
-								<Style Selector="ToggleButton:focused /template/ ContentPresenter#PART_ContentPresenter">
-									<Setter Property="BorderBrush" Value="LightGray"></Setter>
-									<Setter Property="BorderThickness" Value="1"></Setter>
-								</Style>   
-								<Style Selector="ToolTip">
-									<Setter Property="FontWeight" Value="Normal"></Setter>
-								</Style>
-							</ToggleButton.Styles>
-						</ToggleButton>
-				</Grid>
+        <!-- window menu -->
+        <DockPanel>
+            <DockPanel.Styles>
+                <Style Selector="TextBlock.Menu2">
+                    <!-- <Setter Property="LetterSpacing" Value="2"></Setter> -->
+                </Style>
+            </DockPanel.Styles>
+            <Menu DockPanel.Dock="Top" HorizontalAlignment="Left" FontSize="15" Margin="10 0">
+                <Menu.Styles>
+                    <Style Selector="MenuItem.Menu1">
+                        <Setter Property="Margin" Value="8 0 8 0" />
+                        <Setter Property="FontWeight" Value="Medium" />
+                    </Style>
+                    <Style Selector="MenuItem.Menu2">
+                        <Setter Property="FontSize" Value="14" />
+                    </Style>
+                </Menu.Styles>
 
-				<TextBlock Name="ExeFileBlock" FontSize="19" FontWeight="Bold"
-				           HorizontalAlignment="Center" Padding="20"
-				           Text="{x:Static lang:Resources.ExeFileBlock}"/>
+                <MenuItem Name="FileButton" Classes="Menu1" Header="{x:Static lang:Resources.FileButton}">
+                    <MenuItem Name="OpenButton" Classes="Menu2" Command="{Binding ChooseExeFileCommand}"
+                              InputGesture="Ctrl+O" HotKey="Ctrl+O">
+                        <MenuItem.Header>
+                            <TextBlock Text="{x:Static lang:Resources.OpenButton}" />
+                        </MenuItem.Header>
+                    </MenuItem>
+                    <MenuItem Name="SaveButton" Header="{x:Static lang:Resources.SaveButton}" Classes="Menu2"
+                              Command="{Binding SaveCommand}"
+                              InputGesture="Ctrl+S" HotKey="Ctrl+S" />
+                    <Separator />
+                    <MenuItem Name="ExitButton" Header="{x:Static lang:Resources.ExitButton}" Classes="Menu2"
+                              Click="OnExitButtonClicked"
+                              InputGesture="Escape" HotKey="Escape" />
+                </MenuItem>
 
-				<StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Tag="stackpanel2">
-					<!-- SelectedItem="{Binding HistoryItems[0]}" -->
-					<ComboBox Name="HistoryComboBox" HorizontalAlignment="Center" Padding="5 0 1 0"
-					          FontSize="17" MinWidth="400" Height="45" MaxWidth="700"
-					          ItemsSource="{Binding HistoryItems}"
-					          AutoScrollToSelectedItem="True"
-					          SelectedItem="{Binding SelectedHistoryItem }"
-					          SelectedIndex="{Binding SelectedComboboxIndex}">
-						<!-- SelectionChanged="OnSelectionChanged" -->
-						<ComboBox.ItemTemplate>
-							<DataTemplate DataType="vm:HistoryItemViewModel">
-								<view:HistoryComboboxView/>
-							</DataTemplate>
-						</ComboBox.ItemTemplate>
-					</ComboBox>	
-					
-					<Button Name="OpenFilePickerButton" Content=". . ." HorizontalAlignment="Center"
-					        FontSize="18"
-					        Background="Beige" Foreground="Black"
-					        Opacity="0.8"
-					        Margin="5 0 0 0" Padding="10" Width="45"
-					        Height="{Binding #HistoryComboBox.Height }"
-					        BorderBrush="Black"
-	
-					        Command="{Binding ChooseExeFileCommand}">
-						<Button.Styles>
-							<Style Selector="Button">
-								<Setter Property="ToolTip.Tip" Value="Open the file explorer to select"></Setter>
-							</Style>
-							<Style Selector="Button:disabled">
-								<Setter Property="ToolTip.Tip"
-								        Value="555">
-								        <!-- Value="{Binding HistoryLimit, StringFormat='no more than {0} records. change it via setting'}"> -->
-								</Setter>
-							</Style>
-						</Button.Styles>
-					</Button>
-				</StackPanel>
-				<Separator Margin="0 30"/>
-				<Slider Name="slider" BorderBrush="Orange" Minimum="1"
-				        Maximum="8" IsSnapToTickEnabled="True" TickFrequency="1" TickPlacement="TopLeft"
-				        Width="400" Value="{Binding CpuCoreCount}"
-				        ToolTip.Tip="Adjust the cpu core numbers used by the Game program"
-				        PointerWheelChanged="OnPointerWheelChanged">
-				</Slider>
-				
-				<StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-					<TextBlock Name="CPUCoreNumberTextBlock" FontSize="19" FontWeight="Bold" Margin="10 6 10 0"
-					           HorizontalAlignment="Center" Text="{x:Static lang:Resources.CPUCoreNumberTextBlock}"></TextBlock>
-					<!-- <TextBlock Text="{Binding #slider.Value}" -->
-					<!--            HorizontalAlignment="Center" FontSize="20" FontWeight="Bold" Padding="0"/> -->
-					
-					<TextBox Margin="10 0 0 0" HorizontalAlignment="Center"
-					         VerticalContentAlignment="Center"
-					         Padding="0 0 0 0"
-					         CornerRadius="5"
-					         Width="1" MinWidth="40" Height="40" TextAlignment="Center"
-					         Text="{Binding CpuCoreCount}" FontSize="19"
-					         FontWeight="Bold" IsReadOnly="False"
-					         ToolTip.Tip="{Binding HostCpuCoreCount,
-					         StringFormat='Your has {0} logical CPU core. Value must be between 0~{0}'}">
-						
-					</TextBox>
-				</StackPanel>
-				<Button FontStyle="Normal" Foreground="Orange" 
-				        Command="{Binding RunGameCommand}"
-				        HorizontalAlignment="Center" VerticalAlignment="Center"
-				        HorizontalContentAlignment="Center"
-				        VerticalContentAlignment="Center"
-				        FontSize="20" FontWeight="Bold"
-				        Margin="10 25" Padding="12 15"
-				        CornerRadius="5"
-				        ToolTip.Tip="Run the selected Game"
-				        Content="{x:Static lang:Resources.LaunchGameButton}"
-				        HotKey="Enter">
-					<!-- <PathIcon Data="{StaticResource GamesRegular}"/> -->
-				</Button>
-			<TextBlock Name="Auxiliary" Text="{Binding GamePath}" IsVisible="False"/>
-			</StackPanel>
-		</DockPanel>
-		
-	</Panel>
+                <MenuItem Name="EditButton" Classes="Menu1" Header="{x:Static lang:Resources.EditButton}">
+                    <MenuItem Name="CutButton" Header="{x:Static lang:Resources.CutButton}" Classes="Menu2"
+                              Command="{Binding CutTextToClipboard}"
+                              InputGesture="Ctrl+x" HotKey="Ctrl+x"
+                              CommandParameter="{Binding #Auxiliary.Text}" />
+
+                    <MenuItem Name="CopyButton" Header="{x:Static lang:Resources.CopyButton}" Classes="Menu2"
+                              Command="{Binding CopyTextToClipboard}"
+                              InputGesture="Ctrl+c" HotKey="Ctrl+c"
+                              CommandParameter="{Binding #Auxiliary.Text}" />
+                    <MenuItem Name="PasteButton" Header="{x:Static lang:Resources.PasteButton}" Classes="Menu2"
+                              Command="{Binding PastePathFromClipboard}"
+                              InputGesture="Ctrl+v" HotKey="Ctrl+v" />
+                </MenuItem>
+
+                <MenuItem Name="SettingButton" Classes="Menu1" Header="{x:Static lang:Resources.SettingButton}">
+                    <MenuItem Name="ThemeButton" Classes="Menu2">
+                        <MenuItem.Header>
+                            <TextBlock
+                                Text="{x:Static lang:Resources.ThemeSwitch}" />
+                        </MenuItem.Header>
+                        <MenuItem Click="OnSwtichDarkThemeButtonClicked">
+                            <MenuItem.Header>
+                                <TextBlock Name="DarkThemeButton" Text="{x:Static lang:Resources.DarkThemeButton}" />
+                            </MenuItem.Header>
+                        </MenuItem>
+                        <MenuItem Click="OnSwatchLightThemeButtonClicked">
+                            <MenuItem.Header>
+                                <TextBlock Name="LightThemeButton" Text="{x:Static lang:Resources.LightThemeButton}" />
+                            </MenuItem.Header>
+                        </MenuItem>
+                    </MenuItem>
+                    <MenuItem Name="ConfigButton" Header="{x:Static lang:Resources.ConfigButton}" Classes="Menu2"
+                              Command="{Binding OpenSettingWindowCommand }"
+                              InputGesture="Ctrl+K" HotKey="Ctrl+K" />
+                </MenuItem>
+
+                <MenuItem Name="RunButton" Classes="Menu1" Header="{x:Static lang:Resources.RunButton}">
+                    <MenuItem Name="LaunchButton" Header="{x:Static lang:Resources.LaunchButton}" Classes="Menu2"
+                              Command="{Binding RunGameCommand}"
+                              InputGesture="Ctrl+R" HotKey="Ctrl+R" />
+                </MenuItem>
+
+                <MenuItem Name="HelpButton" Classes="Menu1" Header="{x:Static lang:Resources.HelpButton}">
+                    <MenuItem Name="DocsButton" Header="{x:Static lang:Resources.DocsButton}" Classes="Menu2"
+                              Click="OnDocsButtonClicked"
+                              ToolTip.Tip="Click to open docs in browser" InputGesture="Ctrl+D" HotKey="Ctrl+D" />
+                    <Separator />
+                    <MenuItem Name="ProjButton" Header="{x:Static lang:Resources.ProjButton}" Classes="Menu2"
+                              Click="OnOpenProjButtonClicked"
+                              InputGesture="Ctrl+W" HotKey="Ctrl+W" />
+                    <MenuItem Name="AboutButton" Header="{x:Static lang:Resources.AboutButton}" Classes="Menu2"
+                              Click="OnAboutWindowButtonClicked"
+                              InputGesture="F1" HotKey="F1" />
+                </MenuItem>
+            </Menu>
+            <!-- content -->
+            <StackPanel>
+                <Grid RowDefinitions="Auto" ColumnDefinitions="Auto Auto"
+                      Margin="10 10 30 -20"
+                      HorizontalAlignment="Right" VerticalAlignment="Center" ShowGridLines="False">
+                    <Grid.Styles>
+                        <Style Selector="TextBlock">
+                            <Setter Property="VerticalAlignment" Value="Top" />
+                            <Setter Property="HorizontalAlignment" Value="Right" />
+                            <Setter Property="FontWeight" Value="Bold" />
+                        </Style>
+                    </Grid.Styles>
+                    <Grid.Styles>
+                        <Style Selector="ToggleSwitch">
+                            <Setter Property="VerticalAlignment" Value="Top" />
+                            <Setter Property="HorizontalAlignment" Value="Right" />
+                            <Setter Property="FontWeight" Value="Bold" />
+                        </Style>
+                    </Grid.Styles>
+
+                    <ToggleButton Name="ToggleThemeButton" Padding="10 7 10 5" Width="50" Height="36"
+                                  Click="OnToggleThemeButtonClicked">
+                        <StackPanel>
+                            <PathIcon Classes="sun" IsVisible="{Binding !#ToggleThemeButton.IsChecked}"
+                                      Data="{StaticResource WeatherSunnyRegular}" />
+                            <PathIcon Classes="moon" IsVisible="{Binding #ToggleThemeButton.IsChecked}"
+                                      Data="{StaticResource WeatherMoonRegular}" />
+                        </StackPanel>
+                        <ToggleButton.Styles>
+                            <Style Selector="ToggleButton">
+                                <Setter Property="CornerRadius" Value="5" />
+                                <Setter Property="BorderBrush" Value="LightGray" />
+                                <Setter Property="BorderThickness" Value="1" />
+                            </Style>
+                            <Style Selector="ToggleButton > PathIcon">
+                                <Setter Property="Height" Value="20" />
+                                <Setter Property="Width" Value="40" />
+                            </Style>
+                            <Style Selector="ToggleButton">
+                                <Setter Property="Foreground" Value="Black" />
+                                <Setter Property="Background" Value="Black" />
+                            </Style>
+                            <Style Selector="ToggleButton[IsFocused=True]">
+                                <Setter Property="BorderBrush" Value="LightGray" />
+                                <Setter Property="BorderThickness" Value="1" />
+                            </Style>
+                            <Style Selector="ToggleButton:checked /template/ ContentPresenter#PART_ContentPresenter">
+                                <Setter Property="Background" Value="Transparent" />
+                            </Style>
+                            <Style Selector="ToggleButton:unchecked /template/ ContentPresenter#PART_ContentPresenter">
+                                <Setter Property="Background" Value="Transparent" />
+                            </Style>
+                            <Style Selector="ToggleButton:focused /template/ ContentPresenter#PART_ContentPresenter">
+                                <Setter Property="BorderBrush" Value="LightGray" />
+                                <Setter Property="BorderThickness" Value="1" />
+                            </Style>
+                            <Style Selector="ToolTip">
+                                <Setter Property="FontWeight" Value="Normal" />
+                            </Style>
+                        </ToggleButton.Styles>
+                    </ToggleButton>
+                </Grid>
+
+                <TextBlock Name="ExeFileBlock" FontSize="19" FontWeight="Bold"
+                           HorizontalAlignment="Center" Padding="20"
+                           Text="{x:Static lang:Resources.ExeFileBlock}" />
+
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Tag="stackpanel2">
+                    <!-- SelectedItem="{Binding HistoryItems[0]}" -->
+                    <ComboBox Name="HistoryComboBox" HorizontalAlignment="Center" Padding="5 0 1 0"
+                              FontSize="17" MinWidth="400" Height="45" MaxWidth="700"
+                              ItemsSource="{Binding HistoryItems}"
+                              AutoScrollToSelectedItem="True"
+                              SelectedItem="{Binding SelectedHistoryItem }"
+                              SelectedIndex="{Binding SelectedComboboxIndex}">
+                        <!-- SelectionChanged="OnSelectionChanged" -->
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate DataType="vm:HistoryItemViewModel">
+                                <view:HistoryComboboxView />
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+
+                    <Button Name="OpenFilePickerButton" Content=". . ." HorizontalAlignment="Center"
+                            FontSize="18"
+                            Background="Beige" Foreground="Black"
+                            Opacity="0.8"
+                            Margin="5 0 0 0" Padding="10" Width="45"
+                            Height="{Binding #HistoryComboBox.Height }"
+                            BorderBrush="Black"
+
+                            Command="{Binding ChooseExeFileCommand}">
+                        <Button.Styles>
+                            <Style Selector="Button">
+                                <Setter Property="ToolTip.Tip" Value="Open the file explorer to select" />
+                            </Style>
+                            <Style Selector="Button:disabled">
+                                <Setter Property="ToolTip.Tip"
+                                        Value="555">
+                                    <!-- Value="{Binding HistoryLimit, StringFormat='no more than {0} records. change it via setting'}"> -->
+                                </Setter>
+                            </Style>
+                        </Button.Styles>
+                    </Button>
+                </StackPanel>
+                <Separator Margin="0 30" />
+                <Slider Name="slider" BorderBrush="Orange" Minimum="1"
+                        Maximum="8" IsSnapToTickEnabled="True" TickFrequency="1" TickPlacement="TopLeft"
+                        Width="400" Value="{Binding CpuCoreCount}"
+                        ToolTip.Tip="Adjust the cpu core numbers used by the Game program"
+                        PointerWheelChanged="OnPointerWheelChanged" />
+
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                    <TextBlock Name="CPUCoreNumberTextBlock" FontSize="19" FontWeight="Bold" Margin="10 6 10 0"
+                               HorizontalAlignment="Center" Text="{x:Static lang:Resources.CPUCoreNumberTextBlock}" />
+                    <!-- <TextBlock Text="{Binding #slider.Value}" -->
+                    <!--            HorizontalAlignment="Center" FontSize="20" FontWeight="Bold" Padding="0"/> -->
+
+                    <TextBox Margin="10 0 0 0" HorizontalAlignment="Center"
+                             VerticalContentAlignment="Center"
+                             Padding="0 0 0 0"
+                             CornerRadius="5"
+                             Width="1" MinWidth="40" Height="40" TextAlignment="Center"
+                             Text="{Binding CpuCoreCount}" FontSize="19"
+                             FontWeight="Bold" IsReadOnly="False"
+                             ToolTip.Tip="{Binding HostCpuCoreCount,
+					         StringFormat='Your has {0} logical CPU core. Value must be between 0~{0}'}" />
+                </StackPanel>
+                <Button FontStyle="Normal" Foreground="Orange"
+                        Command="{Binding RunGameCommand}"
+                        HorizontalAlignment="Center" VerticalAlignment="Center"
+                        HorizontalContentAlignment="Center"
+                        VerticalContentAlignment="Center"
+                        FontSize="20" FontWeight="Bold"
+                        Margin="10 25" Padding="12 15"
+                        CornerRadius="5"
+                        ToolTip.Tip="Run the selected Game"
+                        Content="{x:Static lang:Resources.LaunchGameButton}"
+                        HotKey="Enter">
+                    <!-- <PathIcon Data="{StaticResource GamesRegular}"/> -->
+                </Button>
+                <TextBlock Name="Auxiliary" Text="{Binding GamePath}" IsVisible="False" />
+            </StackPanel>
+        </DockPanel>
+
+    </Panel>
 </Window>

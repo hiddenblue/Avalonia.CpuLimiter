@@ -1,8 +1,7 @@
 ﻿using ReactiveUI;
 
-namespace Avalonia.CpuLimiter.ViewModels
+namespace Avalonia.CpuLimiter.ViewModels;
+
+public class ViewModelBase : ReactiveObject
 {
-    public class ViewModelBase : ReactiveObject
-    {
-    }
 }

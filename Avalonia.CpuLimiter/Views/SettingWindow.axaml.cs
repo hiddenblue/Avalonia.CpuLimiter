@@ -1,9 +1,9 @@
-using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Controls.Primitives;
+using Avalonia.CpuLimiter.Models;
 using Avalonia.CpuLimiter.Services;
 using Avalonia.CpuLimiter.ViewModels;
 using Avalonia.Input;
@@ -16,57 +16,10 @@ namespace Avalonia.CpuLimiter.Views;
 
 public partial class SettingWindow : Window, ILinuxScreen
 {
-    // dummy
-    public SettingWindow()
-    {
-        InitializeComponent();
-
-        if (Design.IsDesignMode)
-        {
-            SettingBorder.Material.TintColor = Colors.SkyBlue;
-        }
-        
-        if(Application.Current.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
-            ResetStateToConfig();
-        
-        AddScreenWidth();
-    }
-    
-    public SettingWindow(ILogger logger)
-    {
-        InitializeComponent();
-        this._logger = logger;
-
-        if (Design.IsDesignMode)
-        {
-            SettingBorder.Material.TintColor = Colors.SkyBlue;
-        }
-        
-        if(Application.Current.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
-            ResetStateToConfig();
-        
-        AddScreenWidth();
-    }
-    
-    private ILogger _logger;
+    private readonly ILogger _logger;
 
 
-    private void OnRefreshThemeColor(object sender, RangeBaseValueChangedEventArgs e)
-    {
-        int colorIndex = (int)e.NewValue;
-        Console.WriteLine($@"selected color changed {CustomColors[colorIndex]}");
-
-        SettingBorder.Material.TintColor = CustomColors[colorIndex].Color;
-        if (App.Current.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
-        {
-            SettingWindowViewModel vm = DataContext as SettingWindowViewModel;
-            vm.ColorDigit = colorIndex;
-        }
-        
-    }
-
-
-    private List<CustomColor> CustomColors = new List<CustomColor>()
+    private readonly List<CustomColor> CustomColors = new()
     {
         new CustomColor("#e95815"),
         new CustomColor("#f1a100"),
@@ -91,10 +44,59 @@ public partial class SettingWindow : Window, ILinuxScreen
         new CustomColor(Colors.DeepSkyBlue.ToString()),
         new CustomColor(Colors.LightSkyBlue.ToString())
     };
-    
+
+    // dummy
+    public SettingWindow()
+    {
+        InitializeComponent();
+
+        if (Design.IsDesignMode) SettingBorder.Material.TintColor = Colors.SkyBlue;
+
+        if (Application.Current.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+            ResetStateToConfig();
+
+        AddScreenWidth();
+    }
+
+    public SettingWindow(ILogger logger)
+    {
+        InitializeComponent();
+        _logger = logger;
+
+        if (Design.IsDesignMode) SettingBorder.Material.TintColor = Colors.SkyBlue;
+
+        if (Application.Current.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+            ResetStateToConfig();
+
+        AddScreenWidth();
+    }
+
+    public void AddScreenWidth()
+    {
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+        {
+            _logger.Information($@"mainwindow width {Width}, height {Height}");
+            Width *= 1.1;
+            _logger.Information($@" Width: {Width}");
+        }
+    }
+
+
+    private void OnRefreshThemeColor(object sender, RangeBaseValueChangedEventArgs e)
+    {
+        var colorIndex = (int)e.NewValue;
+        _logger.Information($@"selected color changed {CustomColors[colorIndex]}");
+
+        SettingBorder.Material.TintColor = CustomColors[colorIndex].Color;
+        if (App.Current.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+        {
+            SettingWindowViewModel vm = DataContext as SettingWindowViewModel;
+            vm.ColorDigit = colorIndex;
+        }
+    }
+
     private void OnToggleThemeButtonClicked(object? sender, RoutedEventArgs e)
     {
-
         if (sender is ToggleButton toggleButton)
         {
             SettingWindowViewModel vm = DataContext as SettingWindowViewModel;
@@ -102,20 +104,20 @@ public partial class SettingWindow : Window, ILinuxScreen
             {
                 vm.ThemeVariant = ThemeVariant.Light;
                 RequestedThemeVariant = ThemeVariant.Light;
-                Console.WriteLine("configmodel theme variant is set to Light");
+                _logger.Information("configmodel theme variant is set to Light");
             }
             else
             {
                 vm.ThemeVariant = ThemeVariant.Dark;
                 RequestedThemeVariant = ThemeVariant.Dark;
-                Console.WriteLine("configmodel theme variant is set to Dark");
+                _logger.Information("configmodel theme variant is set to Dark");
             }
         }
     }
 
-    private void  OnPointerWheelChanged(object sender, PointerWheelEventArgs e)
+    private void OnPointerWheelChanged(object sender, PointerWheelEventArgs e)
     {
-        Console.WriteLine(e.Delta);
+        _logger.Debug("PointerWheelChanged e.Delta: {0}", e.Delta);
         // e.Delta.Y value is vary between [-2, 2]
         ColorSlider.Value += e.Delta.Y;
     }
@@ -124,16 +126,13 @@ public partial class SettingWindow : Window, ILinuxScreen
     // triggered when actived
     private void ResetStateToConfig()
     {
-        var tempConfig = App.Current.ConfigModel;
-        
-        
-        
+        MyConfigModel tempConfig = App.Current.ConfigModel;
+
+
         if (tempConfig.StartupCultureConfig == "")
             StartupLanguageToggle.IsChecked = true;
         else
-        {
             StartupLanguageToggle.IsChecked = false;
-        }
 
         if (tempConfig.ThemeVariantConfig == ThemeVariant.Dark || tempConfig.ThemeVariantConfig == ThemeVariant.Default)
         {
@@ -145,40 +144,24 @@ public partial class SettingWindow : Window, ILinuxScreen
             StartupThemeToggle.IsChecked = true;
             RequestedThemeVariant = ThemeVariant.Light;
         }
-
-
     }
 
     private void OnHistoryLimitSpinnerChanged(object sender, SpinEventArgs e)
     {
-        var spinner = (Spinner)sender;
+        Spinner spinner = (Spinner)sender;
 
         if (spinner.Content is TextBox textBox && int.TryParse(textBox.Text, out int limitValue))
         {
             if (e.Direction == SpinDirection.Increase)
                 limitValue += 1;
             else
-            {
                 limitValue -= 1;
-            }
 
             if (DataContext is SettingWindowViewModel vm)
             {
                 vm.HistoryLimit = limitValue;
                 App.Current.ConfigModel.HistoryLimit = limitValue;
             }
-
         }
     }
-    
-    public void AddScreenWidth()
-    {
-        if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-        {
-            Console.WriteLine($@"mainwindow width {Width}, height {Height}");
-            this.Width *= 1.1;
-            Console.WriteLine($@" Width: {Width}");
-        }
-    }
-
 }

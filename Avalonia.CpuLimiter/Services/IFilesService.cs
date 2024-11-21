@@ -1,12 +1,11 @@
-﻿using Avalonia.Platform.Storage;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using Avalonia.Platform.Storage;
 
-namespace Avalonia.CpuLimiter.Services
+namespace Avalonia.CpuLimiter.Services;
+
+public interface IFilesService
 {
-    public interface IFilesService
-    {
-        public Task<IStorageFile?> OpenFilePickerAsync();
+    public Task<IStorageFile?> OpenFilePickerAsync();
 
-        public Task<IStorageFile?> SaveFilePickerAsync();
-    }
+    public Task<IStorageFile?> SaveFilePickerAsync();
 }
