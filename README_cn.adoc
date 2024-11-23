@@ -1,0 +1,140 @@
+﻿= AVACL
+Firstname Lastname <author@asciidoctor.org>
+3.0, July 29, 2022: AsciiDoc article template
+:toc:
+:icons: font
+:url-quickref: https://docs.asciidoctor.org/asciidoc/latest/syntax-quick-reference/
+
+image:https://img.shields.io/github/stars/hiddenblue/Avalonia.CpuLimiter?style=social?color=bule[GitHub stars]
+image:https://img.shields.io/github/forks/hiddenblue/Avalonia.CpuLimiter?style=social?color=blue[GitHub forks]
+image:https://img.shields.io/github/watchers/hiddenblue/Avalonia.CpuLimiter?style=social?color=blue[GitHub watchers]
+image:https://img.shields.io/github/downloads/hiddenblue/Avalonia.CpuLimiter/total?color=green[GitHub Downloads (all assets, all releases)]image:https://img.shields.io/github/repo-size/hiddenblue/Avalonia.CpuLimiter[GitHub repo size]image:https://img.shields.io/github/last-commit/hiddenblue/Avalonia.CpuLimiter?color=puple[GitHub last commit]image:https://img.shields.io/github/search/hiddenblue/Avalonia.CpuLimiter/query?color=green[GitHub search hit counter]
+
+
+link:README.adoc[English] | link:README_cn.adoc[简体中文]
+
+== 📖关于 ==
+
+AVACL(avalonia.cpulimiter)是一款基于 https://github.com/AvaloniaUI/Avalonia[Avalonia] 框架开发的程序CPU控制工具，支持Windows和Linux平台， 可以实现对众多程序CPU核心调度的控制。
+
+IMPORTANT: 此工具需要对应平台管理员权限才能使用，否则无法正常工作
+
+== 🖼️界面 ==
+
+=== 🎨主界面 ===
+image::Misc/AVACL_cn_mainwin.png[主界面, 500, align="center"]
+
+
+=== ⚙️设置界面 ===
+image::Misc/AVACL_cn_setting.png[设置界面,500, align="center"]
+
+
+
+== 🚀使用方法 ==
+
+
+
+=== 🪟Windows平台 ===
+下载Release当中对应的软件包，解压后运行avalonia.cpulimiter打开程序主界面
+
+点击主界面的添加文件按钮，打开资源管理器，选择你想要打开的游戏或者应用程序(通常为 `exe` 格式)，点击 `确定`
+
+用鼠标鼠标滚轮点击拖动下方的滑块调整下方的CPU核心数值
+
+然后点击 `启动程序`，即可按照设定的CPU数值执行目标程序
+
+NOTE: 此处设置的CPU核心数值为 `逻辑核心`数量，非常规的CPU`物理核心`数量 逻辑核心数量 = 物理核心数量x2
+
+
+
+'''
+
+=== 🐧Linux平台 ===
+当前linux平台暂无通过GUI启动需要sudo权限的简单方法，请使用命令行启动
+
+在Release下载所对应的linux平台的package，通过包管理器安装，
+在命令行当中执行
+
+.debian
+[source, bash]
+--
+sudo apt install ./avalonia.cpulimiter_0.1-alpha_amd64_native_AOT.deb
+
+--
+
+然后可以通过命令行使用sudo命令执行
+[source, bash]
+--
+sudo -E /usr/bin/avalonia.cpulimiter.sh
+--
+
+WARNING: 在Linux通过AVACL启动的程序也将具有root权限，请斟酌后使用
+
+== 🛠️开发&Debug🐛 ==
+
+此项目基于 https://github.com/AvaloniaUI/Avalonia[Avalonia] 跨平台图形框架开发，使用Dotnet8.0 SDK编译，支持Native AOT等大幅提高启动速度等特性。
+
+*Rider* 和 *Visual studio* 是主要的开发工具。
+
+*日志*
+
+程序的日志默认在用户home目录下生成
+如有Debug的需求请查看日志
+
+
+
+== 💻支持平台 ==
+
+Native AOT:    启动最快，二进制体积最小 +
+Ready to Run:  启动快， 体积大 +
+Self-Contained: 体积大，无需要dotnet运行时
+
+
+[cols="1,2,1"]
+.Table title
+|===
+
+| 平台 | 特性 | 后缀
+
+.3+| Windows (exe)
+| Native AOT start 
+| native_aot
+
+| Ready to Run  
+| R2R
+
+
+| Self-Contained  
+| no_dotnet
+
+.3+| Linux (.deb .rpm)
+| Native AOT
+| native_aot
+
+| Ready to Run
+| R2R
+
+| Self-Contained
+| no_dotnet
+
+.3+| MacOS
+.3+|
+.3+| unSupported
+
+|===
+
+NOTE: 此处不支持Mac主要是我没有可以测试的设备，AVACL可能有部分特性是支持的。
+
+== ⏱️ToDo ==
+
+
+* [ ] 增加在线自动更新功能，打开时检查并联网下载更新
+* [ ] 增加点击自动时选中项目刷新历史使用时间逻辑
+* [ ] 优化日志系统，采用更加简单，兼容native aot的模块
+* [ ] 增加应用程序图标功能
+
+== 📘参考项目 == 
+
+. link:https://github.com/hiddenblue/prototype-game-runner[prototype-game-runner]
+
+. 
